@@ -1,0 +1,4 @@
+/home/bojorge/Documents/TEC/Proyecto_de_diseno/Repositorio_personal/Proyecto_de_diseno_CE/IPC/message_passing/Boost_Asio/CMakeFiles/server.dir
+/home/bojorge/Documents/TEC/Proyecto_de_diseno/Repositorio_personal/Proyecto_de_diseno_CE/IPC/message_passing/Boost_Asio/CMakeFiles/client.dir
+/home/bojorge/Documents/TEC/Proyecto_de_diseno/Repositorio_personal/Proyecto_de_diseno_CE/IPC/message_passing/Boost_Asio/CMakeFiles/edit_cache.dir
+/home/bojorge/Documents/TEC/Proyecto_de_diseno/Repositorio_personal/Proyecto_de_diseno_CE/IPC/message_passing/Boost_Asio/CMakeFiles/rebuild_cache.dir
