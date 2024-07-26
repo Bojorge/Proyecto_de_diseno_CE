@@ -1,4 +1,4 @@
-# Install script for directory: /home/bojorge/Documents/TEC/Proyecto_de_diseno/Repositorio_personal/Proyecto_de_diseno_CE/IPC/message_passing/Boost_Asio
+# Install script for directory: /home/bojorge/Documents/TEC/Proyecto_de_diseno/Repositorio_personal/Proyecto_de_diseno_CE/IPC/message_passing/ZeroMQ
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -50,5 +50,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/home/bojorge/Documents/TEC/Proyecto_de_diseno/Repositorio_personal/Proyecto_de_diseno_CE/IPC/message_passing/Boost_Asio/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/home/bojorge/Documents/TEC/Proyecto_de_diseno/Repositorio_personal/Proyecto_de_diseno_CE/IPC/message_passing/ZeroMQ/build/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

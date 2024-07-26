@@ -3,7 +3,7 @@
 
 # Relative path conversion top directories.
 set(CMAKE_RELATIVE_PATH_TOP_SOURCE "/home/bojorge/Documents/TEC/Proyecto_de_diseno/Repositorio_personal/Proyecto_de_diseno_CE/IPC/message_passing/Boost_Asio")
-set(CMAKE_RELATIVE_PATH_TOP_BINARY "/home/bojorge/Documents/TEC/Proyecto_de_diseno/Repositorio_personal/Proyecto_de_diseno_CE/IPC/message_passing/Boost_Asio")
+set(CMAKE_RELATIVE_PATH_TOP_BINARY "/home/bojorge/Documents/TEC/Proyecto_de_diseno/Repositorio_personal/Proyecto_de_diseno_CE/IPC/message_passing/Boost_Asio/build")
 
 # Force unix paths in dependencies.
 set(CMAKE_FORCE_UNIX_PATHS 1)
