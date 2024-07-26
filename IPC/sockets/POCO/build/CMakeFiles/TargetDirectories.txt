@@ -1,0 +1,4 @@
+/home/bojorge/Documents/TEC/Proyecto_de_diseno/Repositorio_personal/Proyecto_de_diseno_CE/IPC/sockets/POCO/build/CMakeFiles/server.dir
+/home/bojorge/Documents/TEC/Proyecto_de_diseno/Repositorio_personal/Proyecto_de_diseno_CE/IPC/sockets/POCO/build/CMakeFiles/client.dir
+/home/bojorge/Documents/TEC/Proyecto_de_diseno/Repositorio_personal/Proyecto_de_diseno_CE/IPC/sockets/POCO/build/CMakeFiles/edit_cache.dir
+/home/bojorge/Documents/TEC/Proyecto_de_diseno/Repositorio_personal/Proyecto_de_diseno_CE/IPC/sockets/POCO/build/CMakeFiles/rebuild_cache.dir
