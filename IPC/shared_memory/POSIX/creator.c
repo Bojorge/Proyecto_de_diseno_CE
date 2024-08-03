@@ -23,8 +23,8 @@ void init_empty_struct (SharedData *sharedData, int numChars) {
     sharedData->statsInited = false;
 }
 
-void printSharedData(SharedData *sharedData) {
-    /*printf("sharedData->bufferSize: %d\n", sharedData->bufferSize);
+/*void printSharedData(SharedData *sharedData) {
+    printf("sharedData->bufferSize: %d\n", sharedData->bufferSize);
     printf("sharedData->writeIndex: %d\n", sharedData->writeIndex);
     printf("sharedData->readIndex: %d\n", sharedData->readIndex);
     printf("sharedData->clientBlocked: %d\n", sharedData->clientBlocked);
@@ -35,17 +35,17 @@ void printSharedData(SharedData *sharedData) {
     printf("sharedData->clientUserTime: %d\n", sharedData->clientUserTime);
     printf("sharedData->clientKernelTime: %d\n", sharedData->clientKernelTime);
     printf("sharedData->recUserTime: %d\n", sharedData->recUserTime);
-    printf("sharedData->recKernelTime: %d\n", sharedData->recKernelTime);*/
-}
+    printf("sharedData->recKernelTime: %d\n", sharedData->recKernelTime);
+}*/
 
 int main(int argc, char *argv[]) 
 {
     destroy_memory_block(STRUCT_LOCATION);
     destroy_memory_block(BUFFER_LOCATION);
     
-    int numChars;
-    printf("Ingrese la cantidad de caracteres a compartir: ");
-    scanf("%d", &numChars);
+    int numChars = 10;
+    //printf("Ingrese la cantidad de caracteres a compartir: ");
+    //scanf("%d", &numChars);
 
     // Set the semaphores
     sem_unlink(SEM_READ_PROCESS_FNAME);
@@ -117,7 +117,7 @@ int main(int argc, char *argv[])
             printf("buffer[%d] = \"%c\" | time: %s\n", i, buffer[i].character, buffer[i].time);
         }
 
-        printf("--------------------------------------\n");
+        printf("-------------------------------------------------\n");
         fflush(stdout);
 
         sem_post(sem_write);
