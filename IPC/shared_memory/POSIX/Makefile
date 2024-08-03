@@ -1,32 +1,15 @@
-# Nombre del ejecutable
-TARGET = posix_program
+CC		= gcc
+CFLAGS	= -g
+OBJS	= shared_memory.o
+EXE		= creator writer reader
 
-# Compiladores
-CC = gcc
-CXX = g++
+all: $(OBJS) $(EXE)
 
-# Archivos fuente
-C_SOURCES = posix.c
-CPP_SOURCES = main.cpp
+$(OBJS): shared_memory.c
+	$(CC) $(CFLAGS) -c shared_memory.c -o $(OBJS)
 
-# Archivos objeto
-C_OBJECTS = $(C_SOURCES:.c=.o)
-CPP_OBJECTS = $(CPP_SOURCES:.cpp=.o)
+$(EXE): %: %.c $(SHARED_OBJ)
+	$(CC) $(CFLAGS) $< $(OBJS) -o $@
 
-# Reglas de construcción
-all: $(TARGET)
-
-$(TARGET): $(C_OBJECTS) $(CPP_OBJECTS)
-	$(CXX) -o $@ $^ -lrt
-
-%.o: %.c
-	$(CC) -c $< -o $@
-
-%.o: %.cpp
-	$(CXX) -c $< -o $@
-
-clean:
-	rm -f $(C_OBJECTS) $(CPP_OBJECTS) $(TARGET)
-
-# Reglas para evitar que se consideren los archivos de cabecera
-.PHONY: all clean
+clean: 
+	rm -f *.o *.$(OBJS) $(EXE)

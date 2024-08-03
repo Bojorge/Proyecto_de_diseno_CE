@@ -34,27 +34,31 @@ void start_server(const char* port) {
     }
 
     listen(sockfd, 5);
-    clilen = sizeof(cli_addr);
-    newsockfd = accept(sockfd, (struct sockaddr *) &cli_addr, &clilen);
-    if (newsockfd < 0) {
-        perror("ERROR on accept");
-        close(sockfd);
-        exit(1);
-    }
+    printf("Server listening on port %s\n", port);
 
-    memset(buffer, 0, 256);
-    n = read(newsockfd, buffer, 255);
-    if (n < 0) {
-        perror("ERROR reading from socket");
+    while (1) {
+        clilen = sizeof(cli_addr);
+        newsockfd = accept(sockfd, (struct sockaddr *) &cli_addr, &clilen);
+        if (newsockfd < 0) {
+            perror("ERROR on accept");
+            close(sockfd);
+            exit(1);
+        }
+
+        memset(buffer, 0, 256);
+        n = read(newsockfd, buffer, 255);
+        if (n < 0) {
+            perror("ERROR reading from socket");
+            close(newsockfd);
+            continue;  
+        }
+
+        printf("Mensaje recibido >>> %s\n", buffer);
+
         close(newsockfd);
-        close(sockfd);
-        exit(1);
     }
 
-    printf("Here is the message: %s\n", buffer);
-
-    close(newsockfd);
-    close(sockfd);
+    close(sockfd);  //nunca se llega aqui porque lo anterior esta en un loop infinito
 }
 
 void send_message(const char* server_ip, const char* port, const char* message) {
