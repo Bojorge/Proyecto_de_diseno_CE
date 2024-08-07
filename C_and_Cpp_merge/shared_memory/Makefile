@@ -1,38 +1,25 @@
-# Nombre del ejecutable
-TARGET_PRODUCER = producer
-TARGET_CONSUMER = consumer
+CXX     = g++
+CXXFLAGS = -g
+OBJS    = shared_memory.o
+EXE     = creator writer reader
 
-# Compiladores
-CC = gcc
-CXX = g++
+# Regla por defecto
+all: $(EXE)
 
-# Archivos fuente
-C_SOURCES = posix_shared_memory.c
-CPP_SOURCES_PRODUCER = producer.cpp
-CPP_SOURCES_CONSUMER = consumer.cpp
+# Regla para compilar los archivos objeto
+shared_memory.o: shared_memory.cpp
+	$(CXX) $(CXXFLAGS) -c shared_memory.cpp -o shared_memory.o
 
-# Archivos objeto
-C_OBJECTS = $(C_SOURCES:.c=.o)
-CPP_OBJECTS_PRODUCER = $(CPP_SOURCES_PRODUCER:.cpp=.o)
-CPP_OBJECTS_CONSUMER = $(CPP_SOURCES_CONSUMER:.cpp=.o)
+# Reglas para compilar los ejecutables
+creator: creator.cpp shared_memory.o
+	$(CXX) $(CXXFLAGS) creator.cpp shared_memory.o -o creator
 
-# Reglas de construcción
-all: $(TARGET_PRODUCER) $(TARGET_CONSUMER)
+writer: writer.cpp shared_memory.o
+	$(CXX) $(CXXFLAGS) writer.cpp shared_memory.o -o writer
 
-$(TARGET_PRODUCER): $(C_OBJECTS) $(CPP_OBJECTS_PRODUCER)
-	$(CXX) -o $@ $^
+reader: reader.cpp shared_memory.o
+	$(CXX) $(CXXFLAGS) reader.cpp shared_memory.o -o reader
 
-$(TARGET_CONSUMER): $(C_OBJECTS) $(CPP_OBJECTS_CONSUMER)
-	$(CXX) -o $@ $^
-
-%.o: %.c
-	$(CC) -c $< -o $@
-
-%.o: %.cpp
-	$(CXX) -c $< -o $@
-
+# Regla para limpiar los archivos generados
 clean:
-	rm -f $(C_OBJECTS) $(CPP_OBJECTS_PRODUCER) $(CPP_OBJECTS_CONSUMER) $(TARGET_PRODUCER) $(TARGET_CONSUMER)
-
-# Reglas para evitar que se consideren los archivos de cabecera
-.PHONY: all clean
+	rm -f *.o $(EXE)

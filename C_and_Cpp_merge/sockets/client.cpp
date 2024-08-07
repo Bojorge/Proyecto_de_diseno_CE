@@ -3,13 +3,12 @@
 #include "posix_sockets.h"
 
 int main() {
-    const int num_iterations = 5;
+    const int num_iterations = 1000;
     std::string message;
 
     for (int i = 0; i < num_iterations; ++i) {
-        std::cout << "Escribir el mensaje (" << (i + 1) << "/" << num_iterations << ") >>> ";
-        std::getline(std::cin, message);
-
+        std::cout << "Iteración " << i << " --------------------------------------" << std::endl;
+        message = "mensaje #" + std::to_string(i);
         send_message("127.0.0.1", "12345", message.c_str());
     }
 
