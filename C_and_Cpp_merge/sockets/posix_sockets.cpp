@@ -31,6 +31,11 @@ void start_server(const char* port) {
     struct sockaddr_in serv_addr, cli_addr;
     int n;
 
+    // Variables para almacenar los máximos valores
+    long maxRAMUsage = 0;
+    double maxUserCPU = 0.0;
+    double maxSystemCPU = 0.0;
+
     sockfd = socket(AF_INET, SOCK_STREAM, 0);
     if (sockfd < 0) {
         perror("ERROR opening socket");
@@ -69,22 +74,27 @@ void start_server(const char* port) {
             continue;  
         }
 
-        std::cout << "\n ----------- Mensaje recibido >>> " << buffer << std::endl;
+        std::cout << "\n * Mensaje recibido >>> " << buffer << std::endl;
 
         long ramUsage = getRAMUsage();
         double userCPU, systemCPU;
         getCPUUsage(userCPU, systemCPU);
 
-        std::cout << "Iteración " << message_count << std::endl;
-        std::cout << "RAM: " << ramUsage << " KB" << std::endl;
-        std::cout << "CPU usuario: " << userCPU << " s" << std::endl;
-        std::cout << "CPU sistema: " << systemCPU << " s" << std::endl;
+        // Actualizar los máximos valores
+        if (ramUsage > maxRAMUsage) maxRAMUsage = ramUsage;
+        if (userCPU > maxUserCPU) maxUserCPU = userCPU;
+        if (systemCPU > maxSystemCPU) maxSystemCPU = systemCPU;
+
 
         close(newsockfd);
         message_count++;
     }
     std::cout << "\n *** Se han recibido " << num_iterations << " mensajes. Cerrando servidor..." << std::endl;
     close(sockfd); 
+
+    std::cout << "RAM: " << maxRAMUsage << " KB" << std::endl;
+    std::cout << "CPU usuario: " << maxUserCPU << " s" << std::endl;
+    std::cout << "CPU sistema: " << maxSystemCPU << " s" << std::endl;
 }
 
 
@@ -124,14 +134,6 @@ void send_message(const char* server_ip, const char* port, const char* message) 
         close(sockfd);
         exit(1);
     }
-
-    long ramUsage = getRAMUsage();
-    double userCPU, systemCPU;
-    getCPUUsage(userCPU, systemCPU);
-
-    std::cout << "RAM: " << ramUsage << " KB" << std::endl;
-    std::cout << "CPU usuario: " << userCPU << " s" << std::endl;
-    std::cout << "CPU sistema: " << systemCPU << " s" << std::endl;
 
     close(sockfd);
 }

@@ -1,39 +1,37 @@
-#include <boost/asio.hpp>
 #include <iostream>
-
-using boost::asio::ip::tcp;
-
-const int PORT = 12345;
-const std::string SERVER_IP = "127.0.0.1";
-
-void send_message(boost::asio::io_context& io_context, const std::string& message) {
-    tcp::resolver resolver(io_context);
-    tcp::resolver::results_type endpoints = resolver.resolve(SERVER_IP, std::to_string(PORT));
-
-    tcp::socket socket(io_context);
-    boost::asio::connect(socket, endpoints);
-
-    boost::asio::write(socket, boost::asio::buffer(message));
-}
+#include <string>
+#include "sockets.hpp"
 
 int main() {
-    try {
-        boost::asio::io_context io_context;
-        std::string message;
+    const int num_iterations = 1000;
+    std::string message;
 
-        while (true) {
-            std::cout << "Enter message: ";
-            std::getline(std::cin, message);
+    // Variables para almacenar los máximos valores
+    long maxRAMUsage = 0;
+    double maxUserCPU = 0.0;
+    double maxSystemCPU = 0.0;
 
-            if (message == "exit") {
-                break;
-            }
+    for (int i = 0; i < num_iterations; ++i) {
+        message = "mensaje #" + std::to_string(i);
+        std::cout << message << std::endl;
 
-            send_message(io_context, message);
-        }
-    } catch (std::exception& e) {
-        std::cerr << "Exception: " << e.what() << std::endl;
+        // Llama a la función send_message desde sockets.hpp
+        send_message("127.0.0.1", "12345", message.c_str());
+
+        // Medir y actualizar los máximos valores
+        long ramUsage = getRAMUsage();
+        double userCPU, systemCPU;
+        getCPUUsage(userCPU, systemCPU);
+
+        if (ramUsage > maxRAMUsage) maxRAMUsage = ramUsage;
+        if (userCPU > maxUserCPU) maxUserCPU = userCPU;
+        if (systemCPU > maxSystemCPU) maxSystemCPU = systemCPU;
     }
+
+    std::cout << "-------------------------------" << std::endl;
+    std::cout << "RAM: " << maxRAMUsage << " KB" << std::endl;
+    std::cout << "CPU usuario: " << maxUserCPU << " s" << std::endl;
+    std::cout << "CPU sistema: " << maxSystemCPU << " s" << std::endl;
 
     return 0;
 }
