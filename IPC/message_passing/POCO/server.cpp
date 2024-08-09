@@ -11,7 +11,6 @@ using Poco::Net::StreamSocket;
 using Poco::Net::SocketStream;
 using Poco::Exception;
 
-// Puerto como una cadena de caracteres en lugar de entero
 const char* PORT = "12345";
 
 void server_thread() {

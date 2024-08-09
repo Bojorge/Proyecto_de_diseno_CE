@@ -3,8 +3,10 @@
 #include <boost/asio.hpp>
 #include "sockets.hpp"
 
+const char* PORT = "12345";
+
 void server_thread() {
-    start_server("12345");
+    start_server(PORT);
 }
 
 int main() {
