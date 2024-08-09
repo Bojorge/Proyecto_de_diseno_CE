@@ -39,12 +39,14 @@ extern "C" {
 #endif
 
 // Funciones
-void init_mem_block(char *struct_location, char *buffer_location, int sizeStruct, int sizeBuffer);
-SharedData * attach_struct(char *struct_location, int size);
-Sentence * attach_buffer(char *buffer_location, int size);
+long getRAMUsage();
+void getCPUUsage(double &userCPU, double &systemCPU);
+void init_mem_block(const char *struct_location, const char *buffer_location, int sizeStruct, int sizeBuffer);
+SharedData * attach_struct(const char *struct_location, int size);
+Sentence * attach_buffer(const char *buffer_location, int size);
 bool detach_struct(SharedData *sharedStruct);
 bool detach_buffer(Sentence *buffer);
-bool destroy_memory_block(char *filename);
+bool destroy_memory_block(const char *filename);
 
 #ifdef __cplusplus
 }

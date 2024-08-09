@@ -59,9 +59,9 @@ void insert_char(sem_t *sem_read, sem_t *sem_write, SharedData *sharedData, Sent
 
         // Asignar el carácter al buffer
         int index = sharedData->writeIndex;
-        std::cout << "Caracter ingresado: " << character << std::endl;
+        //std::cout << "Caracter ingresado: " << character << std::endl;
         buffer[sharedData->writeIndex].character = character;
-        std::cout << "Agregando a buffer:\nbuffer[" << index << "] = \"" << buffer[index].character << "\" | tiempo: " << buffer[index].time << "\n------------------------\n";
+        //std::cout << "Agregando a buffer:\nbuffer[" << index << "] = \"" << buffer[index].character << "\" | tiempo: " << buffer[index].time << "\n------------------------\n";
 
         // Actualizar los índices compartidos
         sharedData->writeIndex = (sharedData->writeIndex + 1) % sharedData->bufferSize;

@@ -25,6 +25,16 @@ void init_empty_struct(SharedData *sharedData, int numChars) {
     sharedData->statsInited = false;
 }
 
+void printResourceUsage() {
+    long ramUsage = getRAMUsage();
+    double userCPU, systemCPU;
+    getCPUUsage(userCPU, systemCPU);
+
+    std::cout << "Uso de RAM: " << ramUsage << " KB" << std::endl;
+    std::cout << "Uso de CPU - Modo Usuario: " << userCPU << " s" << std::endl;
+    std::cout << "Uso de CPU - Modo Sistema: " << systemCPU << " s" << std::endl;
+}
+
 int main(int argc, char *argv[]) 
 {
     destroy_memory_block(STRUCT_LOCATION);
@@ -105,6 +115,9 @@ int main(int argc, char *argv[])
         std::cout.flush();
 
         sem_post(sem_write);
+
+        sleep(5);
+        printResourceUsage();
     }
 
     detach_struct(sharedStruct);
