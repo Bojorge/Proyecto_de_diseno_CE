@@ -1,41 +1,33 @@
 #include <Poco/Net/ServerSocket.h>
-#include <Poco/Net/SocketStream.h>
 #include <Poco/Net/StreamSocket.h>
+#include <Poco/Net/SocketStream.h>
+#include <Poco/Exception.h>
 #include <iostream>
 #include <thread>
+#include "sockets.hpp"
 
 using Poco::Net::ServerSocket;
 using Poco::Net::StreamSocket;
 using Poco::Net::SocketStream;
+using Poco::Exception;
 
-const int PORT = 12345;
+// Puerto como una cadena de caracteres en lugar de entero
+const char* PORT = "12345";
 
-void session(StreamSocket socket) {
-    try {
-        char data[1024];
-        int bytesReceived = socket.receiveBytes(data, sizeof(data));
-        while (bytesReceived > 0) {
-            std::cout << "Received: " << std::string(data, bytesReceived) << std::endl;
-            bytesReceived = socket.receiveBytes(data, sizeof(data));
-        }
-    } catch (Poco::Exception& e) {
-        std::cerr << "Exception in thread: " << e.displayText() << std::endl;
-    }
-}
-
-void start_server() {
-    try {
-        ServerSocket serverSocket(PORT);
-        for (;;) {
-            StreamSocket socket = serverSocket.acceptConnection();
-            std::thread(session, std::move(socket)).detach();
-        }
-    } catch (Poco::Exception& e) {
-        std::cerr << "Server exception: " << e.displayText() << std::endl;
-    }
+void server_thread() {
+    start_server(PORT);
 }
 
 int main() {
-    start_server();
+    try {
+        // Crear y ejecutar el hilo del servidor
+        std::thread server(server_thread);
+        server.join();  // Esperar a que el hilo del servidor termine
+    } catch (const Poco::Exception& e) {
+        std::cerr << "Poco Exception: " << e.displayText() << std::endl;
+    } catch (const std::exception& e) {
+        std::cerr << "Standard Exception: " << e.what() << std::endl;
+    }
+
     return 0;
 }

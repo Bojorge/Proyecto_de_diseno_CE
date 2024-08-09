@@ -1,40 +1,51 @@
 #include <Poco/Net/StreamSocket.h>
 #include <Poco/Net/SocketAddress.h>
 #include <Poco/Net/SocketStream.h>
+#include <Poco/Exception.h>
 #include <iostream>
+#include <string>
+#include <thread>
+#include "sockets.hpp"  // Asegúrate de que este archivo incluya las declaraciones necesarias
 
 using Poco::Net::StreamSocket;
 using Poco::Net::SocketAddress;
 using Poco::Net::SocketStream;
-
-const int PORT = 12345;
-const std::string SERVER_IP = "127.0.0.1";
-
-void send_message(const std::string& message) {
-    try {
-        SocketAddress serverAddr(SERVER_IP, PORT);
-        StreamSocket socket(serverAddr);
-        SocketStream str(socket);
-        str << message << std::endl;
-        str.flush();
-    } catch (Poco::Exception& e) {
-        std::cerr << "Client exception: " << e.displayText() << std::endl;
-    }
-}
+using Poco::Exception;
 
 int main() {
+    const int num_iterations = 1000;
     std::string message;
 
-    while (true) {
-        std::cout << "Enter message: ";
-        std::getline(std::cin, message);
+    // Variables para almacenar los máximos valores
+    long maxRAMUsage = 0;
+    double maxUserCPU = 0.0;
+    double maxSystemCPU = 0.0;
 
-        if (message == "exit") {
-            break;
+    for (int i = 0; i < num_iterations; ++i) {
+        message = "mensaje #" + std::to_string(i);
+        std::cout << "Enviando: " << message << std::endl;
+
+        try {
+            // Llama a la función send_message desde sockets.hpp
+            send_message("127.0.0.1", "12345", message.c_str());
+        } catch (const Exception& e) {
+            std::cerr << "Error al enviar mensaje: " << e.displayText() << std::endl;
         }
 
-        send_message(message);
+        // Medir y actualizar los máximos valores
+        long ramUsage = getRAMUsage();
+        double userCPU, systemCPU;
+        getCPUUsage(userCPU, systemCPU);
+
+        if (ramUsage > maxRAMUsage) maxRAMUsage = ramUsage;
+        if (userCPU > maxUserCPU) maxUserCPU = userCPU;
+        if (systemCPU > maxSystemCPU) maxSystemCPU = systemCPU;
     }
+
+    std::cout << "-------------------------------" << std::endl;
+    std::cout << "RAM: " << maxRAMUsage << " KB" << std::endl;
+    std::cout << "CPU usuario: " << maxUserCPU << " s" << std::endl;
+    std::cout << "CPU sistema: " << maxSystemCPU << " s" << std::endl;
 
     return 0;
 }
