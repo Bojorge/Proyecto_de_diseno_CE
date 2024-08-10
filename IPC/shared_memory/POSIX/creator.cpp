@@ -1,10 +1,12 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
+#include <iostream>
+#include <cstdlib>
+#include <cstring>
+#include <string>
+#include <semaphore.h>
+#include <fcntl.h>
 #include "shared_memory.h"
 
-void init_empty_struct (SharedData *sharedData, int numChars) {
+void init_empty_struct(SharedData *sharedData, int numChars) {
     sharedData->bufferSize = numChars;
     sharedData->writeIndex = 0;
     sharedData->readIndex = 0;
@@ -23,20 +25,15 @@ void init_empty_struct (SharedData *sharedData, int numChars) {
     sharedData->statsInited = false;
 }
 
-/*void printSharedData(SharedData *sharedData) {
-    printf("sharedData->bufferSize: %d\n", sharedData->bufferSize);
-    printf("sharedData->writeIndex: %d\n", sharedData->writeIndex);
-    printf("sharedData->readIndex: %d\n", sharedData->readIndex);
-    printf("sharedData->clientBlocked: %d\n", sharedData->clientBlocked);
-    printf("sharedData->recBlocked: %d\n", sharedData->recBlocked);
-    printf("sharedData->charsTransferred: %d\n", sharedData->charsTransferred);
-    printf("sharedData->charsRemaining: %d\n", sharedData->charsRemaining);
-    printf("sharedData->memUsed: %d\n", sharedData->memUsed);
-    printf("sharedData->clientUserTime: %d\n", sharedData->clientUserTime);
-    printf("sharedData->clientKernelTime: %d\n", sharedData->clientKernelTime);
-    printf("sharedData->recUserTime: %d\n", sharedData->recUserTime);
-    printf("sharedData->recKernelTime: %d\n", sharedData->recKernelTime);
-}*/
+void printResourceUsage() {
+    long ramUsage = getRAMUsage();
+    double userCPU, systemCPU;
+    getCPUUsage(userCPU, systemCPU);
+
+    std::cout << "Uso de RAM: " << ramUsage << " KB" << std::endl;
+    std::cout << "Uso de CPU - Modo Usuario: " << userCPU << " s" << std::endl;
+    std::cout << "Uso de CPU - Modo Sistema: " << systemCPU << " s" << std::endl;
+}
 
 int main(int argc, char *argv[]) 
 {
@@ -44,8 +41,8 @@ int main(int argc, char *argv[])
     destroy_memory_block(BUFFER_LOCATION);
     
     int numChars = 10;
-    //printf("Ingrese la cantidad de caracteres a compartir: ");
-    //scanf("%d", &numChars);
+    // std::cout << "Ingrese la cantidad de caracteres a compartir: ";
+    // std::cin >> numChars;
 
     // Set the semaphores
     sem_unlink(SEM_READ_PROCESS_FNAME);
@@ -64,24 +61,21 @@ int main(int argc, char *argv[])
 
     for (int i = 0; i < numChars; i++) {
         // Make every semaphore name for each buffer space
-        char sem_write_name[MAX_LENGTH];
-        sprintf(sem_write_name, "%s%d", SEM_WRITE_VARIABLE_FNAME, i);
-
-        char sem_read_name[MAX_LENGTH];
-        sprintf(sem_read_name, "%s%d", SEM_READ_VARIABLE_FNAME, i);
+        std::string sem_write_name = std::string(SEM_WRITE_VARIABLE_FNAME) + std::to_string(i);
+        std::string sem_read_name = std::string(SEM_READ_VARIABLE_FNAME) + std::to_string(i);
 
         // Unlink them to prevent
-        sem_unlink(sem_write_name);
-        sem_unlink(sem_read_name);
+        sem_unlink(sem_write_name.c_str());
+        sem_unlink(sem_read_name.c_str());
 
         // Init each semaphore
-        sem_t *sem_temp_write = sem_open(sem_write_name, O_CREAT, 0644, 1);
+        sem_t *sem_temp_write = sem_open(sem_write_name.c_str(), O_CREAT, 0644, 1);
         if (sem_temp_write == SEM_FAILED) {
             perror("sem_open/variables");
             exit(EXIT_FAILURE);
         }
 
-        sem_t *sem_temp_read = sem_open(sem_read_name, O_CREAT, 0644, 0);
+        sem_t *sem_temp_read = sem_open(sem_read_name.c_str(), O_CREAT, 0644, 0);
         if (sem_temp_read == SEM_FAILED) {
             perror("sem_open/variables");
             exit(EXIT_FAILURE);
@@ -93,15 +87,15 @@ int main(int argc, char *argv[])
 
     // Attach to struct shared mem block
     SharedData *sharedStruct = attach_struct(STRUCT_LOCATION, sizeof(SharedData));
-    if (sharedStruct == NULL) {
-        printf("Error al adjuntar al bloque de memoria compartida.\n");
+    if (sharedStruct == nullptr) {
+        std::cerr << "Error al adjuntar al bloque de memoria compartida." << std::endl;
         exit(EXIT_FAILURE);
     }
 
     // Attach to buffer mem block
     Sentence *buffer = attach_buffer(BUFFER_LOCATION, numChars * sizeof(Sentence));
-    if (buffer == NULL) {
-        printf("Error al adjuntar al bloque de memoria compartida.\n");
+    if (buffer == nullptr) {
+        std::cerr << "Error al adjuntar al bloque de memoria compartida." << std::endl;
         exit(EXIT_FAILURE);
     }
 
@@ -109,19 +103,22 @@ int main(int argc, char *argv[])
     init_empty_struct(sharedStruct, numChars);
 
     // Start visualization of mem block
-    while(true) {
+    while (true) {
         sem_wait(sem_read);
-        printf("\033[0;0H\033[2J"); // Mover el cursor a la posición (0, 0) y borrar la pantalla
-        fflush(stdout);
+        std::cout << "\033[0;0H\033[2J"; // Mover el cursor a la posición (0, 0) y borrar la pantalla
+        std::cout.flush();
         for (int i = 0; i < numChars; i++) {
-            printf("buffer[%d] = \"%c\" | time: %s\n", i, buffer[i].character, buffer[i].time);
+            std::cout << "buffer[" << i << "] = \"" << buffer[i].character << "\" | time: " << buffer[i].time << std::endl;
         }
 
-        printf("-------------------------------------------------\n");
-        fflush(stdout);
+        std::cout << "-------------------------------------------------" << std::endl;
+        std::cout.flush();
 
         sem_post(sem_write);
+
+        printResourceUsage();
     }
+    
 
     detach_struct(sharedStruct);
     detach_buffer(buffer);

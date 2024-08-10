@@ -6,6 +6,16 @@
 #include <string>
 #include "shared_memory.h"
 
+void printResourceUsage() {
+    long ramUsage = getRAMUsage();
+    double userCPU, systemCPU;
+    getCPUUsage(userCPU, systemCPU);
+
+    std::cout << "Uso de RAM: " << ramUsage << " KB" << std::endl;
+    std::cout << "Uso de CPU - Modo Usuario: " << userCPU << " s" << std::endl;
+    std::cout << "Uso de CPU - Modo Sistema: " << systemCPU << " s" << std::endl;
+}
+
 void read_memory(sem_t *sem_read, sem_t *sem_write, SharedData *sharedData, Sentence *buffer, int interval) {
     while (!sharedData->writingFinished) {
         sem_wait(sem_write);
@@ -31,7 +41,9 @@ void read_memory(sem_t *sem_read, sem_t *sem_write, SharedData *sharedData, Sent
 
         // Imprimir en la consola el índice del buffer, el carácter y la hora recuperada
         int index = sharedData->readIndex;
-        std::cout << "Leyendo del buffer:\nbuffer[" << index << "] = \"" << buffer[index].character << "\" | tiempo: " << buffer[index].time << std::endl;
+        std::cout << "\n \n *** Leyendo:\nbuffer[" << index << "] = \"" << buffer[index].character << "\" | tiempo: " << buffer[index].time << std::endl;
+
+        printResourceUsage();
 
         // Borrar el carácter leído del buffer
         buffer[index].character = '\0';

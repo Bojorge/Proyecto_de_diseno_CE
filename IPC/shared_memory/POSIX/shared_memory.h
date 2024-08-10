@@ -34,20 +34,27 @@ typedef struct {
     char time[MAX_TIME_LENGTH];
 } Sentence;
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 // Funciones
-void init_mem_block(char *struct_location, char *buffer_location, int sizeStruct, int sizeBuffer);
-
-SharedData * attach_struct(char *struct_location, int size);
-Sentence * attach_buffer(char *buffer_location, int size);
-
+long getRAMUsage();
+void getCPUUsage(double &userCPU, double &systemCPU);
+void init_mem_block(const char *struct_location, const char *buffer_location, int sizeStruct, int sizeBuffer);
+SharedData * attach_struct(const char *struct_location, int size);
+Sentence * attach_buffer(const char *buffer_location, int size);
 bool detach_struct(SharedData *sharedStruct);
 bool detach_buffer(Sentence *buffer);
+bool destroy_memory_block(const char *filename);
 
-bool destroy_memory_block(char *filename);
+#ifdef __cplusplus
+}
+#endif
 
 // Variables
-#define STRUCT_LOCATION "creator.c"
-#define BUFFER_LOCATION "destroy.c"
+#define STRUCT_LOCATION "creator.cpp"
+#define BUFFER_LOCATION "destroy.cpp"
 
 #define SEM_READ_PROCESS_FNAME "/myprocessread"
 #define SEM_WRITE_PROCESS_FNAME "/myprocesswrite"
