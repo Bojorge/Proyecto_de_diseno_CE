@@ -2,96 +2,55 @@
 #define SHARED_MEMORY_HPP
 
 #include <boost/interprocess/managed_shared_memory.hpp>
-#include <boost/interprocess/containers/string.hpp>
-#include <boost/interprocess/allocators/allocator.hpp>
-#include <boost/interprocess/sync/interprocess_mutex.hpp>
-#include <boost/interprocess/sync/interprocess_condition.hpp>
-#include <boost/interprocess/sync/scoped_lock.hpp>
+#include <boost/interprocess/sync/named_semaphore.hpp>
 #include <iostream>
-#include <cstring>  // Para strncpy
+#include <cstdlib>
+#include <cstring>
+#include <string>
 
 namespace bip = boost::interprocess;
 
-typedef bip::allocator<char, bip::managed_shared_memory::segment_manager> CharAllocator;
-typedef bip::basic_string<char, std::char_traits<char>, CharAllocator> SharedString;
-
-struct SharedMemoryBuffer {
-    enum { BufferSize = 1024 };
-    typedef bip::interprocess_mutex Mutex;
-    typedef bip::interprocess_condition Condition;
-
-    Mutex mutex;
-    Condition cond_empty;
-    Condition cond_full;
-    bool full;
-    char buffer[BufferSize];
-
-    SharedMemoryBuffer() : full(false) {
-        std::memset(buffer, 0, BufferSize);
-    }
+// Structs
+struct SharedData {
+    int bufferSize;
+    int writeIndex, readIndex;
+    int readingFileIndex;
+    int clientBlocked, recBlocked;
+    int charsTransferred, charsRemaining;
+    int memUsed;
+    int clientUserTime, clientKernelTime;
+    int recUserTime, recKernelTime;
+    bool writingFinished, readingFinished, statsInited;
 };
 
-void create_shared_memory() {
-    bip::shared_memory_object::remove("MySharedMemory");
-    try {
-        bip::managed_shared_memory segment(bip::create_only, "MySharedMemory", 65536);
-        segment.construct<SharedMemoryBuffer>("SharedMemoryBuffer")();
-        std::cout << "Shared memory and buffer created successfully." << std::endl;
-    } catch (const std::exception& e) {
-        std::cerr << "Exception while creating shared memory: " << e.what() << std::endl;
-        throw;
-    }
-}
+#define MAX_TIME_LENGTH 21
 
-SharedMemoryBuffer* get_shared_memory() {
-    try {
-        bip::managed_shared_memory segment(bip::open_only, "MySharedMemory");
-        SharedMemoryBuffer* buffer = segment.find<SharedMemoryBuffer>("SharedMemoryBuffer").first;
-        if (!buffer) {
-            throw std::runtime_error("SharedMemoryBuffer not found.");
-        }
-        return buffer;
-    } catch (const std::exception& e) {
-        std::cerr << "Exception while accessing shared memory: " << e.what() << std::endl;
-        throw;
-    }
-}
+struct Sentence {
+    char character;
+    char time[MAX_TIME_LENGTH];
+};
 
-void write_to_shared_memory(const std::string& message) {
-    SharedMemoryBuffer* shm_buffer = get_shared_memory();
-    if (shm_buffer == nullptr) {
-        std::cerr << "Shared memory buffer not found" << std::endl;
-        return;
-    }
+// Funciones
+long getRAMUsage();
+void getCPUUsage(double &userCPU, double &systemCPU);
 
-    bip::scoped_lock<SharedMemoryBuffer::Mutex> lock(shm_buffer->mutex);
-    while (shm_buffer->full) {
-        shm_buffer->cond_full.wait(lock);
-    }
+// Funciones Boost.Interprocess
+void init_mem_block(const char *struct_location, const char *buffer_location, int sizeStruct, int sizeBuffer);
+SharedData *attach_struct(const char *struct_location);
+Sentence *attach_buffer(const char *buffer_location, int sizeBuffer);
+bool detach_struct(SharedData *sharedStruct);
+bool detach_buffer(Sentence *buffer);
+bool destroy_memory_block(const char *filename);
 
-    std::strncpy(shm_buffer->buffer, message.c_str(), SharedMemoryBuffer::BufferSize);
-    shm_buffer->full = true;
-    shm_buffer->cond_empty.notify_one();
-    std::cout << "Message written to shared memory: " << message << std::endl;
-}
+// Variables
+#define STRUCT_LOCATION "shared_memory_struct"
+#define BUFFER_LOCATION "shared_memory_buffer"
 
-std::string read_from_shared_memory() {
-    SharedMemoryBuffer* shm_buffer = get_shared_memory();
-    if (shm_buffer == nullptr) {
-        std::cerr << "Shared memory buffer not found" << std::endl;
-        return "";
-    }
+#define SEM_READ_PROCESS_FNAME "myprocessread"
+#define SEM_WRITE_PROCESS_FNAME "myprocesswrite"
+#define SEM_READ_VARIABLE_FNAME "mybufferreadvariable"
+#define SEM_WRITE_VARIABLE_FNAME "mybufferwritevariable"
 
-    bip::scoped_lock<SharedMemoryBuffer::Mutex> lock(shm_buffer->mutex);
-    while (!shm_buffer->full) {
-        shm_buffer->cond_empty.wait(lock);
-    }
+#define MAX_LENGTH 100
 
-    std::string message(shm_buffer->buffer);
-    shm_buffer->full = false;
-    shm_buffer->cond_full.notify_one();
-    std::cout << "Message read from shared memory: " << message << std::endl;
-    return message;
-}
-
-#endif // SHA
+#endif

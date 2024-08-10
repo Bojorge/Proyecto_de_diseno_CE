@@ -1,27 +1,26 @@
-# Nombre de los ejecutables
-PRODUCER = producer
-CONSUMER = consumer
+CXX     = g++
+CXXFLAGS = -g -std=c++17 -I/usr/include/boost
+LDFLAGS  = -lboost_system -lrt
+OBJS    = shared_memory.o
+EXE     = creator writer reader
 
-# Compiladores
-CXX = g++
+# Regla por defecto
+all: $(EXE)
 
-# Opciones de compilación
-CXXFLAGS = -I/usr/include -lrt -lboost_system -lboost_thread -lpthread
+# Regla para compilar los archivos objeto
+shared_memory.o: shared_memory.cpp
+	$(CXX) $(CXXFLAGS) -c shared_memory.cpp -o shared_memory.o
 
-# Archivos fuente
-CPP_SOURCES = producer.cpp consumer.cpp shared_memory.hpp
+# Reglas para compilar los ejecutables
+creator: creator.cpp shared_memory.o
+	$(CXX) $(CXXFLAGS) creator.cpp shared_memory.o -o creator $(LDFLAGS)
 
-# Reglas de construcción
-all: $(PRODUCER) $(CONSUMER)
+writer: writer.cpp shared_memory.o
+	$(CXX) $(CXXFLAGS) writer.cpp shared_memory.o -o writer $(LDFLAGS)
 
-$(PRODUCER): producer.cpp shared_memory.hpp
-	$(CXX) -o $(PRODUCER) producer.cpp $(CXXFLAGS)
+reader: reader.cpp shared_memory.o
+	$(CXX) $(CXXFLAGS) reader.cpp shared_memory.o -o reader $(LDFLAGS)
 
-$(CONSUMER): consumer.cpp shared_memory.hpp
-	$(CXX) -o $(CONSUMER) consumer.cpp $(CXXFLAGS)
-
+# Regla para limpiar los archivos generados
 clean:
-	rm -f $(PRODUCER) $(CONSUMER)
-
-# Reglas para evitar que se consideren los archivos de cabecera
-.PHONY: all clean
+	rm -f *.o $(EXE)
