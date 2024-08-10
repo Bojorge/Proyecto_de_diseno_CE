@@ -37,20 +37,24 @@ void getCPUUsage(double &userCPU, double &systemCPU);
 // Funciones Boost.Interprocess
 void init_mem_block(const char *struct_location, const char *buffer_location, int sizeStruct, int sizeBuffer);
 SharedData *attach_struct(const char *struct_location);
-Sentence *attach_buffer(const char *buffer_location, int sizeBuffer);
-bool detach_struct(SharedData *sharedStruct);
-bool detach_buffer(Sentence *buffer);
-bool destroy_memory_block(const char *filename);
+Sentence *attach_buffer(const char *buffer_location);
+bool detach_struct(const char *struct_location);
+bool detach_buffer(const char *buffer_location);
+bool destroy_memory_block(const char *location);
 
 // Variables
 #define STRUCT_LOCATION "shared_memory_struct"
 #define BUFFER_LOCATION "shared_memory_buffer"
+//#define STRUCT_LOCATION "creator.cpp"
+//#define BUFFER_LOCATION "destroy.cpp"
 
-#define SEM_READ_PROCESS_FNAME "myprocessread"
-#define SEM_WRITE_PROCESS_FNAME "myprocesswrite"
-#define SEM_READ_VARIABLE_FNAME "mybufferreadvariable"
-#define SEM_WRITE_VARIABLE_FNAME "mybufferwritevariable"
+#define SEM_READ_PROCESS_FNAME "/myprocessread"
+#define SEM_WRITE_PROCESS_FNAME "/myprocesswrite"
+#define SEM_READ_VARIABLE_FNAME "/mybufferreadvariable"
+#define SEM_WRITE_VARIABLE_FNAME "/mybufferwritevariable"
 
 #define MAX_LENGTH 100
 
 #endif
+
+

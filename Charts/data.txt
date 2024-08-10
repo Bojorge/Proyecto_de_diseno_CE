@@ -82,18 +82,38 @@ tiempo de CPU en modo sistema (modo kernel): 0.005494 s
 
 CREATOR
 
-uso de RAM:
-tiempo de CPU en modo usuario:
-tiempo de CPU en modo sistema (modo kernel):
+uso de RAM: X KB
+tiempo de CPU en modo usuario: X s
+tiempo de CPU en modo sistema (modo kernel): X s
 
 WRITER
 
-uso de RAM:
-tiempo de CPU en modo usuario:
-tiempo de CPU en modo sistema (modo kernel):
+uso de RAM: X KB
+tiempo de CPU en modo usuario: X s
+tiempo de CPU en modo sistema (modo kernel): X s
 
 READER
 
-uso de RAM:
-tiempo de CPU en modo usuario:
-tiempo de CPU en modo sistema (modo kernel):
+uso de RAM: X KB
+tiempo de CPU en modo usuario: X s
+tiempo de CPU en modo sistema (modo kernel): X s
+
+*** POCO ***
+
+CREATOR
+
+uso de RAM: X KB
+tiempo de CPU en modo usuario: X s
+tiempo de CPU en modo sistema (modo kernel): X s
+
+WRITER
+
+uso de RAM: X KB
+tiempo de CPU en modo usuario: X s
+tiempo de CPU en modo sistema (modo kernel): X s
+
+READER
+
+uso de RAM: X KB
+tiempo de CPU en modo usuario: X s
+tiempo de CPU en modo sistema (modo kernel): X s

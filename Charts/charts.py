@@ -32,9 +32,9 @@ def plot_usage(libraries, ram_usage, user_cpu_usage, system_cpu_usage):
     plt.show()
 
 # Ejemplo de uso
-libraries = ['Boost.Interprocess', 'POSIX']
-ram_usage = [0, 0]  # en KB
-user_cpu_usage = [0.0, 0.0]  # en segundos
-system_cpu_usage = [0.0, 0.0]  # en segundos
+libraries = ['POSIX', 'Boost.Interprocess', 'POCO']
+ram_usage = [3456, 0, 0]  # en KB
+user_cpu_usage = [0.004671, 0.0, 0.0]  # en segundos
+system_cpu_usage = [0.004514, 0.0, 0.0]  # en segundos
 
 plot_usage(libraries, ram_usage, user_cpu_usage, system_cpu_usage)

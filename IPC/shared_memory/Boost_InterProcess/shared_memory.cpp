@@ -24,57 +24,95 @@ void getCPUUsage(double &userCPU, double &systemCPU) {
     systemCPU = usage.ru_stime.tv_sec + usage.ru_stime.tv_usec / 1e6;
 }
 
-// Inicializa el bloque de memoria compartida
-void init_mem_block(const char *struct_location, const char *buffer_location, int sizeStruct, int sizeBuffer) {
-    using namespace boost::interprocess;
-    
-    // Crear segmento de memoria compartida para SharedData
-    managed_shared_memory shm(create_only, struct_location, sizeStruct);
-    shm.construct<SharedData>("SharedData")();
-    
-    // Crear segmento de memoria compartida para Sentence
-    managed_shared_memory shmBuffer(create_only, buffer_location, sizeBuffer);
-    shmBuffer.construct<Sentence>("SentenceArray")[sizeBuffer / sizeof(Sentence)]; // Ajuste del tamaño del buffer
-}
-
-// Adjunta la estructura compartida
-SharedData *attach_struct(const char *struct_location) {
-    using namespace boost::interprocess;
-    
-    managed_shared_memory shm(open_only, struct_location);
-    SharedData *sharedData = shm.find<SharedData>("SharedData").first;
-    return sharedData;
-}
-
-// Adjunta el buffer
-Sentence *attach_buffer(const char *buffer_location, int sizeBuffer) {
-    using namespace boost::interprocess;
-    
-    managed_shared_memory shmBuffer(open_only, buffer_location);
-    Sentence *buffer = shmBuffer.find<Sentence>("SentenceArray").first;
-    return buffer;
-}
-
-// Desconecta la estructura compartida
-bool detach_struct(SharedData *sharedStruct) {
-    // La memoria compartida es administrada por Boost.Interprocess y no requiere desconexión explícita.
-    return true;
-}
-
-// Desconecta el buffer
-bool detach_buffer(Sentence *buffer) {
-    // La memoria compartida es administrada por Boost.Interprocess y no requiere desconexión explícita.
-    return true;
-}
-
-// Destruye el bloque de memoria compartida
-bool destroy_memory_block(const char *filename) {
-    using namespace boost::interprocess;
-    
+SharedData* attach_struct(const char *struct_location) {
     try {
-        shared_memory_object::remove(filename);
+        // Abre la memoria compartida existente
+        bip::managed_shared_memory segment(bip::open_only, struct_location);
+
+        // Encuentra el objeto SharedData
+        SharedData* sharedData = segment.find<SharedData>("SharedData").first;
+
+        if (sharedData == nullptr) {
+            std::cerr << "Error al adjuntar la estructura compartida." << std::endl;
+            return nullptr;
+        }
+
+        return sharedData;
+    } catch (const std::exception& e) {
+        std::cerr << "Error al adjuntar la estructura compartida: " << e.what() << std::endl;
+        return nullptr;
+    }
+}
+
+Sentence* attach_buffer(const char *buffer_location) {
+    try {
+        // Abre la memoria compartida existente
+        bip::managed_shared_memory segment(bip::open_only, buffer_location);
+
+        // Encuentra el buffer de Sentences
+        Sentence* buffer = segment.find<Sentence>("SentenceBuffer").first;
+
+        if (buffer == nullptr) {
+            std::cerr << "Error al adjuntar el buffer compartido." << std::endl;
+            return nullptr;
+        }
+
+        return buffer;
+    } catch (const std::exception& e) {
+        std::cerr << "Error al adjuntar el buffer compartido: " << e.what() << std::endl;
+        return nullptr;
+    }
+}
+
+void init_mem_block(const char *struct_location, const char *buffer_location, int sizeStruct, int sizeBuffer) {
+    try {
+        // Crear la memoria compartida para la estructura
+        bip::managed_shared_memory struct_segment(bip::create_only, struct_location, sizeStruct);
+
+        // Crear la memoria compartida para el buffer
+        bip::managed_shared_memory buffer_segment(bip::create_only, buffer_location, sizeBuffer);
+
+        // Inicializar la estructura en la memoria compartida
+        struct_segment.construct<SharedData>("SharedData")();
+
+        // Inicializar el buffer en la memoria compartida
+        buffer_segment.construct<Sentence>("SentenceBuffer")[sizeBuffer / sizeof(Sentence)]();
+
+        std::cout << "Bloques de memoria compartida inicializados correctamente." << std::endl;
+    } catch (const std::exception& e) {
+        std::cerr << "Error al inicializar los bloques de memoria compartida: " << e.what() << std::endl;
+        exit(EXIT_FAILURE);
+    }
+}
+
+bool detach_struct(const char *struct_location) {
+    try {
+        bip::managed_shared_memory segment(bip::open_only, struct_location);
+        segment.destroy<SharedData>("SharedData");
         return true;
-    } catch (...) {
+    } catch (const std::exception& e) {
+        std::cerr << "Error al intentar desvincular la estructura: " << e.what() << std::endl;
+        return false;
+    }
+}
+
+bool detach_buffer(const char *buffer_location) {
+    try {
+        bip::managed_shared_memory segment(bip::open_only, buffer_location);
+        segment.destroy<Sentence>("SentenceBuffer");
+        return true;
+    } catch (const std::exception& e) {
+        std::cerr << "Error al intentar desvincular el buffer: " << e.what() << std::endl;
+        return false;
+    }
+}
+
+bool destroy_memory_block(const char *location) {
+    try {
+        bip::shared_memory_object::remove(location);
+        return true;
+    } catch (const std::exception& e) {
+        std::cerr << "Error al intentar eliminar el bloque de memoria: " << e.what() << std::endl;
         return false;
     }
 }

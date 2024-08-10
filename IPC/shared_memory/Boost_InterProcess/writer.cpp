@@ -3,9 +3,11 @@
 #include <cstring>
 #include <string>
 #include <ctime>
-#include <boost/interprocess/managed_shared_memory.hpp>
 #include <boost/interprocess/sync/named_semaphore.hpp>
+#include <boost/interprocess/managed_shared_memory.hpp>
 #include "shared_memory.hpp"
+
+namespace bip = boost::interprocess;
 
 void printResourceUsage() {
     long ramUsage = getRAMUsage();
@@ -17,11 +19,7 @@ void printResourceUsage() {
     std::cout << "Uso de CPU - Modo Sistema: " << systemCPU << " s" << std::endl;
 }
 
-void insert_char(boost::interprocess::named_semaphore &sem_read, 
-                 boost::interprocess::named_semaphore &sem_write, 
-                 SharedData *sharedData, 
-                 Sentence *buffer) 
-{
+void insert_char(bip::named_semaphore &sem_read, bip::named_semaphore &sem_write, SharedData *sharedData, Sentence *buffer) {
     char character;
 
     // Variables para manejar la entrada dinámica
@@ -29,7 +27,7 @@ void insert_char(boost::interprocess::named_semaphore &sem_read,
 
     while (true) {
         // Esperar hasta que el semáforo de escritura esté disponible
-        sem_write.wait(); 
+        sem_write.wait();
 
         // Reiniciar el string dinámico para la próxima iteración
         dynamic_string.clear();
@@ -47,11 +45,11 @@ void insert_char(boost::interprocess::named_semaphore &sem_read,
 
         // Obtener el semáforo para el espacio de escritura
         std::string sem_write_name = std::string(SEM_WRITE_VARIABLE_FNAME) + std::to_string(sharedData->writeIndex);
-        boost::interprocess::named_semaphore sem_var_write(boost::interprocess::open_only, sem_write_name.c_str());
+        bip::named_semaphore sem_var_write(bip::open_only, sem_write_name.c_str());
 
         // Obtener el semáforo para el espacio de lectura
         std::string sem_read_name = std::string(SEM_READ_VARIABLE_FNAME) + std::to_string(sharedData->writeIndex);
-        boost::interprocess::named_semaphore sem_var_read(boost::interprocess::open_only, sem_read_name.c_str());
+        bip::named_semaphore sem_var_read(bip::open_only, sem_read_name.c_str());
 
         // Esperar el semáforo para el espacio de escritura
         sem_var_write.wait();
@@ -71,7 +69,7 @@ void insert_char(boost::interprocess::named_semaphore &sem_read,
         sharedData->writeIndex = (sharedData->writeIndex + 1) % sharedData->bufferSize;
 
         // Post para que la variable pueda ser leída
-        sem_var_read.post();  
+        sem_var_read.post();
         sem_read.post();
 
         printResourceUsage();
@@ -81,35 +79,60 @@ void insert_char(boost::interprocess::named_semaphore &sem_read,
 }
 
 int main() 
-{   
+{
     using namespace boost::interprocess;
 
-    // Conectar a los semáforos que ya fueron creados
+    // Crear y abrir semáforos
     named_semaphore sem_read(open_only, SEM_READ_PROCESS_FNAME);
     named_semaphore sem_write(open_only, SEM_WRITE_PROCESS_FNAME);
 
-    // Conectar al bloque de memoria compartida para SharedData
-    managed_shared_memory shm(create_only, STRUCT_LOCATION, 65536); // Ajusta el tamaño si es necesario
-    SharedData *sharedData = shm.find<SharedData>("SharedData").first;
-    if (sharedData == nullptr) {
-        std::cerr << "ERROR: no se pudo acceder al bloque" << std::endl;
-        return -1;
+    int numChars = 10;
+
+    // Inicializar bloques de memoria compartida
+    init_mem_block(STRUCT_LOCATION, BUFFER_LOCATION, sizeof(SharedData), numChars * sizeof(Sentence));
+
+    // Adjuntar a los bloques de memoria compartida
+    SharedData *sharedStruct = attach_struct(STRUCT_LOCATION);
+    if (sharedStruct == nullptr) {
+        std::cerr << "Error al adjuntar al bloque de memoria compartida." << std::endl;
+        exit(EXIT_FAILURE);
     }
 
-    // Conectar al bloque de memoria compartida para Sentence
-    managed_shared_memory shmBuffer(create_only, BUFFER_LOCATION, 65536); // Ajusta el tamaño si es necesario
-    Sentence *buffer = shmBuffer.find<Sentence>("SentenceArray").first;
+    Sentence *buffer = attach_buffer(BUFFER_LOCATION);
     if (buffer == nullptr) {
-        std::cerr << "ERROR: no se pudo acceder al bloque" << std::endl;
-        return -1;
+        std::cerr << "Error al adjuntar al bloque de memoria compartida." << std::endl;
+        exit(EXIT_FAILURE);
     }
 
-    insert_char(sem_read, sem_write, sharedData, buffer);
+    // Escribir datos en el buffer
+    for (int i = 0; i < numChars; i++) {
+        sem_write.wait(); // Esperar en el semáforo de escritura
 
-    // Desconectar de la memoria compartida después de finalizar
-    // Destruir bloques de memoria si es necesario aquí (descomentar si se desea destruir automáticamente)
-    // shared_memory_object::remove(STRUCT_LOCATION);
-    // shared_memory_object::remove(BUFFER_LOCATION);
+        // Escribir datos en el buffer (ejemplo simple)
+        buffer[i].character = 'A' + (i % 26);
+        std::sprintf(buffer[i].time, "%d", i);
+
+        sem_read.post(); // Liberar el semáforo de lectura
+    }
+
+    // Liberar recursos
+    sem_read.post(); // Asegurarse de que el semáforo de lectura se libera al final
+
+    // No es necesario desconectar explícitamente en Boost.Interprocess
+
+    // Eliminar el segmento de memoria compartida y semáforos
+    destroy_memory_block(STRUCT_LOCATION);
+    destroy_memory_block(BUFFER_LOCATION);
+
+    // Cerrar los semáforos
+    sem_unlink(SEM_READ_PROCESS_FNAME);
+    sem_unlink(SEM_WRITE_PROCESS_FNAME);
+    for (int i = 0; i < numChars; i++) {
+        std::string sem_write_name = std::string(SEM_WRITE_VARIABLE_FNAME) + std::to_string(i);
+        std::string sem_read_name = std::string(SEM_READ_VARIABLE_FNAME) + std::to_string(i);
+        sem_unlink(sem_write_name.c_str());
+        sem_unlink(sem_read_name.c_str());
+    }
 
     return 0;
 }
