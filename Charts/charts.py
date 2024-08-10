@@ -26,15 +26,15 @@ def plot_usage(libraries, ram_usage, user_cpu_usage, system_cpu_usage):
     plt.subplots_adjust(hspace=0.9, top=0.93, bottom=0.12, left=0.1, right=0.95)
     
     # Título de la ventana
-    fig.suptitle('Sockets', fontsize=15)
+    fig.suptitle('Shared memory - Creator', fontsize=15)
     
     # Mostrar gráficos
     plt.show()
 
 # Ejemplo de uso
-libraries = ['POSIX', 'Boost.Asio', 'POCO']
-ram_usage = [0, 0, 0]  # en KB
-user_cpu_usage = [0.0, 0.0, 0.0]  # en segundos
-system_cpu_usage = [0.0, 0.0, 0.0]  # en segundos
+libraries = ['Boost.Interprocess', 'POSIX']
+ram_usage = [0, 0]  # en KB
+user_cpu_usage = [0.0, 0.0]  # en segundos
+system_cpu_usage = [0.0, 0.0]  # en segundos
 
 plot_usage(libraries, ram_usage, user_cpu_usage, system_cpu_usage)
