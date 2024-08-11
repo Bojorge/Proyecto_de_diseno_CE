@@ -37,49 +37,74 @@ void printResourceUsage() {
 
 int main(int argc, char *argv[]) 
 {
-    // Eliminar bloques de memoria compartida y semáforos existentes
     destroy_memory_block(STRUCT_LOCATION);
     destroy_memory_block(BUFFER_LOCATION);
-
+    
     int numChars = 10;
+    // std::cout << "Ingrese la cantidad de caracteres a compartir: ";
+    // std::cin >> numChars;
 
-    using namespace boost::interprocess;
+    // Set the semaphores
+    sem_unlink(SEM_READ_PROCESS_FNAME);
+    sem_unlink(SEM_WRITE_PROCESS_FNAME);
 
-    // Crear y abrir semáforos
-    named_semaphore sem_read(create_only, SEM_READ_PROCESS_FNAME, 1);
-    named_semaphore sem_write(create_only, SEM_WRITE_PROCESS_FNAME, 0);
+    sem_t *sem_read = sem_open(SEM_READ_PROCESS_FNAME, O_CREAT, 0644, 1);
+    if (sem_read == SEM_FAILED) {
+        perror("sem_open/read");
+        exit(EXIT_FAILURE);
+    }
+    sem_t *sem_write = sem_open(SEM_WRITE_PROCESS_FNAME, O_CREAT, 0644, 0);
+    if (sem_write == SEM_FAILED) {
+        perror("sem_open/write");
+        exit(EXIT_FAILURE);
+    }
 
     for (int i = 0; i < numChars; i++) {
+        // Make every semaphore name for each buffer space
         std::string sem_write_name = std::string(SEM_WRITE_VARIABLE_FNAME) + std::to_string(i);
         std::string sem_read_name = std::string(SEM_READ_VARIABLE_FNAME) + std::to_string(i);
 
-        named_semaphore sem_temp_write(create_only, sem_write_name.c_str(), 1);
-        named_semaphore sem_temp_read(create_only, sem_read_name.c_str(), 0);
+        // Unlink them to prevent
+        sem_unlink(sem_write_name.c_str());
+        sem_unlink(sem_read_name.c_str());
+
+        // Init each semaphore
+        sem_t *sem_temp_write = sem_open(sem_write_name.c_str(), O_CREAT, 0644, 1);
+        if (sem_temp_write == SEM_FAILED) {
+            perror("sem_open/variables");
+            exit(EXIT_FAILURE);
+        }
+
+        sem_t *sem_temp_read = sem_open(sem_read_name.c_str(), O_CREAT, 0644, 0);
+        if (sem_temp_read == SEM_FAILED) {
+            perror("sem_open/variables");
+            exit(EXIT_FAILURE);
+        }
     }
 
-    // Inicializar bloques de memoria compartida
+    // Initialize shared mem blocks
     init_mem_block(STRUCT_LOCATION, BUFFER_LOCATION, sizeof(SharedData), numChars * sizeof(Sentence));
 
-    // Adjuntar a los bloques de memoria compartida
-    SharedData *sharedStruct = attach_struct(STRUCT_LOCATION);
+    // Attach to struct shared mem block
+    SharedData *sharedStruct = attach_struct(STRUCT_LOCATION, sizeof(SharedData));
     if (sharedStruct == nullptr) {
         std::cerr << "Error al adjuntar al bloque de memoria compartida." << std::endl;
         exit(EXIT_FAILURE);
     }
 
-    Sentence *buffer = attach_buffer(BUFFER_LOCATION);
+    // Attach to buffer mem block
+    Sentence *buffer = attach_buffer(BUFFER_LOCATION, numChars * sizeof(Sentence));
     if (buffer == nullptr) {
         std::cerr << "Error al adjuntar al bloque de memoria compartida." << std::endl;
         exit(EXIT_FAILURE);
     }
 
-    // Inicializar la estructura compartida
+    // Initialize empty struct for the shared mem block
     init_empty_struct(sharedStruct, numChars);
 
-    // Visualizar el bloque de memoria
+    // Start visualization of mem block
     while (true) {
-        sem_read.wait();  // Esperar en el semáforo de lectura
-
+        sem_wait(sem_read);
         std::cout << "\033[0;0H\033[2J"; // Mover el cursor a la posición (0, 0) y borrar la pantalla
         std::cout.flush();
         for (int i = 0; i < numChars; i++) {
@@ -89,12 +114,19 @@ int main(int argc, char *argv[])
         std::cout << "-------------------------------------------------" << std::endl;
         std::cout.flush();
 
-        sem_write.post(); // Liberar el semáforo de escritura
+        sem_post(sem_write);
 
         printResourceUsage();
     }
+    
 
-    // Destruir el segmento de memoria compartida y semáforos
+    detach_struct(sharedStruct);
+    detach_buffer(buffer);
+
+    // Destroy the shared mem block and semaphores
+    sem_close(sem_read);
+    sem_close(sem_write);
+
     destroy_memory_block(STRUCT_LOCATION);
     destroy_memory_block(BUFFER_LOCATION);
 

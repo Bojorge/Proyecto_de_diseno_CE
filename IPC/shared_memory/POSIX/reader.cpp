@@ -2,11 +2,9 @@
 #include <cstdlib>
 #include <cstring>
 #include <unistd.h>
-#include <boost/interprocess/sync/named_semaphore.hpp>
-#include <boost/interprocess/managed_shared_memory.hpp>
-#include "shared_memory.hpp"
-
-namespace bip = boost::interprocess;
+#include <semaphore.h>
+#include <string>
+#include "shared_memory.h"
 
 void printResourceUsage() {
     long ramUsage = getRAMUsage();
@@ -18,20 +16,28 @@ void printResourceUsage() {
     std::cout << "Uso de CPU - Modo Sistema: " << systemCPU << " s" << std::endl;
 }
 
-void read_memory(bip::named_semaphore &sem_read, bip::named_semaphore &sem_write, SharedData *sharedData, Sentence *buffer, int interval) {
+void read_memory(sem_t *sem_read, sem_t *sem_write, SharedData *sharedData, Sentence *buffer, int interval) {
     while (!sharedData->writingFinished) {
-        sem_write.wait();
+        sem_wait(sem_write);
 
         // Obtener el semáforo para el espacio de lectura
         std::string sem_read_name = std::string(SEM_READ_VARIABLE_FNAME) + std::to_string(sharedData->readIndex);
-        bip::named_semaphore sem_var_read(bip::open_only, sem_read_name.c_str());
+        sem_t *sem_var_read = sem_open(sem_read_name.c_str(), 0);
+        if (sem_var_read == SEM_FAILED) {
+            perror("sem_open/variables");
+            exit(EXIT_FAILURE);
+        }
 
         // Obtener el semáforo para el espacio de escritura
         std::string sem_write_name = std::string(SEM_WRITE_VARIABLE_FNAME) + std::to_string(sharedData->readIndex);
-        bip::named_semaphore sem_var_write(bip::open_only, sem_write_name.c_str());
+        sem_t *sem_var_write = sem_open(sem_write_name.c_str(), 0);
+        if (sem_var_write == SEM_FAILED) {
+            perror("sem_open/variables");
+            exit(EXIT_FAILURE);
+        }
 
-        // Esperar el semáforo para el espacio de lectura
-        sem_var_read.wait();
+        // Leer después de comprobar si el semáforo está abierto
+        sem_wait(sem_var_read);
 
         // Imprimir en la consola el índice del buffer, el carácter y la hora recuperada
         int index = sharedData->readIndex;
@@ -48,8 +54,8 @@ void read_memory(bip::named_semaphore &sem_read, bip::named_semaphore &sem_write
         sharedData->readIndex = (sharedData->readIndex + 1) % sharedData->bufferSize;
 
         // Publicar para que se pueda escribir de nuevo en el espacio
-        sem_var_write.post();
-        sem_read.post();
+        sem_post(sem_var_write);
+        sem_post(sem_read);
 
         // Esperar el intervalo especificado antes de la próxima lectura
         sleep(interval);
@@ -57,21 +63,26 @@ void read_memory(bip::named_semaphore &sem_read, bip::named_semaphore &sem_write
 }
 
 int main() {
-    using namespace boost::interprocess;
+    // Open semaphores that were already created
+    sem_t *sem_read = sem_open(SEM_READ_PROCESS_FNAME, 0);
+    if (sem_read == SEM_FAILED) {
+        perror("sem_open/creator");
+        exit(EXIT_FAILURE);
+    }
+    sem_t *sem_write = sem_open(SEM_WRITE_PROCESS_FNAME, 0);
+    if (sem_write == SEM_FAILED) {
+        perror("sem_open/client");
+        exit(EXIT_FAILURE);
+    }
 
-    // Abrir semáforos ya creados
-    bip::named_semaphore sem_read(bip::open_only, SEM_READ_PROCESS_FNAME);
-    bip::named_semaphore sem_write(bip::open_only, SEM_WRITE_PROCESS_FNAME);
-
-    // Conectar a la estructura de memoria compartida
-    SharedData *sharedData = attach_struct(STRUCT_LOCATION);
+    // Connect to shared mem block
+    SharedData *sharedData = attach_struct(STRUCT_LOCATION, sizeof(SharedData));
     if (sharedData == nullptr) {
         std::cerr << "ERROR: no se pudo acceder al bloque" << std::endl;
         return -1;
     }
 
-    // Conectar al buffer de memoria compartida
-    Sentence *buffer = attach_buffer(BUFFER_LOCATION, sharedData->bufferSize * sizeof(Sentence));
+    Sentence *buffer = attach_buffer(BUFFER_LOCATION, (sharedData->bufferSize * sizeof(Sentence)));
     if (buffer == nullptr) {
         std::cerr << "ERROR: no se pudo acceder al bloque" << std::endl;
         return -1;
@@ -81,7 +92,7 @@ int main() {
 
     read_memory(sem_read, sem_write, sharedData, buffer, interval);
 
-    // Desconectar de la memoria después de terminar
+    // Detach from memory after finishing
     detach_struct(sharedData);
     detach_buffer(buffer);
 

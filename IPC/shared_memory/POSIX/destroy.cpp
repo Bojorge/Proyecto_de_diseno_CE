@@ -4,7 +4,8 @@
 #include "shared_memory.h"
 
 #define STRUCT_FILENAME "creator.cpp"
-#define BUFFER_FILENAME "buffer.cpp"
+#define BUFFER_FILENAME "destroy.cpp"
+
 
 int main(int argc, char *argv[]) 
 {
