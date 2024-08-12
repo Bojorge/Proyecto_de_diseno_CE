@@ -1,6 +1,8 @@
 #include <boost/interprocess/managed_shared_memory.hpp>
 #include <boost/interprocess/sync/named_semaphore.hpp>
 #include <boost/interprocess/containers/vector.hpp>
+#include <boost/interprocess/shared_memory_object.hpp>
+#include <boost/interprocess/mapped_region.hpp>
 #include <iostream>
 #include <cstdlib>
 #include <cstring>
@@ -26,19 +28,16 @@ void getCPUUsage(double &userCPU, double &systemCPU) {
 
 SharedData* attach_struct(const char *struct_location) {
     try {
-        // Abre la memoria compartida existente
         bip::managed_shared_memory segment(bip::open_only, struct_location);
-
-        // Encuentra el objeto SharedData
         SharedData* sharedData = segment.find<SharedData>("SharedData").first;
 
         if (sharedData == nullptr) {
-            std::cerr << "Error al adjuntar la estructura compartida." << std::endl;
+            std::cerr << "Error: la estructura compartida no se encontró." << std::endl;
             return nullptr;
         }
 
         return sharedData;
-    } catch (const std::exception& e) {
+    } catch (const bip::interprocess_exception& e) {
         std::cerr << "Error al adjuntar la estructura compartida: " << e.what() << std::endl;
         return nullptr;
     }
@@ -46,42 +45,18 @@ SharedData* attach_struct(const char *struct_location) {
 
 Sentence* attach_buffer(const char *buffer_location) {
     try {
-        // Abre la memoria compartida existente
         bip::managed_shared_memory segment(bip::open_only, buffer_location);
-
-        // Encuentra el buffer de Sentences
         Sentence* buffer = segment.find<Sentence>("SentenceBuffer").first;
 
         if (buffer == nullptr) {
-            std::cerr << "Error al adjuntar el buffer compartido." << std::endl;
+            std::cerr << "Error: el buffer compartido no se encontró." << std::endl;
             return nullptr;
         }
 
         return buffer;
-    } catch (const std::exception& e) {
+    } catch (const bip::interprocess_exception& e) {
         std::cerr << "Error al adjuntar el buffer compartido: " << e.what() << std::endl;
         return nullptr;
-    }
-}
-
-void init_mem_block(const char *struct_location, const char *buffer_location, int sizeStruct, int sizeBuffer) {
-    try {
-        // Crear la memoria compartida para la estructura
-        bip::managed_shared_memory struct_segment(bip::create_only, struct_location, sizeStruct);
-
-        // Crear la memoria compartida para el buffer
-        bip::managed_shared_memory buffer_segment(bip::create_only, buffer_location, sizeBuffer);
-
-        // Inicializar la estructura en la memoria compartida
-        struct_segment.construct<SharedData>("SharedData")();
-
-        // Inicializar el buffer en la memoria compartida
-        buffer_segment.construct<Sentence>("SentenceBuffer")[sizeBuffer / sizeof(Sentence)]();
-
-        std::cout << "Bloques de memoria compartida inicializados correctamente." << std::endl;
-    } catch (const std::exception& e) {
-        std::cerr << "Error al inicializar los bloques de memoria compartida: " << e.what() << std::endl;
-        exit(EXIT_FAILURE);
     }
 }
 
@@ -90,7 +65,7 @@ bool detach_struct(const char *struct_location) {
         bip::managed_shared_memory segment(bip::open_only, struct_location);
         segment.destroy<SharedData>("SharedData");
         return true;
-    } catch (const std::exception& e) {
+    } catch (const bip::interprocess_exception& e) {
         std::cerr << "Error al intentar desvincular la estructura: " << e.what() << std::endl;
         return false;
     }
@@ -101,7 +76,7 @@ bool detach_buffer(const char *buffer_location) {
         bip::managed_shared_memory segment(bip::open_only, buffer_location);
         segment.destroy<Sentence>("SentenceBuffer");
         return true;
-    } catch (const std::exception& e) {
+    } catch (const bip::interprocess_exception& e) {
         std::cerr << "Error al intentar desvincular el buffer: " << e.what() << std::endl;
         return false;
     }
@@ -114,5 +89,45 @@ bool destroy_memory_block(const char *location) {
     } catch (const std::exception& e) {
         std::cerr << "Error al intentar eliminar el bloque de memoria: " << e.what() << std::endl;
         return false;
+    }
+}
+
+bool destroy_semaphore(const char *name) {
+    try {
+        bip::named_semaphore::remove(name);
+        return true;
+    } catch (const std::exception &e) {
+        std::cerr << "Error al eliminar el semáforo: " << e.what() << std::endl;
+        return false;
+    }
+}
+
+void init_mem_block(const char *struct_location, const char *buffer_location, std::size_t sizeStruct, std::size_t sizeBuffer) {
+    try {
+        // Eliminar bloques de memoria compartida existentes
+        destroy_memory_block(struct_location);
+        destroy_memory_block(buffer_location);
+
+        // Crear y configurar el objeto de memoria compartida para la estructura
+        boost::interprocess::shared_memory_object shm_struct(boost::interprocess::create_only, struct_location, boost::interprocess::read_write);
+        shm_struct.truncate(sizeStruct);
+        boost::interprocess::mapped_region region_struct(shm_struct, boost::interprocess::read_write);
+        
+        // Inicializar la estructura en la memoria compartida
+        SharedData* sharedData = new (region_struct.get_address()) SharedData();
+
+        // Crear y configurar el objeto de memoria compartida para el buffer
+        boost::interprocess::shared_memory_object shm_buffer(boost::interprocess::create_only, buffer_location, boost::interprocess::read_write);
+        shm_buffer.truncate(sizeBuffer);
+        boost::interprocess::mapped_region region_buffer(shm_buffer, boost::interprocess::read_write);
+        
+        // Inicializar el buffer en la memoria compartida
+        std::size_t numSentences = sizeBuffer / sizeof(Sentence);
+        Sentence* sentenceBuffer = new (region_buffer.get_address()) Sentence[numSentences];
+
+        std::cout << "Bloques de memoria compartida inicializados correctamente." << std::endl;
+    } catch (const boost::interprocess::interprocess_exception& e) {
+        std::cerr << "Error al inicializar los bloques de memoria compartida: " << e.what() << std::endl;
+        exit(EXIT_FAILURE);
     }
 }

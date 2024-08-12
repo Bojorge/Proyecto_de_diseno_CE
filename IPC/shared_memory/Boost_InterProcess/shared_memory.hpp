@@ -10,7 +10,6 @@
 
 namespace bip = boost::interprocess;
 
-// Structs
 struct SharedData {
     int bufferSize;
     int writeIndex, readIndex;
@@ -30,23 +29,19 @@ struct Sentence {
     char time[MAX_TIME_LENGTH];
 };
 
-// Funciones
 long getRAMUsage();
 void getCPUUsage(double &userCPU, double &systemCPU);
-
-// Funciones Boost.Interprocess
-void init_mem_block(const char *struct_location, const char *buffer_location, int sizeStruct, int sizeBuffer);
+void init_mem_block(const char *struct_location, const char *buffer_location, std::size_t sizeStruct, std::size_t sizeBuffer);
 SharedData *attach_struct(const char *struct_location);
 Sentence *attach_buffer(const char *buffer_location);
-bool detach_struct(const char *struct_location);
-bool detach_buffer(const char *buffer_location);
+bool detach_struct(SharedData *sharedStruct);
+bool detach_buffer(Sentence *buffer);
 bool destroy_memory_block(const char *location);
+bool destroy_semaphore(const char *name);
 
 // Variables
-#define STRUCT_LOCATION "shared_memory_struct"
-#define BUFFER_LOCATION "shared_memory_buffer"
-//#define STRUCT_LOCATION "creator.cpp"
-//#define BUFFER_LOCATION "destroy.cpp"
+#define STRUCT_LOCATION "/shared_data_segment"
+#define BUFFER_LOCATION "/shared_buffer_segment"
 
 #define SEM_READ_PROCESS_FNAME "/myprocessread"
 #define SEM_WRITE_PROCESS_FNAME "/myprocesswrite"
@@ -56,5 +51,3 @@ bool destroy_memory_block(const char *location);
 #define MAX_LENGTH 100
 
 #endif
-
-
