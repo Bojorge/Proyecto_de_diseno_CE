@@ -40,8 +40,8 @@ bool destroy_memory_block(const char *location);
 bool destroy_semaphore(const char *name);
 
 // Variables
-#define STRUCT_LOCATION "/shared_data_segment"
-#define BUFFER_LOCATION "/shared_buffer_segment"
+#define STRUCT_LOCATION "shared_data_segment"
+#define BUFFER_LOCATION "shared_buffer_segment"
 
 #define SEM_READ_PROCESS_FNAME "/myprocessread"
 #define SEM_WRITE_PROCESS_FNAME "/myprocesswrite"

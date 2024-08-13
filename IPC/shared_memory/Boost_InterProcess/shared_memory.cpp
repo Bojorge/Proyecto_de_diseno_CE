@@ -28,8 +28,10 @@ void getCPUUsage(double &userCPU, double &systemCPU) {
 
 SharedData* attach_struct(const char *struct_location) {
     try {
-        bip::managed_shared_memory segment(bip::open_only, struct_location);
-        SharedData* sharedData = segment.find<SharedData>("SharedData").first;
+        bip::shared_memory_object shm(bip::open_only, struct_location, bip::read_write);
+        bip::mapped_region region(shm, bip::read_write);
+
+        SharedData* sharedData = static_cast<SharedData*>(region.get_address());
 
         if (sharedData == nullptr) {
             std::cerr << "Error: la estructura compartida no se encontró." << std::endl;
@@ -45,8 +47,10 @@ SharedData* attach_struct(const char *struct_location) {
 
 Sentence* attach_buffer(const char *buffer_location) {
     try {
-        bip::managed_shared_memory segment(bip::open_only, buffer_location);
-        Sentence* buffer = segment.find<Sentence>("SentenceBuffer").first;
+        bip::shared_memory_object shm(bip::open_only, buffer_location, bip::read_write);
+        bip::mapped_region region(shm, bip::read_write);
+
+        Sentence* buffer = static_cast<Sentence*>(region.get_address());
 
         if (buffer == nullptr) {
             std::cerr << "Error: el buffer compartido no se encontró." << std::endl;
@@ -62,8 +66,11 @@ Sentence* attach_buffer(const char *buffer_location) {
 
 bool detach_struct(const char *struct_location) {
     try {
-        bip::managed_shared_memory segment(bip::open_only, struct_location);
-        segment.destroy<SharedData>("SharedData");
+        bip::shared_memory_object shm(bip::open_only, struct_location, bip::read_write);
+        bip::mapped_region region(shm, bip::read_write);
+
+        // Desvinculamos el mapeo
+        region.flush();
         return true;
     } catch (const bip::interprocess_exception& e) {
         std::cerr << "Error al intentar desvincular la estructura: " << e.what() << std::endl;
@@ -73,8 +80,11 @@ bool detach_struct(const char *struct_location) {
 
 bool detach_buffer(const char *buffer_location) {
     try {
-        bip::managed_shared_memory segment(bip::open_only, buffer_location);
-        segment.destroy<Sentence>("SentenceBuffer");
+        bip::shared_memory_object shm(bip::open_only, buffer_location, bip::read_write);
+        bip::mapped_region region(shm, bip::read_write);
+
+        // Desvinculamos el mapeo
+        region.flush();
         return true;
     } catch (const bip::interprocess_exception& e) {
         std::cerr << "Error al intentar desvincular el buffer: " << e.what() << std::endl;
@@ -114,7 +124,8 @@ void init_mem_block(const char *struct_location, const char *buffer_location, st
         boost::interprocess::mapped_region region_struct(shm_struct, boost::interprocess::read_write);
         
         // Inicializar la estructura en la memoria compartida
-        SharedData* sharedData = new (region_struct.get_address()) SharedData();
+        void* addr_struct = region_struct.get_address();
+        SharedData* sharedData = new (addr_struct) SharedData(); // Placement new para la estructura
 
         // Crear y configurar el objeto de memoria compartida para el buffer
         boost::interprocess::shared_memory_object shm_buffer(boost::interprocess::create_only, buffer_location, boost::interprocess::read_write);
@@ -123,7 +134,11 @@ void init_mem_block(const char *struct_location, const char *buffer_location, st
         
         // Inicializar el buffer en la memoria compartida
         std::size_t numSentences = sizeBuffer / sizeof(Sentence);
-        Sentence* sentenceBuffer = new (region_buffer.get_address()) Sentence[numSentences];
+        void* addr_buffer = region_buffer.get_address();
+
+        for (std::size_t i = 0; i < numSentences; ++i) {
+            new (static_cast<Sentence*>(addr_buffer) + i) Sentence(); // Placement new para cada Sentence
+        }
 
         std::cout << "Bloques de memoria compartida inicializados correctamente." << std::endl;
     } catch (const boost::interprocess::interprocess_exception& e) {

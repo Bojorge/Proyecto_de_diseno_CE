@@ -9,8 +9,15 @@
 
 namespace bip = boost::interprocess;
 
-void init_empty_struct(SharedData *sharedData, int numChars) {
-    sharedData->bufferSize = numChars;
+void init_empty_struct(SharedData *sharedData, int numChars) { 
+    if (sharedData == nullptr) {
+        std::cerr << "Error: sharedData es un puntero nulo." << std::endl;
+        return;
+    }
+
+    std::cout << "Tamaño de SharedData: " << sizeof(SharedData) << std::endl;
+
+    sharedData->bufferSize = numChars; 
     sharedData->writeIndex = 0;
     sharedData->readIndex = 0;
     sharedData->readingFileIndex = 0;
@@ -27,6 +34,7 @@ void init_empty_struct(SharedData *sharedData, int numChars) {
     sharedData->readingFinished = false;
     sharedData->statsInited = false;
 }
+
 
 void printResourceUsage() {
     long ramUsage = getRAMUsage();
@@ -91,33 +99,68 @@ void destroy_semaphores(const char *segment_name, int numChars) {
     }
 }
 
+void check_shared_memory_size(const char* location) {
+    try {
+        // Abrir el objeto de memoria compartida
+        boost::interprocess::shared_memory_object shm_obj(boost::interprocess::open_only, location, boost::interprocess::read_only);
+        
+        // Obtener el tamaño del bloque de memoria compartida
+        boost::interprocess::offset_t size;
+        shm_obj.get_size(size);
+        
+        std::cout << "El tamaño del bloque de memoria compartida en " << location << " es de: " << size << " bytes." << std::endl;
+    } catch (const boost::interprocess::interprocess_exception& e) {
+        std::cerr << "Error al intentar obtener el tamaño de la memoria compartida: " << e.what() << std::endl;
+    }
+}
+
 int main(int argc, char *argv[]) {
     int numChars = 10;
+
+    destroy_memory_block(STRUCT_LOCATION);
+    destroy_memory_block(BUFFER_LOCATION);
 
     // Nombre del segmento de semáforos
     const char *sems_segment_name = "SemaphoresSegment";
 
+    destroy_semaphores(sems_segment_name, numChars);
+    
     // Crear e inicializar semáforos
-    create_and_init_semaphores(sems_segment_name, numChars);
+    //create_and_init_semaphores(sems_segment_name, numChars);
 
     // Inicializar bloques de memoria compartida
-    init_mem_block(STRUCT_LOCATION, BUFFER_LOCATION, sizeof(SharedData), numChars * sizeof(Sentence));
-
-    std::cout << " ---  AQUI  ---" << std::endl;
+    //init_mem_block(STRUCT_LOCATION, BUFFER_LOCATION, sizeof(SharedData), numChars * sizeof(Sentence));
     
+    // Verificar el tamaño del bloque de memoria compartida
+    check_shared_memory_size(STRUCT_LOCATION);
+    check_shared_memory_size(BUFFER_LOCATION);
+
     // Adjuntar a los bloques de memoria compartida
     SharedData *sharedStruct = attach_struct(STRUCT_LOCATION);
     if (sharedStruct == nullptr) {
         std::cerr << "Error al adjuntar al bloque de memoria compartida." << std::endl;
         exit(EXIT_FAILURE);
+    } else {
+        std::cout << "Adjuntado sharedStruct en la dirección: " << sharedStruct << std::endl;
+        // Opcional: Imprimir los valores iniciales
+        std::cout << "Valores iniciales de sharedStruct:" << std::endl;
+        std::cout << "bufferSize: " << sharedStruct->bufferSize << std::endl;
+        // Añadir más campos según sea necesario...
     }
 
     Sentence *buffer = attach_buffer(BUFFER_LOCATION);
     if (buffer == nullptr) {
         std::cerr << "Error al adjuntar al bloque de memoria compartida." << std::endl;
         exit(EXIT_FAILURE);
+    } else {
+        std::cout << "Adjuntado buffer en la dirección: " << buffer << std::endl;
+        // Opcional: Imprimir los valores iniciales de los primeros elementos del buffer
+        for (int i = 0; i < 5; i++) { // Ajusta el número según la cantidad de datos que desees verificar
+            std::cout << "buffer[" << i << "].character: " << buffer[i].character << std::endl;
+        }
     }
 
+    
     // Inicializar la estructura compartida
     init_empty_struct(sharedStruct, numChars);
 
