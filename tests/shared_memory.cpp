@@ -90,3 +90,18 @@ bip::named_semaphore* get_semaphore(const char *name) {
         return nullptr;
     }
 }
+
+void check_shared_memory_size(const char* location) {
+    try {
+        // Abrir el objeto de memoria compartida
+        boost::interprocess::shared_memory_object shm_obj(boost::interprocess::open_only, location, boost::interprocess::read_only);
+        
+        // Obtener el tamaño del bloque de memoria compartida
+        boost::interprocess::offset_t size;
+        shm_obj.get_size(size);
+        
+        std::cout << "El tamaño del bloque de memoria compartida en " << location << " es de: " << size << " bytes." << std::endl;
+    } catch (const boost::interprocess::interprocess_exception& e) {
+        std::cerr << "Error al intentar obtener el tamaño de la memoria compartida: " << e.what() << std::endl;
+    }
+}

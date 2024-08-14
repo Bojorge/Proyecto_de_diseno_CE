@@ -13,28 +13,25 @@ int main() {
     // Inicializar el bloque de memoria compartida
     init_mem_block(BUFFER_LOCATION, sizeBuffer);
 
-    // Crear semáforos para controlar el acceso concurrente
-    if (!create_semaphore(SEM_READ_PROCESS_NAME, 1)) {
-        std::cerr << "Error al crear el semáforo de lectura del proceso." << std::endl;
-        return EXIT_FAILURE;
-    }
-    
-    if (!create_semaphore(SEM_WRITE_PROCESS_NAME, 1)) {
-        std::cerr << "Error al crear el semáforo de escritura del proceso." << std::endl;
-        return EXIT_FAILURE;
+    check_shared_memory_size(BUFFER_LOCATION);
+
+    Sentence *buffer = attach_buffer(BUFFER_LOCATION);
+
+    // Verificar la alineación
+    std::uintptr_t bufferAddress = reinterpret_cast<std::uintptr_t>(buffer);
+    std::size_t alignment = alignof(Sentence);
+    if (bufferAddress % alignment == 0) {
+        std::cout << "La memoria está alineada correctamente. Alignment = " << alignment << std::endl;
     }
 
-    if (!create_semaphore(SEM_READ_VARIABLE_NAME, 1)) {
-        std::cerr << "Error al crear el semáforo de lectura de variables." << std::endl;
-        return EXIT_FAILURE;
-    }
-    
-    if (!create_semaphore(SEM_WRITE_VARIABLE_NAME, 1)) {
-        std::cerr << "Error al crear el semáforo de escritura de variables." << std::endl;
-        return EXIT_FAILURE;
-    }
+    std::cout << "El buffer esta en la dirección: " << buffer << std::endl;
+    std::cout << "&buffer : " << &buffer << std::endl;
 
-    std::cout << "Memoria compartida y semáforos inicializados correctamente." << std::endl;
+    buffer->character = 'A';
+    std::cout << "character: " << buffer->character << std::endl;
 
     return EXIT_SUCCESS;
 }
+
+
+

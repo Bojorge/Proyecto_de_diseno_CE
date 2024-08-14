@@ -8,13 +8,10 @@
 #include <cstring>
 #include <string>
 
-namespace bip = boost::interprocess;
-
-
-// Tamaño máximo para la cadena de tiempo
 #define MAX_TIME_LENGTH 21
 
-// Estructura para almacenar datos en el buffer
+namespace bip = boost::interprocess;
+
 struct Sentence {
     char character;
     char time[MAX_TIME_LENGTH];
@@ -30,6 +27,8 @@ bool destroy_mem_block(const char *location);
 bool create_semaphore(const char *name, unsigned int initial_count);
 bool destroy_semaphore(const char *name);
 bip::named_semaphore* get_semaphore(const char *name);
+
+void check_shared_memory_size(const char* location);
 
 // Variables de configuración
 #define BUFFER_LOCATION "shared_buffer_segment"
