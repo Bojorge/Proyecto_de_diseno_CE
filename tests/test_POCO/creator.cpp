@@ -1,26 +1,24 @@
 #include "Poco/SharedMemory.h"
-#include <Poco/Exception.h>
 #include "Poco/File.h"
 #include <iostream>
-#include <cstring> // Para memset, memcpy
-#include <cstdlib> // Para exit
+#include <cstring>
 
 const std::string FILE_NAME = "shared_memory.dat";
 const std::size_t MEMORY_SIZE = 65536;
 
 int main() {
     try {
-        // Crea un archivo vacío para la memoria compartida
+        // Crear un archivo y establecer su tamaño
         Poco::File file(FILE_NAME);
-        if (file.exists()) {
-            file.remove(); // Elimina el archivo si ya existe
+        if (!file.exists()) {
+            file.createFile();
         }
-        file.createFile(); // Crea un nuevo archivo
+        file.setSize(MEMORY_SIZE); // Establece el tamaño del archivo
 
-        // Crea o se conecta a un segmento de memoria compartida basado en el archivo
+        // Mapear el archivo a memoria compartida
         Poco::SharedMemory sharedMemory(file, Poco::SharedMemory::AM_READ | Poco::SharedMemory::AM_WRITE);
 
-        // Inicializa el contenido de la memoria compartida
+        // Inicializar la memoria compartida
         std::memset(sharedMemory.begin(), 0, MEMORY_SIZE);
 
         // Interacción del usuario

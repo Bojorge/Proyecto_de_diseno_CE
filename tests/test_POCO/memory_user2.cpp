@@ -1,23 +1,15 @@
 #include "Poco/SharedMemory.h"
 #include <Poco/Exception.h>
-#include "Poco/File.h"
 #include <iostream>
 #include <cstring>
 
-const std::string FILE_NAME = "shared_memory.dat";
+const std::string MEMORY_NAME = "shared_memory";
 const std::size_t MEMORY_SIZE = 65536;
 
 int main() {
     try {
-        // Crear el archivo y establecer su tamaño
-        Poco::File file (FILE_NAME);
-        if (!file.exists()) {
-            file.createFile();
-        }
-        file.setSize(MEMORY_SIZE); // Establece el tamaño del archivo
-
-        // Conectar el archivo a la memoria compartida
-        Poco::SharedMemory sharedMemory(file, Poco::SharedMemory::AM_READ | Poco::SharedMemory::AM_WRITE, 0);
+        // Crear o conectar a la memoria compartida utilizando un nombre
+        Poco::SharedMemory sharedMemory(MEMORY_NAME, MEMORY_SIZE, Poco::SharedMemory::AM_READ | Poco::SharedMemory::AM_WRITE, 0, true);
 
         // Inicializar la memoria compartida
         std::memset(sharedMemory.begin(), 0, MEMORY_SIZE);
