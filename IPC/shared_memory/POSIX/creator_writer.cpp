@@ -33,15 +33,14 @@ int main() {
         return -1;
     }
 
-    // Escribir en la memoria compartida en un bucle
     for (int i = 0; i < 10; ++i) {
-        std::string sharedData = "ABCDEFGH " + std::to_string(i);
+        std::string sharedData = "MESSAGE #" + std::to_string(i);
         std::cout << "WRITING <- " << sharedData << std::endl;
         
         memset(ptr, '\0', SHARED_MEMORY_SIZE); // Limpia la memoria compartida
         memcpy(ptr, sharedData.c_str(), sharedData.size()); // Copia los datos a la memoria compartida
 
-        std::this_thread::sleep_for(std::chrono::seconds(1));
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
 
     // Desvincular y cerrar

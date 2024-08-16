@@ -11,6 +11,8 @@ const char* SHARED_MEMORY_NAME = "/MySharedMemory";
 const size_t SHARED_MEMORY_SIZE = 65536;
 
 int main() {
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    
     // Abrir el segmento de memoria compartida
     int fd = shm_open(SHARED_MEMORY_NAME, O_RDONLY, 0666);
     if (fd == -1) {
@@ -25,15 +27,12 @@ int main() {
         close(fd);
         return -1;
     }
-
-    std::this_thread::sleep_for(std::chrono::seconds(1));
     
-    // Leer de la memoria compartida en un bucle
     for (int i = 0; i < 10; ++i) {
         std::cout << "READING -> ";
         std::cout << static_cast<char*>(ptr) << std::endl;
 
-        std::this_thread::sleep_for(std::chrono::seconds(1));
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
 
     // Desvincular y cerrar
