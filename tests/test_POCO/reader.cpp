@@ -1,37 +1,44 @@
 #include <Poco/SharedMemory.h>
-#include <Poco/Exception.h>
 #include <Poco/File.h>
+#include <Poco/Exception.h>
 #include <Poco/Semaphore.h>
 #include <iostream>
+#include <cstring>
 #include <string>
+#include <chrono>
+#include <thread>
 
 const std::string FILE_NAME = "shared_memory.dat";
 const std::size_t SHARED_MEMORY_SIZE = 65536; // Tamaño de la memoria compartida
-Poco::Semaphore writeSemaphore(1, 1); // Semáforo de escritura
 
 int main() {
     try {
+        // Esperar 1 segundo antes de iniciar
+        std::this_thread::sleep_for(std::chrono::seconds(1));
+
+        // Crear el archivo si no existe
         Poco::File file(FILE_NAME);
         if (!file.exists()) {
-            std::cerr << "Shared memory file does not exist. Please run the writer first." << std::endl;
-            return -1;
+            file.createFile();
         }
 
+        // Establecer el tamaño del archivo
+        file.setSize(SHARED_MEMORY_SIZE);
+
+        // Abrir la memoria compartida en modo de solo lectura
         Poco::SharedMemory sharedMemory(file, Poco::SharedMemory::AM_READ);
 
-        for (int i = 0; i < 10; ++i) {
-            writeSemaphore.wait(); // Esperar a que el escritor libere el semáforo
+        // Definir la dirección del bloque en memoria compartida
+        // Nota: En POCO no se usa un "handle" como en Boost. Usamos una dirección fija.
+        void *msg = sharedMemory.begin(); 
 
-            std::string content(static_cast<char*>(sharedMemory.begin()), SHARED_MEMORY_SIZE);
-            std::cout << "Read " << (i + 1) << ": Shared Memory Content: " << content.c_str() << std::endl;
+        for (int i = 0; i < 10; i++) {
+            std::cout << "READING -> ";
+            std::cout << static_cast<char*>(msg) << std::endl;
 
-            writeSemaphore.set(); // Liberar el semáforo para que el escritor pueda escribir nuevamente
-
-            // Esperar un corto tiempo para evitar lecturas demasiado rápidas consecutivas
-            //std::cout << "Press enter to read the next or wait automatically: ";
-            //std::cin.ignore();
+            // Esperar 1 segundo antes de intentar nuevamente
+            std::this_thread::sleep_for(std::chrono::seconds(1));
         }
-
     } catch (Poco::Exception& ex) {
         std::cerr << "Poco exception: " << ex.displayText() << std::endl;
         return -1;
