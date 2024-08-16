@@ -8,23 +8,14 @@
 #include <chrono>
 #include <thread>
 
-const std::string FILE_NAME = "shared_memory.dat";
+const std::string SHARED_MEMORY_NAME = "MySharedMemory";
 const std::size_t SHARED_MEMORY_SIZE = 65536;
 
 int main() {
     try {
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
-        // Crear el archivo si no existe
-        Poco::File file(FILE_NAME);
-        if (!file.exists()) {
-            file.createFile();
-        }
-
-        file.setSize(SHARED_MEMORY_SIZE);
-
-        // Abrir la memoria compartida en modo de solo lectura
-        Poco::SharedMemory sharedMemory(file, Poco::SharedMemory::AM_READ);
+        Poco::SharedMemory sharedMemory(SHARED_MEMORY_NAME, SHARED_MEMORY_SIZE, Poco::SharedMemory::AM_READ, nullptr, false);
 
         void *msg = sharedMemory.begin(); 
 

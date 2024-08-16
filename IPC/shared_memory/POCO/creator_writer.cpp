@@ -8,20 +8,13 @@
 #include <chrono>
 #include <thread>
 
-const std::string FILE_NAME = "shared_memory.dat";
+const std::string SHARED_MEMORY_NAME = "MySharedMemory";
 const std::size_t SHARED_MEMORY_SIZE = 65536; 
 const std::size_t BLOCK_SIZE = 1024;
 
 int main() {
     try {
-        Poco::File file(FILE_NAME);
-        if (!file.exists()) {
-            file.createFile(); // Crear el archivo si no existe
-        }
-
-        file.setSize(SHARED_MEMORY_SIZE);
-
-        Poco::SharedMemory sharedMemory(file, Poco::SharedMemory::AM_WRITE);
+        Poco::SharedMemory sharedMemory(SHARED_MEMORY_NAME, SHARED_MEMORY_SIZE, Poco::SharedMemory::AM_WRITE, nullptr, true);
 
         for (int i = 0; i < 10; ++i) {
             std::string sharedData = "MESSAGE #" + std::to_string(i);
