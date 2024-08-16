@@ -1,27 +1,38 @@
-# Nombre de los ejecutables
-TARGETS = shared_memory user_memory
-
-# Compilador y flags
+# Compilador
 CXX = g++
-CXXFLAGS = -std=c++17 -Wall -I/usr/include
-LDFLAGS = -lrt -lpthread -lboost_system -lboost_filesystem
 
-# Objetivos
+# Opciones de compilación
+CXXFLAGS = -std=c++17 -Wall -I/usr/include/boost
+
+# Opciones de enlace
+LIBS = -L/usr/lib/x86_64-linux-gnu -lboost_system -lboost_filesystem
+
+# Archivos fuente
+SRCS = creator_writer.cpp reader.cpp
+
+# Archivos objeto
+OBJS = $(SRCS:.cpp=.o)
+
+# Nombre de los ejecutables
+TARGETS = creator_writer reader
+
+# Regla por defecto
 all: $(TARGETS)
 
-# Reglas para compilar cada programa
-shared_memory: shared_memory.o
-	$(CXX) -o $@ $^ $(LDFLAGS)
+# Regla para crear los ejecutables
+$(TARGETS): %: %.o
+	$(CXX) $(CXXFLAGS) $< -o $@ $(LIBS)
 
-user_memory: user_memory.o
-	$(CXX) -o $@ $^ $(LDFLAGS)
-
-# Reglas para compilar los archivos fuente
+# Regla para compilar archivos fuente a archivos objeto
 %.o: %.cpp
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 # Regla para limpiar los archivos generados
 clean:
-	rm -f $(TARGETS) *.o
+	rm -f $(TARGETS) $(OBJS)
 
-.PHONY: all clean
+run: $(TARGETS)
+	gnome-terminal -- bash -c "./creator_writer; exec bash" & \
+	gnome-terminal -- bash -c "./reader; exec bash" &
+
+.PHONY: all clean run

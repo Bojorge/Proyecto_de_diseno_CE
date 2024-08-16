@@ -2,6 +2,8 @@
 #include <iostream>
 #include <cstdlib> // Para std::system
 #include <sstream>
+#include <chrono> // Para std::chrono::seconds
+#include <thread> // Para std::this_thread::sleep_for
 
 #define SharedMemory "MySharedMemory"
 
@@ -11,12 +13,10 @@ int main (int argc, char *argv[])
 {
     // Buffer para almacenar datos a compartir y opciones del menú
     char buffer[1024];
-    char opt[10];
-
+    
     // Inicializa los buffers con ceros (caracteres nulos)
     memset(buffer, '\0', sizeof(buffer));
-    memset(opt, '\0', sizeof(opt));
-
+    
     // Estructura para eliminar la memoria compartida cuando el programa termina
     struct shm_remove
     {
@@ -50,28 +50,16 @@ int main (int argc, char *argv[])
     std::cout << "Shared Memory handle : " << handle << std::endl;
 
     // Bucle infinito para interactuar con el usuario hasta que se seleccione "exit"
-    for (;;) {
-        std::cout << "Select Option (write/read/exit) : ";
-        memset(opt, '\0', sizeof(opt)); // Reinicia el buffer de opciones
-        std::cin.getline(opt, sizeof(opt)); // Lee la opción del usuario
-        
-        if ( !strcmp(opt, "write") ){
-            // Si se selecciona "write", escribe datos en la memoria compartida
-            std::cout << "-> Shared Memory : ";
-            memset(buffer, '\0', sizeof(buffer)); // Reinicia el buffer de escritura
-            std::cin.getline(buffer, sizeof(buffer)); // Lee los datos del usuario
-            memset(shptr, '\d', 1024); // Limpia el bloque de memoria compartida
-            memcpy((char*)shptr, buffer, strlen(buffer)); // Copia los datos a la memoria compartida
-        }
-        else if ( !strcmp(opt, "read") ){
-            // Si se selecciona "read", lee datos de la memoria compartida
-            std::cout << "<- Share Memory : ";
-            std::cout << (char*)shptr << std::endl; // Muestra los datos almacenados en la memoria compartida
-        }
-        else {
-            // Si se selecciona cualquier otra cosa (incluyendo "exit"), termina el programa
-            break;
-        }
+    for (int i=0;i<10;i++) {        
+        memset(buffer, '\0', sizeof(buffer)); // Reinicia el buffer de escritura
+        std::string sharedData = "ABCDEFGH " + std::to_string(i);
+        std::cout << "WRITING <- " << sharedData << std::endl;
+        strncpy(buffer, sharedData.c_str(), sizeof(buffer) - 1);
+        memset(shptr, '\0', 1024); // Limpia el bloque de memoria compartida
+        memcpy((char*)shptr, buffer, strlen(buffer)); // Copia los datos a la memoria compartida
+
+        // Esperar 1 segundo antes de intentar nuevamente
+        std::this_thread::sleep_for(std::chrono::seconds(1));
     }
     return 0;
 }
