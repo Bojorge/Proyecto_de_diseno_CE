@@ -1,25 +1,34 @@
-CXX     = g++
-CXXFLAGS = -g
-OBJS    = shared_memory.o
-EXE     = creator writer reader
+# Definición de variables
+CXX = g++
+CXXFLAGS = -std=c++17 -Wall -Wextra
+LDFLAGS =
+
+# Nombres de los archivos fuente y ejecutables
+SRCS = creator_writer.cpp reader.cpp
+OBJS = $(SRCS:.cpp=.o)
+EXES = creator_writer reader
 
 # Regla por defecto
-all: $(EXE)
+all: $(EXES)
 
-# Regla para compilar los archivos objeto
-shared_memory.o: shared_memory.cpp
-	$(CXX) $(CXXFLAGS) -c shared_memory.cpp -o shared_memory.o
+# Regla para compilar el ejecutable creator_writer
+creator_writer: creator_writer.o
+	$(CXX) $(CXXFLAGS) -o $@ $^ $(LDFLAGS)
 
-# Reglas para compilar los ejecutables
-creator: creator.cpp shared_memory.o
-	$(CXX) $(CXXFLAGS) creator.cpp shared_memory.o -o creator
+# Regla para compilar el ejecutable reader
+reader: reader.o
+	$(CXX) $(CXXFLAGS) -o $@ $^ $(LDFLAGS)
 
-writer: writer.cpp shared_memory.o
-	$(CXX) $(CXXFLAGS) writer.cpp shared_memory.o -o writer
+# Regla para compilar archivos .cpp en archivos .o
+%.o: %.cpp
+	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
-reader: reader.cpp shared_memory.o
-	$(CXX) $(CXXFLAGS) reader.cpp shared_memory.o -o reader
-
-# Regla para limpiar los archivos generados
+# Regla para limpiar archivos generados
 clean:
-	rm -f *.o $(EXE)
+	rm -f $(OBJS) $(EXES)
+
+run: $(TARGETS)
+	gnome-terminal -- bash -c "./creator_writer; exec bash" & \
+	gnome-terminal -- bash -c "./reader; exec bash" &
+
+.PHONY: all clean run

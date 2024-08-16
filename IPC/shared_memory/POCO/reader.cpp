@@ -1,91 +1,47 @@
-#include <iostream>
-#include <cstdlib>
-#include <string>
-#include <ctime>
-#include <Poco/Exception.h>
-#include <Poco/NamedSemaphore.h>
 #include <Poco/SharedMemory.h>
-#include <Poco/ScopedLock.h>
-#include "shared_memory.hpp"
+#include <Poco/File.h>
+#include <Poco/Exception.h>
+#include <Poco/Semaphore.h>
+#include <iostream>
+#include <cstring>
+#include <string>
+#include <chrono>
+#include <thread>
 
-void printResourceUsage() {
-    long ramUsage = getRAMUsage();
-    double userCPU, systemCPU;
-    getCPUUsage(userCPU, systemCPU);
+const std::string FILE_NAME = "shared_memory.dat";
+const std::size_t SHARED_MEMORY_SIZE = 65536; // Tamaño de la memoria compartida
 
-    std::cout << "Uso de RAM: " << ramUsage << " KB" << std::endl;
-    std::cout << "Uso de CPU - Modo Usuario: " << userCPU << " s" << std::endl;
-    std::cout << "Uso de CPU - Modo Sistema: " << systemCPU << " s" << std::endl;
-}
-
-void read_memory(Poco::NamedSemaphore &sem_read, Poco::NamedSemaphore &sem_write, SharedData *sharedData, Sentence *buffer, int interval) {
-    while (!sharedData->writingFinished) {
-        sem_write.wait();  // Esperar hasta que el semáforo de escritura esté disponible
-
-        // Obtener el semáforo para el espacio de lectura
-        std::string sem_read_name = std::string(SEM_READ_VARIABLE_FNAME) + std::to_string(sharedData->readIndex);
-        Poco::NamedSemaphore sem_var_read(Poco::NamedSemaphore::OPEN_ONLY, sem_read_name);
-
-        // Obtener el semáforo para el espacio de escritura
-        std::string sem_write_name = std::string(SEM_WRITE_VARIABLE_FNAME) + std::to_string(sharedData->readIndex);
-        Poco::NamedSemaphore sem_var_write(Poco::NamedSemaphore::OPEN_ONLY, sem_write_name);
-
-        sem_var_read.wait();  // Esperar el semáforo para el espacio de lectura
-
-        // Imprimir en la consola el índice del buffer, el carácter y la hora recuperada
-        int index = sharedData->readIndex;
-        std::cout << "\n \n *** Leyendo:\nbuffer[" << index << "] = \"" << buffer[index].character << "\" | tiempo: " << buffer[index].time << std::endl;
-
-        printResourceUsage();
-
-        // Borrar el carácter leído del buffer
-        buffer[index].character = '\0';
-        strcpy(buffer[index].time, "");
-
-        // Actualizar las variables compartidas
-        sharedData->charsTransferred++;
-        sharedData->readIndex = (sharedData->readIndex + 1) % sharedData->bufferSize;
-
-        sem_var_write.post();  // Liberar el semáforo de escritura
-        sem_read.post();      // Liberar el semáforo de lectura general
-
-        // Esperar el intervalo especificado antes de la próxima lectura
-        Poco::Thread::sleep(interval * 1000); // `sleep` en segundos se convierte a milisegundos
-    }
-}
-
-int main() 
-{
+int main() {
     try {
-        // Abrir semáforos que ya fueron creados
-        Poco::NamedSemaphore sem_read(Poco::NamedSemaphore::OPEN_ONLY, SEM_READ_PROCESS_FNAME);
-        Poco::NamedSemaphore sem_write(Poco::NamedSemaphore::OPEN_ONLY, SEM_WRITE_PROCESS_FNAME);
+        // Esperar 1 segundo antes de iniciar
+        std::this_thread::sleep_for(std::chrono::seconds(1));
 
-        // Conectar con el bloque de memoria compartida
-        SharedData *sharedData = attach_struct(STRUCT_LOCATION);
-        if (sharedData == nullptr) {
-            std::cerr << "ERROR: no se pudo acceder al bloque" << std::endl;
-            return -1;
+        // Crear el archivo si no existe
+        Poco::File file(FILE_NAME);
+        if (!file.exists()) {
+            file.createFile();
         }
 
-        // Conectar con el buffer de memoria compartida
-        Sentence *buffer = attach_buffer(BUFFER_LOCATION);
-        if (buffer == nullptr) {
-            std::cerr << "ERROR: no se pudo acceder al bloque" << std::endl;
-            return -1;
+        // Establecer el tamaño del archivo
+        file.setSize(SHARED_MEMORY_SIZE);
+
+        // Abrir la memoria compartida en modo de solo lectura
+        Poco::SharedMemory sharedMemory(file, Poco::SharedMemory::AM_READ);
+
+        // Definir la dirección del bloque en memoria compartida
+        // Nota: En POCO no se usa un "handle" como en Boost. Usamos una dirección fija.
+        void *msg = sharedMemory.begin(); 
+
+        for (int i = 0; i < 10; i++) {
+            std::cout << "READING -> ";
+            std::cout << static_cast<char*>(msg) << std::endl;
+
+            // Esperar 1 segundo antes de intentar nuevamente
+            std::this_thread::sleep_for(std::chrono::seconds(1));
         }
-
-        int interval = 2;
-
-        read_memory(sem_read, sem_write, sharedData, buffer, interval);
-
-        // Desconectar de la memoria después de finalizar
-        detach_struct(sharedData);
-        detach_buffer(buffer);
-
-    } catch (const Poco::Exception &e) {
-        std::cerr << "Error: " << e.displayText() << std::endl;
-        return EXIT_FAILURE;
+    } catch (Poco::Exception& ex) {
+        std::cerr << "Poco exception: " << ex.displayText() << std::endl;
+        return -1;
     }
 
     return 0;

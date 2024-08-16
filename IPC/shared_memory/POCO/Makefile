@@ -1,34 +1,37 @@
-CXX     = g++
-CXXFLAGS = -g -I/path/to/poco/include -L/path/to/poco/lib -lPocoFoundation -lPocoUtil -lPocoNamedSem -lPocoSharedMemory
-OBJS    = shared_memory.o creator.o writer.o reader.o
-EXE     = creator writer reader
+# Compilador
+CXX = g++
+
+# Opciones de compilación
+CXXFLAGS = -std=c++17 -Wall -I/usr/include/poco
+
+# Opciones de enlace
+LIBS = -L/usr/lib/x86_64-linux-gnu -lPocoFoundation -lPocoUtil
+# Archivos fuente
+SRCS = creator_writer.cpp reader.cpp
+
+# Archivos objeto
+OBJS = $(SRCS:.cpp=.o)
+
+# Nombre de los ejecutables
+TARGETS = creator_writer reader
 
 # Regla por defecto
-all: $(EXE)
+all: $(TARGETS)
 
-# Regla para compilar los archivos objeto
-shared_memory.o: shared_memory.cpp
-	$(CXX) $(CXXFLAGS) -c shared_memory.cpp -o shared_memory.o
+# Regla para crear los ejecutables
+$(TARGETS): %: %.o
+	$(CXX) $(CXXFLAGS) $< -o $@ $(LIBS)
 
-creator.o: creator.cpp
-	$(CXX) $(CXXFLAGS) -c creator.cpp -o creator.o
-
-writer.o: writer.cpp
-	$(CXX) $(CXXFLAGS) -c writer.cpp -o writer.o
-
-reader.o: reader.cpp
-	$(CXX) $(CXXFLAGS) -c reader.cpp -o reader.o
-
-# Reglas para compilar los ejecutables
-creator: creator.o shared_memory.o
-	$(CXX) $(CXXFLAGS) creator.o shared_memory.o -o creator
-
-writer: writer.o shared_memory.o
-	$(CXX) $(CXXFLAGS) writer.o shared_memory.o -o writer
-
-reader: reader.o shared_memory.o
-	$(CXX) $(CXXFLAGS) reader.o shared_memory.o -o reader
+# Regla para compilar archivos fuente a archivos objeto
+%.o: %.cpp
+	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 # Regla para limpiar los archivos generados
 clean:
-	rm -f *.o $(EXE)
+	rm -f $(TARGETS) $(OBJS)
+
+run: $(TARGETS)
+	gnome-terminal -- bash -c "./creator_writer; exec bash" & \
+	gnome-terminal -- bash -c "./reader; exec bash" &
+
+.PHONY: all clean run

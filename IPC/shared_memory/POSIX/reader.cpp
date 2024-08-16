@@ -1,100 +1,49 @@
-#include <iostream>
-#include <cstdlib>
-#include <cstring>
+#include <fcntl.h>
+#include <sys/mman.h>
+#include <sys/stat.h>
 #include <unistd.h>
-#include <semaphore.h>
-#include <string>
-#include "shared_memory.h"
+#include <iostream>
+#include <cstring>
+#include <chrono>
+#include <thread>
 
-void printResourceUsage() {
-    long ramUsage = getRAMUsage();
-    double userCPU, systemCPU;
-    getCPUUsage(userCPU, systemCPU);
-
-    std::cout << "Uso de RAM: " << ramUsage << " KB" << std::endl;
-    std::cout << "Uso de CPU - Modo Usuario: " << userCPU << " s" << std::endl;
-    std::cout << "Uso de CPU - Modo Sistema: " << systemCPU << " s" << std::endl;
-}
-
-void read_memory(sem_t *sem_read, sem_t *sem_write, SharedData *sharedData, Sentence *buffer, int interval) {
-    while (!sharedData->writingFinished) {
-        sem_wait(sem_write);
-
-        // Obtener el semáforo para el espacio de lectura
-        std::string sem_read_name = std::string(SEM_READ_VARIABLE_FNAME) + std::to_string(sharedData->readIndex);
-        sem_t *sem_var_read = sem_open(sem_read_name.c_str(), 0);
-        if (sem_var_read == SEM_FAILED) {
-            perror("sem_open/variables");
-            exit(EXIT_FAILURE);
-        }
-
-        // Obtener el semáforo para el espacio de escritura
-        std::string sem_write_name = std::string(SEM_WRITE_VARIABLE_FNAME) + std::to_string(sharedData->readIndex);
-        sem_t *sem_var_write = sem_open(sem_write_name.c_str(), 0);
-        if (sem_var_write == SEM_FAILED) {
-            perror("sem_open/variables");
-            exit(EXIT_FAILURE);
-        }
-
-        // Leer después de comprobar si el semáforo está abierto
-        sem_wait(sem_var_read);
-
-        // Imprimir en la consola el índice del buffer, el carácter y la hora recuperada
-        int index = sharedData->readIndex;
-        std::cout << "\n \n *** Leyendo:\nbuffer[" << index << "] = \"" << buffer[index].character << "\" | tiempo: " << buffer[index].time << std::endl;
-
-        printResourceUsage();
-
-        // Borrar el carácter leído del buffer
-        buffer[index].character = '\0';
-        strcpy(buffer[index].time, "");
-
-        // Actualizar las variables compartidas
-        sharedData->charsTransferred++;
-        sharedData->readIndex = (sharedData->readIndex + 1) % sharedData->bufferSize;
-
-        // Publicar para que se pueda escribir de nuevo en el espacio
-        sem_post(sem_var_write);
-        sem_post(sem_read);
-
-        // Esperar el intervalo especificado antes de la próxima lectura
-        sleep(interval);
-    }
-}
+const char* SHARED_MEMORY_NAME = "/MySharedMemory";
+const size_t SHARED_MEMORY_SIZE = 65536;
 
 int main() {
-    // Open semaphores that were already created
-    sem_t *sem_read = sem_open(SEM_READ_PROCESS_FNAME, 0);
-    if (sem_read == SEM_FAILED) {
-        perror("sem_open/creator");
-        exit(EXIT_FAILURE);
-    }
-    sem_t *sem_write = sem_open(SEM_WRITE_PROCESS_FNAME, 0);
-    if (sem_write == SEM_FAILED) {
-        perror("sem_open/client");
-        exit(EXIT_FAILURE);
-    }
-
-    // Connect to shared mem block
-    SharedData *sharedData = attach_struct(STRUCT_LOCATION, sizeof(SharedData));
-    if (sharedData == nullptr) {
-        std::cerr << "ERROR: no se pudo acceder al bloque" << std::endl;
+    // Abrir el segmento de memoria compartida
+    int fd = shm_open(SHARED_MEMORY_NAME, O_RDONLY, 0666);
+    if (fd == -1) {
+        perror("shm_open");
         return -1;
     }
 
-    Sentence *buffer = attach_buffer(BUFFER_LOCATION, (sharedData->bufferSize * sizeof(Sentence)));
-    if (buffer == nullptr) {
-        std::cerr << "ERROR: no se pudo acceder al bloque" << std::endl;
+    // Mapear el segmento de memoria compartida en el espacio de direcciones del proceso
+    void* ptr = mmap(NULL, SHARED_MEMORY_SIZE, PROT_READ, MAP_SHARED, fd, 0);
+    if (ptr == MAP_FAILED) {
+        perror("mmap");
+        close(fd);
         return -1;
     }
 
-    int interval = 2;
+    std::this_thread::sleep_for(std::chrono::seconds(1));
+    
+    // Leer de la memoria compartida en un bucle
+    for (int i = 0; i < 10; ++i) {
+        std::cout << "READING -> ";
+        std::cout << static_cast<char*>(ptr) << std::endl;
 
-    read_memory(sem_read, sem_write, sharedData, buffer, interval);
+        std::this_thread::sleep_for(std::chrono::seconds(1));
+    }
 
-    // Detach from memory after finishing
-    detach_struct(sharedData);
-    detach_buffer(buffer);
+    // Desvincular y cerrar
+    if (munmap(ptr, SHARED_MEMORY_SIZE) == -1) {
+        perror("munmap");
+    }
+    close(fd);
 
+    // Eliminar el segmento de memoria compartida (opcional, según tus necesidades)
+    shm_unlink(SHARED_MEMORY_NAME);
+    
     return 0;
 }

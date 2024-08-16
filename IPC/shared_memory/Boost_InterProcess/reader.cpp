@@ -1,91 +1,37 @@
-#include <iostream>
-#include <cstdlib>
-#include <cstring>
-#include <unistd.h>
 #include <boost/interprocess/managed_shared_memory.hpp>
-#include <boost/interprocess/sync/named_semaphore.hpp>
-#include "shared_memory.hpp"
+#include <iostream>
+#include <cstdlib> //std::system
+#include <sstream>
+#include <stdio.h>
+#include <chrono> // Para std::chrono::seconds
+#include <thread> // Para std::this_thread::sleep_for
 
-void printResourceUsage() {
-    long ramUsage = getRAMUsage();
-    double userCPU, systemCPU;
-    getCPUUsage(userCPU, systemCPU);
+using namespace boost::interprocess;
 
-    std::cout << "Uso de RAM: " << ramUsage << " KB" << std::endl;
-    std::cout << "Uso de CPU - Modo Usuario: " << userCPU << " s" << std::endl;
-    std::cout << "Uso de CPU - Modo Sistema: " << systemCPU << " s" << std::endl;
-}
-
-void read_memory(boost::interprocess::named_semaphore &sem_read, 
-                 boost::interprocess::named_semaphore &sem_write, 
-                 SharedData *sharedData, 
-                 Sentence *buffer, 
-                 int interval) 
+int main (int argc, char *argv[])
 {
-    while (!sharedData->writingFinished) {
-        // Esperar hasta que el semáforo de escritura esté disponible
-        sem_write.wait(); 
+    // Esperar 1 segundo antes de iniciar
+        std::this_thread::sleep_for(std::chrono::seconds(1));
 
-        // Obtener el semáforo para el espacio de lectura
-        std::string sem_read_name = std::string(SEM_READ_VARIABLE_FNAME) + std::to_string(sharedData->readIndex);
-        boost::interprocess::named_semaphore sem_var_read(boost::interprocess::open_only, sem_read_name.c_str());
+    char buffer[1024];
+    
+    memset(buffer, '\0', sizeof(buffer));
+    
 
-        // Obtener el semáforo para el espacio de escritura
-        std::string sem_write_name = std::string(SEM_WRITE_VARIABLE_FNAME) + std::to_string(sharedData->readIndex);
-        boost::interprocess::named_semaphore sem_var_write(boost::interprocess::open_only, sem_write_name.c_str());
+    managed_shared_memory segment (open_only, "MySharedMemory");
+    managed_shared_memory::handle_t handle = 240; //hardcodeado, esto se debe pasar como parametro
 
-        // Esperar el semáforo para el espacio de lectura
-        sem_var_read.wait();
 
-        // Imprimir en la consola el índice del buffer, el carácter y la hora recuperada
-        int index = sharedData->readIndex;
-        std::cout << "\n \n *** Leyendo:\nbuffer[" << index << "] = \"" << buffer[index].character << "\" | tiempo: " << buffer[index].time << std::endl;
+    //Get buffer local address from handle
+    void *msg = segment.get_address_from_handle(handle);
 
-        printResourceUsage();
+    for(int i=0;i<10;i++){
+        std::cout << "READING -> ";
+        std::cout << (char*)msg << std::endl;
 
-        // Borrar el carácter leído del buffer
-        buffer[index].character = '\0';
-        std::strcpy(buffer[index].time, "");
-
-        // Actualizar las variables compartidas
-        sharedData->charsTransferred++;
-        sharedData->readIndex = (sharedData->readIndex + 1) % sharedData->bufferSize;
-
-        // Publicar para que se pueda escribir de nuevo en el espacio
-        sem_var_write.post();
-        sem_read.post();
-
-        // Esperar el intervalo especificado antes de la próxima lectura
-        sleep(interval);
+        // Esperar 1 segundo antes de intentar nuevamente
+        std::this_thread::sleep_for(std::chrono::seconds(1));
     }
-}
-
-int main() {
-    using namespace boost::interprocess;
-
-    // Conectar a los semáforos que ya fueron creados
-    named_semaphore sem_read(open_only, SEM_READ_PROCESS_FNAME);
-    named_semaphore sem_write(open_only, SEM_WRITE_PROCESS_FNAME);
-
-    // Conectar al bloque de memoria compartida para SharedData
-    managed_shared_memory shm(open_only, STRUCT_LOCATION);
-    SharedData *sharedData = shm.find<SharedData>("SharedData").first;
-    if (sharedData == nullptr) {
-        std::cerr << "ERROR: no se pudo acceder al bloque" << std::endl;
-        return -1;
-    }
-
-    // Conectar al bloque de memoria compartida para Sentence
-    managed_shared_memory shmBuffer(open_only, BUFFER_LOCATION);
-    Sentence *buffer = shmBuffer.find<Sentence>("SentenceArray").first;
-    if (buffer == nullptr) {
-        std::cerr << "ERROR: no se pudo acceder al bloque" << std::endl;
-        return -1;
-    }
-
-    int interval = 2;
-
-    read_memory(sem_read, sem_write, sharedData, buffer, interval);
-
     return 0;
+    
 }

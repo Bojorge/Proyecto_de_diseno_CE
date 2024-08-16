@@ -1,26 +1,38 @@
-CXX     = g++
-CXXFLAGS = -g -std=c++17 -I/usr/include/boost
-LDFLAGS  = -lboost_system -lrt
-OBJS    = shared_memory.o
-EXE     = creator writer reader
+# Compilador
+CXX = g++
+
+# Opciones de compilación
+CXXFLAGS = -std=c++17 -Wall -I/usr/include/boost
+
+# Opciones de enlace
+LIBS = -L/usr/lib/x86_64-linux-gnu -lboost_system -lboost_filesystem
+
+# Archivos fuente
+SRCS = creator_writer.cpp reader.cpp
+
+# Archivos objeto
+OBJS = $(SRCS:.cpp=.o)
+
+# Nombre de los ejecutables
+TARGETS = creator_writer reader
 
 # Regla por defecto
-all: $(EXE)
+all: $(TARGETS)
 
-# Regla para compilar los archivos objeto
-shared_memory.o: shared_memory.cpp
-	$(CXX) $(CXXFLAGS) -c shared_memory.cpp -o shared_memory.o
+# Regla para crear los ejecutables
+$(TARGETS): %: %.o
+	$(CXX) $(CXXFLAGS) $< -o $@ $(LIBS)
 
-# Reglas para compilar los ejecutables
-creator: creator.cpp shared_memory.o
-	$(CXX) $(CXXFLAGS) creator.cpp shared_memory.o -o creator $(LDFLAGS)
-
-writer: writer.cpp shared_memory.o
-	$(CXX) $(CXXFLAGS) writer.cpp shared_memory.o -o writer $(LDFLAGS)
-
-reader: reader.cpp shared_memory.o
-	$(CXX) $(CXXFLAGS) reader.cpp shared_memory.o -o reader $(LDFLAGS)
+# Regla para compilar archivos fuente a archivos objeto
+%.o: %.cpp
+	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 # Regla para limpiar los archivos generados
 clean:
-	rm -f *.o $(EXE)
+	rm -f $(TARGETS) $(OBJS)
+
+run: $(TARGETS)
+	gnome-terminal -- bash -c "./creator_writer; exec bash" & \
+	gnome-terminal -- bash -c "./reader; exec bash" &
+
+.PHONY: all clean run
