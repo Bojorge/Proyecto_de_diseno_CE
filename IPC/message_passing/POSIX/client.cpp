@@ -1,8 +1,14 @@
 #include <iostream>
 #include <string>
+#include <chrono>
+#include <thread>
 #include "posix_sockets.h"
 
 int main() {
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+    auto start = std::chrono::high_resolution_clock::now();
+    
     const int num_iterations = 1000;
     std::string message;
 
@@ -25,6 +31,11 @@ int main() {
         if (userCPU > maxUserCPU) maxUserCPU = userCPU;
         if (systemCPU > maxSystemCPU) maxSystemCPU = systemCPU;
     }
+    // Registrar el tiempo de fin
+    auto end = std::chrono::high_resolution_clock::now();
+    // Calcular la duración
+    std::chrono::duration<double> duration = end - start;
+    std::cout << "El programa tardó " << duration.count() << " segundos en ejecutarse." << std::endl;
 
     std::cout << "-------------------------------" << std::endl;
     std::cout << "RAM: " << maxRAMUsage << " KB" << std::endl;

@@ -19,9 +19,17 @@ void server_thread() {
 
 int main() {
     try {
+        auto start = std::chrono::high_resolution_clock::now();
+
         // Crear y ejecutar el hilo del servidor
         std::thread server(server_thread);
-        server.join();  // Esperar a que el hilo del servidor termine
+        server.join(); 
+
+        // Registrar el tiempo de fin
+        auto end = std::chrono::high_resolution_clock::now();
+        // Calcular la duración
+        std::chrono::duration<double> duration = end - start;
+        std::cout << "El programa tardó " << duration.count() << " segundos en ejecutarse." << std::endl;
     } catch (const Poco::Exception& e) {
         std::cerr << "Poco Exception: " << e.displayText() << std::endl;
     } catch (const std::exception& e) {

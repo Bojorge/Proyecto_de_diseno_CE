@@ -34,5 +34,9 @@ $(TARGET_CLIENT): $(C_OBJECTS) $(CPP_OBJECTS_CLIENT)
 clean:
 	rm -f $(C_OBJECTS) $(CPP_OBJECTS_SERVER) $(CPP_OBJECTS_CLIENT) $(TARGET_SERVER) $(TARGET_CLIENT)
 
+run: $(TARGETS)
+	gnome-terminal -- bash -c "./server; exec bash" & \
+	gnome-terminal -- bash -c "./client; exec bash" &
+
 # Reglas para evitar que se consideren los archivos de cabecera
 .PHONY: all clean

@@ -33,3 +33,7 @@ sockets.o: sockets.cpp sockets.hpp
 # Regla para limpiar los archivos generados
 clean:
 	rm -f $(OBJS) $(EXEC_CLIENT) $(EXEC_SERVER)
+
+run: $(TARGETS)
+	gnome-terminal -- bash -c "./server; exec bash" & \
+	gnome-terminal -- bash -c "./client; exec bash" &
