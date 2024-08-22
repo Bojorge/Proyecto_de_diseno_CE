@@ -1,42 +1,41 @@
-# Nombre del ejecutable
-TARGET_SERVER = server
-TARGET_CLIENT = client
-
-# Compiladores
-CC = gcc
+# Variables
 CXX = g++
+CXXFLAGS = -std=c++17 -Wall -pthread -Ofast
+SRCS = client.cpp server.cpp sockets.cpp
+OBJS = $(SRCS:.cpp=.o)
+EXEC_CLIENT = client
+EXEC_SERVER = server
 
-# Archivos fuente
-C_SOURCES = posix_sockets.c
-CPP_SOURCES_SERVER = server.cpp
-CPP_SOURCES_CLIENT = client.cpp
+# Regla principal para construir los ejecutables
+all: $(EXEC_CLIENT) $(EXEC_SERVER)
 
-# Archivos objeto
-C_OBJECTS = $(C_SOURCES:.c=.o)
-CPP_OBJECTS_SERVER = $(CPP_SOURCES_SERVER:.cpp=.o)
-CPP_OBJECTS_CLIENT = $(CPP_SOURCES_CLIENT:.cpp=.o)
+# Regla para construir el ejecutable client
+$(EXEC_CLIENT): client.o sockets.o
+	$(CXX) $(CXXFLAGS) -o $(EXEC_CLIENT) client.o sockets.o $(LDFLAGS)
 
-# Reglas de construcción
-all: $(TARGET_SERVER) $(TARGET_CLIENT)
+# Regla para construir el ejecutable server
+$(EXEC_SERVER): server.o sockets.o
+	$(CXX) $(CXXFLAGS) -o $(EXEC_SERVER) server.o sockets.o $(LDFLAGS)
 
-$(TARGET_SERVER): $(C_OBJECTS) $(CPP_OBJECTS_SERVER)
-	$(CXX) -o $@ $^
+# Regla para construir el archivo objeto de client
+client.o: client.cpp sockets.hpp
+	$(CXX) $(CXXFLAGS) -c client.cpp
 
-$(TARGET_CLIENT): $(C_OBJECTS) $(CPP_OBJECTS_CLIENT)
-	$(CXX) -o $@ $^
+# Regla para construir el archivo objeto de server
+server.o: server.cpp sockets.hpp
+	$(CXX) $(CXXFLAGS) -c server.cpp
 
-%.o: %.c
-	$(CC) -c $< -o $@
+# Regla para construir el archivo objeto de sockets
+sockets.o: sockets.cpp sockets.hpp
+	$(CXX) $(CXXFLAGS) -c sockets.cpp
 
-%.o: %.cpp
-	$(CXX) -c $< -o $@
-
+# Regla para limpiar los archivos generados
 clean:
-	rm -f $(C_OBJECTS) $(CPP_OBJECTS_SERVER) $(CPP_OBJECTS_CLIENT) $(TARGET_SERVER) $(TARGET_CLIENT)
+	rm -f $(OBJS) $(EXEC_CLIENT) $(EXEC_SERVER)
 
-run: $(TARGETS)
+run: $(EXEC_CLIENT) $(EXEC_SERVER)
 	gnome-terminal -- bash -c "./server; exec bash" & \
 	gnome-terminal -- bash -c "./client; exec bash" &
 
 # Reglas para evitar que se consideren los archivos de cabecera
-.PHONY: all clean
+.PHONY: all clean run

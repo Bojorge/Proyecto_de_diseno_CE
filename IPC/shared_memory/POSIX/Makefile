@@ -1,6 +1,6 @@
 # Definición de variables
 CXX = g++
-CXXFLAGS = -std=c++17 -Wall -Wextra
+CXXFLAGS = -std=c++17 -Wall -Wextra -Ofast
 LDFLAGS =
 
 # Nombres de los archivos fuente y ejecutables
