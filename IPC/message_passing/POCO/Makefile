@@ -1,6 +1,6 @@
 # Variables
 CXX = g++
-CXXFLAGS = -std=c++17 -Wall -I/usr/include/poco # Ajusta la ruta si es necesario
+CXXFLAGS = -std=c++17 -Wall -I/usr/include/poco -Ofast
 LDFLAGS = -lPocoNet -lPocoFoundation
 SRCS = client.cpp server.cpp sockets.cpp
 OBJS = $(SRCS:.cpp=.o)

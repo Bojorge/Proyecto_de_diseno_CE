@@ -1,6 +1,6 @@
 # Variables
 CXX = g++
-CXXFLAGS = -std=c++17 -Wall -I. -I/usr/include/zmq # Ajusta la versión de C++ si es necesario
+CXXFLAGS = -std=c++17 -Wall -I. -I/usr/include/zmq -Ofast
 LDFLAGS = -lzmq
 SRCS = client.cpp server.cpp sockets.cpp
 OBJS = $(SRCS:.cpp=.o)

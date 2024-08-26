@@ -2,7 +2,7 @@
 CXX = g++
 
 # Opciones de compilación
-CXXFLAGS = -std=c++17 -Wall -I/usr/include/poco
+CXXFLAGS = -std=c++17 -Wall -I/usr/include/poco -Ofast
 
 # Opciones de enlace
 LIBS = -L/usr/lib/x86_64-linux-gnu -lPocoFoundation -lPocoUtil
