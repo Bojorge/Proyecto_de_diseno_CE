@@ -88,6 +88,4 @@ void send_message(const char* server_ip, const char* port, const char* message) 
         return;
     }
 
-    //std::string reply_msg(static_cast<char*>(reply.data()), reply.size());
-    //std::cout << "Received reply: " << reply_msg << std::endl;
 }

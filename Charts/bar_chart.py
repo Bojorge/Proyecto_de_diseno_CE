@@ -27,7 +27,7 @@ def plot_usage(libraries, ram_usage, user_cpu_usage, system_cpu_usage, total_exe
     axs[3].set_ylabel('Tiempo de \nejecución (s)')
     axs[3].tick_params(axis='x', rotation=45)
     
-    # Ajustar el espaciado para que no se sobrepongan las etiquetas
+    # Ajustes
     plt.subplots_adjust(hspace=1.5, top=0.93, bottom=0.12, left=0.1, right=0.95)
     
     # Título de la ventana

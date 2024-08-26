@@ -25,12 +25,14 @@ void getCPUUsage(double &userCPU, double &systemCPU) {
 void start_server(const char* port) {
     const int num_iterations = 1000;
     int message_count = 0;
+
     int sockfd, newsockfd, portno;
     socklen_t clilen;
     char buffer[256];
     struct sockaddr_in serv_addr, cli_addr;
     int n;
 
+    // Variables para almacenar los máximos valores
     long maxRAMUsage = 0;
     double maxUserCPU = 0.0;
     double maxSystemCPU = 0.0;
@@ -89,13 +91,12 @@ void start_server(const char* port) {
             if (systemCPU > maxSystemCPU) maxSystemCPU = systemCPU;
         }
 
-        close(newsockfd);
+        //close(newsockfd);
         ++message_count;
     }
-
-    std::cout << "\n *** Se han recibido " << num_iterations << " mensajes. Cerrando servidor..." << std::endl;
     close(sockfd);
 
+    std::cout << "\n *** Se han recibido " << num_iterations << " mensajes. Cerrando servidor..." << std::endl;
     std::cout << "RAM: " << maxRAMUsage << " KB" << std::endl;
     std::cout << "CPU usuario: " << maxUserCPU << " s" << std::endl;
     std::cout << "CPU sistema: " << maxSystemCPU << " s" << std::endl;
