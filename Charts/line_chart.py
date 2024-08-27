@@ -9,7 +9,6 @@ def plot_performance_metrics(execution_numbers, ram_usage, user_cpu_usage, syste
     axs[0].set_xlabel('Número de Ejecución')
     axs[0].set_ylabel('RAM (KB)')
     axs[0].set_title('Uso de RAM por Ejecución')
-    ##axs[0].legend()
     axs[0].grid(True)
 
     # Gráfico de uso de CPU en modo usuario
@@ -17,7 +16,6 @@ def plot_performance_metrics(execution_numbers, ram_usage, user_cpu_usage, syste
     axs[1].set_xlabel('Número de Ejecución')
     axs[1].set_ylabel('CPU Usuario (s)')
     axs[1].set_title('Uso de CPU en Modo Usuario por Ejecución')
-    ##axs[1].legend()
     axs[1].grid(True)
 
     # Gráfico de uso de CPU en modo sistema
@@ -25,15 +23,13 @@ def plot_performance_metrics(execution_numbers, ram_usage, user_cpu_usage, syste
     axs[2].set_xlabel('Número de Ejecución')
     axs[2].set_ylabel('CPU Sistema (s)')
     axs[2].set_title('Uso de CPU en Modo Sistema por Ejecución')
-    ##axs[2].legend()
     axs[2].grid(True)
 
     # Gráfico de latencia
     axs[3].plot(execution_numbers, latency, marker='o', color='mediumpurple')
     axs[3].set_xlabel('Número de Ejecución')
-    axs[3].set_ylabel('Latencia (ms)')
+    axs[3].set_ylabel('Latencia (s)')
     axs[3].set_title('Latencia por Ejecución')
-    ##axs[3].legend()
     axs[3].grid(True)
 
     # Ajustar el espaciado entre los gráficos
@@ -43,16 +39,16 @@ def plot_performance_metrics(execution_numbers, ram_usage, user_cpu_usage, syste
     plt.subplots_adjust(hspace=1.5, top=0.85, bottom=0.12, left=0.1, right=0.95)
     
     # Título principal
-    fig.suptitle('Resultados de 10 Ejecuciones', fontsize=16)
+    fig.suptitle('Shared memory (reader) - POSIX', fontsize=16)
     
     # Mostrar gráficos
     plt.show()
 
 # Ejemplo de uso con datos ficticios para 10 ejecuciones
 execution_numbers = list(range(1, 11))  # Lista de números de ejecución del 1 al 10
-ram_usage = [512, 490, 530, 505, 495, 520, 515, 510, 500, 505]  # Uso de RAM en KB
-user_cpu_usage = [1.2, 1.3, 1.1, 1.2, 1.2, 1.3, 1.4, 1.2, 1.1, 1.2]  # CPU en modo usuario en segundos
-system_cpu_usage = [0.8, 0.7, 0.9, 0.8, 0.7, 0.8, 0.9, 0.8, 0.7, 0.8]  # CPU en modo sistema en segundos
-latency = [100, 105, 98, 102, 100, 99, 103, 101, 100, 104]  # Latencia en milisegundos
+ram_usage = [3200, 3200, 3200, 3200, 3200, 3200, 3200, 3200, 3200, 3200]
+system_cpu_usage = [0.008319, 0.008148, 0.008255, 0.008252, 0.004227, 0.005142, 0.002401, 0.008401, 0.005581, 0.005227]
+user_cpu_usage = [0, 0, 0, 0, 0.00402, 0.002959, 0.005836, 0, 0.00279, 0.003064]
+latency = [10.0219, 10.0156, 10.0184, 10.0137, 10.021, 10.0143, 10.0222, 10.0215, 10.0143, 10.0156]
 
 plot_performance_metrics(execution_numbers, ram_usage, user_cpu_usage, system_cpu_usage, latency)
