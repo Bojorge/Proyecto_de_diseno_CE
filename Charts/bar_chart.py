@@ -31,16 +31,16 @@ def plot_usage(libraries, ram_usage, user_cpu_usage, system_cpu_usage, total_exe
     plt.subplots_adjust(hspace=1.5, top=0.93, bottom=0.12, left=0.1, right=0.95)
     
     # Título de la ventana
-    fig.suptitle('READER', fontsize=15)
+    fig.suptitle('SHARED MEMORY', fontsize=15)
     
     # Mostrar gráficos
     plt.show()
 
-# Ejemplo de uso
-libraries = ['Boost.InterProcess', 'POCO', 'POSIX']
-ram_usage = [0, 0, 0]  # en KB
-user_cpu_usage = [0.0, 0.0, 0.0]  # en segundos
-system_cpu_usage = [0.0, 0.0, 0.0]  # en segundos
-total_execution_time = [0.0, 0.0, 0.0]  # en segundos
+
+libraries = ['Boost', 'POCO', 'POSIX']
+ram_usage = [3392, 4743, 3264]  # en KB
+user_cpu_usage = [0.00607, 0.00558, 0.00381]  # en segundos
+system_cpu_usage = [0.00343, 0.00503, 0.00610]  # en segundos
+total_execution_time = [10.0176, 10.01465, 10.0161]  # en segundos
 
 plot_usage(libraries, ram_usage, user_cpu_usage, system_cpu_usage, total_execution_time)
