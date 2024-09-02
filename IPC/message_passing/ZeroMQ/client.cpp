@@ -1,41 +1,48 @@
-#include <zmq.hpp>
 #include <iostream>
-
-void send_message(const std::string& message) {
-    zmq::context_t context(1);
-    zmq::socket_t socket(context, ZMQ_REQ);
-    socket.connect("tcp://localhost:5555");
-
-    zmq::message_t request(message.size());
-    memcpy(request.data(), message.data(), message.size());
-
-    // Enviar el mensaje
-    socket.send(request, zmq::send_flags::none);
-
-    // Esperar la respuesta
-    zmq::message_t reply;
-    socket.recv(reply, zmq::recv_flags::none);
-    std::string reply_msg(static_cast<char*>(reply.data()), reply.size());
-    std::cout << "Received: " << reply_msg << std::endl;
-}
+#include <string>
+#include <chrono>
+#include <thread>
+#include "sockets.hpp"
 
 int main() {
-    try {
-        std::string message;
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
-        while (true) {
-            std::cout << "Enter message: ";
-            std::getline(std::cin, message);
+    auto start = std::chrono::high_resolution_clock::now();
+    
+    const int num_iterations = 1000;
+    std::string message;
 
-            if (message == "exit") {
-                break;
-            }
+    // Variables para almacenar los máximos valores
+    long maxRAMUsage = 0;
+    double maxUserCPU = 0.0;
+    double maxSystemCPU = 0.0;
 
-            send_message(message);
-        }
-    } catch (std::exception& e) {
-        std::cerr << "Exception: " << e.what() << std::endl;
+    for (int i = 0; i < num_iterations; ++i) {
+        message = "mensaje #" + std::to_string(i);
+        std::cout << message << std::endl;
+
+        // Llama a la función send_message desde sockets.hpp
+        send_message("127.0.0.1", "12345", message.c_str());
+
+        // Medir y actualizar los máximos valores
+        long ramUsage = getRAMUsage();
+        double userCPU, systemCPU;
+        getCPUUsage(userCPU, systemCPU);
+
+        if (ramUsage > maxRAMUsage) maxRAMUsage = ramUsage;
+        if (userCPU > maxUserCPU) maxUserCPU = userCPU;
+        if (systemCPU > maxSystemCPU) maxSystemCPU = systemCPU;
     }
+    // Registrar el tiempo de fin
+    auto end = std::chrono::high_resolution_clock::now();
+    // Calcular la duración
+    std::chrono::duration<double> duration = end - start;
+    std::cout << "El programa tardó " << duration.count() << " segundos en ejecutarse." << std::endl;
+
+    std::cout << "-------------------------------" << std::endl;
+    std::cout << "RAM: " << maxRAMUsage << " KB" << std::endl;
+    std::cout << "CPU usuario: " << maxUserCPU << " s" << std::endl;
+    std::cout << "CPU sistema: " << maxSystemCPU << " s" << std::endl;
 
     return 0;
 }

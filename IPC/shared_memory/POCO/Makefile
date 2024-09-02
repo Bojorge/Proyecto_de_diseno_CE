@@ -2,11 +2,10 @@
 CXX = g++
 
 # Opciones de compilación
-CXXFLAGS = -std=c++17 -Wall -I/usr/include/boost -Ofast
+CXXFLAGS = -std=c++17 -Wall -I/usr/include/poco -Ofast
 
 # Opciones de enlace
-LIBS = -L/usr/lib/x86_64-linux-gnu -lboost_system -lboost_filesystem
-
+LIBS = -L/usr/lib/x86_64-linux-gnu -lPocoFoundation -lPocoUtil
 # Archivos fuente
 SRCS = creator_writer.cpp reader.cpp
 

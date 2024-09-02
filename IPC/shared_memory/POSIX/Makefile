@@ -1,32 +1,34 @@
-# Nombre del ejecutable
-TARGET = posix_program
-
-# Compiladores
-CC = gcc
+# Definición de variables
 CXX = g++
+CXXFLAGS = -std=c++17 -Wall -Wextra -Ofast
+LDFLAGS =
 
-# Archivos fuente
-C_SOURCES = posix.c
-CPP_SOURCES = main.cpp
+# Nombres de los archivos fuente y ejecutables
+SRCS = creator_writer.cpp reader.cpp
+OBJS = $(SRCS:.cpp=.o)
+EXES = creator_writer reader
 
-# Archivos objeto
-C_OBJECTS = $(C_SOURCES:.c=.o)
-CPP_OBJECTS = $(CPP_SOURCES:.cpp=.o)
+# Regla por defecto
+all: $(EXES)
 
-# Reglas de construcción
-all: $(TARGET)
+# Regla para compilar el ejecutable creator_writer
+creator_writer: creator_writer.o
+	$(CXX) $(CXXFLAGS) -o $@ $^ $(LDFLAGS)
 
-$(TARGET): $(C_OBJECTS) $(CPP_OBJECTS)
-	$(CXX) -o $@ $^ -lrt
+# Regla para compilar el ejecutable reader
+reader: reader.o
+	$(CXX) $(CXXFLAGS) -o $@ $^ $(LDFLAGS)
 
-%.o: %.c
-	$(CC) -c $< -o $@
-
+# Regla para compilar archivos .cpp en archivos .o
 %.o: %.cpp
-	$(CXX) -c $< -o $@
+	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
+# Regla para limpiar archivos generados
 clean:
-	rm -f $(C_OBJECTS) $(CPP_OBJECTS) $(TARGET)
+	rm -f $(OBJS) $(EXES)
 
-# Reglas para evitar que se consideren los archivos de cabecera
-.PHONY: all clean
+run: $(TARGETS)
+	gnome-terminal -- bash -c "./creator_writer; exec bash" & \
+	gnome-terminal -- bash -c "./reader; exec bash" &
+
+.PHONY: all clean run

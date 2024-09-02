@@ -1,7 +1,15 @@
+#include <Poco/Net/ServerSocket.h>
+#include <Poco/Net/StreamSocket.h>
+#include <Poco/Net/SocketStream.h>
+#include <Poco/Exception.h>
 #include <iostream>
 #include <thread>
-#include <boost/asio.hpp>
 #include "sockets.hpp"
+
+using Poco::Net::ServerSocket;
+using Poco::Net::StreamSocket;
+using Poco::Net::SocketStream;
+using Poco::Exception;
 
 const char* PORT = "12345";
 
@@ -11,20 +19,21 @@ void server_thread() {
 
 int main() {
     try {
-        // Registrar el tiempo de inicio
         auto start = std::chrono::high_resolution_clock::now();
 
+        // Crear y ejecutar el hilo del servidor
         std::thread server(server_thread);
-        server.join();
+        server.join(); 
 
         // Registrar el tiempo de fin
         auto end = std::chrono::high_resolution_clock::now();
-
         // Calcular la duración
         std::chrono::duration<double> duration = end - start;
         std::cout << "El programa tardó " << duration.count() << " segundos en ejecutarse." << std::endl;
-    } catch (std::exception& e) {
-        std::cerr << "Exception: " << e.what() << std::endl;
+    } catch (const Poco::Exception& e) {
+        std::cerr << "Poco Exception: " << e.displayText() << std::endl;
+    } catch (const std::exception& e) {
+        std::cerr << "Standard Exception: " << e.what() << std::endl;
     }
 
     return 0;

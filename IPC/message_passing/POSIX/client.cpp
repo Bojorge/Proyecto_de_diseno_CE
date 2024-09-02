@@ -8,7 +8,7 @@ int main() {
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
     auto start = std::chrono::high_resolution_clock::now();
-
+    
     const int num_iterations = 1000;
     std::string message;
 
@@ -20,15 +20,13 @@ int main() {
     for (int i = 0; i < num_iterations; ++i) {
         message = "mensaje #" + std::to_string(i);
         std::cout << message << std::endl;
-
-        // Llama a la función send_message desde sockets.hpp
         send_message("127.0.0.1", "12345", message.c_str());
 
-        // Medir y actualizar los máximos valores
         long ramUsage = getRAMUsage();
         double userCPU, systemCPU;
         getCPUUsage(userCPU, systemCPU);
 
+        // Actualizar los máximos valores
         if (ramUsage > maxRAMUsage) maxRAMUsage = ramUsage;
         if (userCPU > maxUserCPU) maxUserCPU = userCPU;
         if (systemCPU > maxSystemCPU) maxSystemCPU = systemCPU;
