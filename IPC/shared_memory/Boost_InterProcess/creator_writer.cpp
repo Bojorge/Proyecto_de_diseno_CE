@@ -19,6 +19,7 @@ long getRAMUsage() {
 void getCPUUsage(double &userCPU, double &systemCPU) {
     struct rusage usage;
     getrusage(RUSAGE_SELF, &usage);
+    // Parte entera del tiempo en segundos  +  parte fraccionaria del tiempo en microsegundos, convertida a segundos
     userCPU = usage.ru_utime.tv_sec + usage.ru_utime.tv_usec / 1e6;  // tiempo de CPU en modo usuario en segundos
     systemCPU = usage.ru_stime.tv_sec + usage.ru_stime.tv_usec / 1e6; // tiempo de CPU en modo sistema en segundos
 }
