@@ -1,6 +1,6 @@
-#include <xrt/xrt.h> // Incluye la biblioteca XRT para gestionar dispositivos y buffers en FPGA.
-#include <xrt/experimental/xrt_kernel.h> // Incluye las funcionalidades experimentales de XRT para manejar kernels.
-#include <vector> // Incluye la biblioteca estándar de C++ para utilizar el contenedor vector.
+#include <xrt/xrt.h> // Gestiona dispositivos y buffers en FPGA.
+#include <xrt/experimental/xrt_kernel.h> // Funcionalidades experimentales de XRT para manejar kernels.
+#include <vector> 
 
 int main(int argc, char** argv) {
     // Definición de las dimensiones de las matrices
@@ -55,10 +55,10 @@ int main(int argc, char** argv) {
     // Itera sobre la matriz resultante C y la imprime en formato de matriz.
     for (int i = 0; i < M; ++i) { // Itera sobre las filas de la matriz C
         for (int j = 0; j < P; ++j) { // Itera sobre las columnas de la matriz C
-            std::cout << C[i * P + j] << " "; // Imprime el valor de cada elemento
+            std::cout << C[i * P + j] << " ";
         }
-        std::cout << std::endl; // Salto de línea al final de cada fila
+        std::cout << std::endl; // Final de cada fila
     }
 
-    return 0; // Indica que el programa finalizó correctamente
+    return 0; 
 }

@@ -1,9 +1,9 @@
-#include <hls_half.h> // Incluimos la librería para manejar FP16 (16 bits en coma flotante)
+#include <hls_half.h> // Biblioteca para manejar FP16 
 
 // Función principal del kernel de multiplicación de matrices
 // A, B y C son punteros a matrices en formato FP16 (half)
 // M es el número de filas de la matriz A
-// N es el número de columnas de la matriz A y filas de la matriz B
+// N es el número de columnas de la matriz A y filas de la matriz B (es igual para que cumplan la condicion de la multiplicacion de matrices)
 // P es el número de columnas de la matriz B
 void matrix_mult(const half *A, const half *B, half *C, int M, int N, int P) {
     
@@ -28,17 +28,15 @@ void matrix_mult(const half *A, const half *B, half *C, int M, int N, int P) {
     // Pragma para la interfaz de retorno de la función, usando AXI Lite
     #pragma HLS INTERFACE s_axilite port=return bundle=control
 
-    // Multiplicación de matrices
-    // Recorre cada fila de la matriz A
+    // Recorre las filas de la matriz A
     for (int i = 0; i < M; i++) {
-        // Recorre cada columna de la matriz B
+        // Recorre las columnas de la matriz B
         for (int j = 0; j < P; j++) {
-            // Inicializa la variable `sum` en 0, donde se acumulará el resultado
+            // Inicializa el acumulador
             half sum = 0;
             // Realiza el producto escalar entre la fila `i` de A y la columna `j` de B
             for (int k = 0; k < N; k++) {
-                // Accede al elemento A[i * N + k] y B[k * P + j] usando índices lineales
-                // y realiza la multiplicación, acumulando el resultado en `sum`
+                // Accede al elemento usando índices lineales
                 sum += A[i * N + k] * B[k * P + j];
             }
             // Guarda el resultado en la matriz C en la posición correspondiente
