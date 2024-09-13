@@ -73,7 +73,7 @@ $(SHELL_JSON): $(ROOT_DIR)/../../shell.json
 	mkdir -p $(PACKAGE_OUT)
 	cp $< $@
 
-$(DTB_FILE): $(ROOT_DIR)/../pl.dtbo
+$(DTB_FILE): $(ROOT_DIR)/../../pl.dtbo
 	mkdir -p $(PACKAGE_OUT)
 	cp $< $@
 
