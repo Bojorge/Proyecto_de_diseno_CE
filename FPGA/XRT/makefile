@@ -1,3 +1,6 @@
+# g++ -o matrix_mult_app matrix_mult_app.cpp -lxrt_core -lxrt_coreutil -lhls_half -std=c++17
+
+
 # Nombre del ejecutable que se generará
 TARGET = matrix_mult_app
 

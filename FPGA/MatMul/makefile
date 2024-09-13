@@ -1,3 +1,5 @@
+# v++ -c -t hw --platform <la_plataforma> -k matrix_mult -o matrix_mult.xo matrix_mult.cpp
+
 # ================================================================
 # Makefile para la síntesis y compilación utilizando Vitis HLS y v++.
 #
