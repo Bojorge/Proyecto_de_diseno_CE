@@ -1,4 +1,4 @@
-#include <hls_half.h> // Biblioteca para manejar FP16 
+#include "matrix_mult.h" // Biblioteca para manejar FP16 
 
 // Función principal del kernel de multiplicación de matrices
 // A, B y C son punteros a matrices en formato FP16 (half)
@@ -18,9 +18,6 @@ void matrix_mult(const half *A, const half *B, half *C, int M, int N, int P) {
     // Pragma para definir la interfaz de control
     // `s_axilite` define una interfaz de control AXI Lite para los parámetros de la función
     // `bundle=control` agrupa todos los puertos de control bajo el mismo bundle
-    #pragma HLS INTERFACE s_axilite port=A bundle=control
-    #pragma HLS INTERFACE s_axilite port=B bundle=control
-    #pragma HLS INTERFACE s_axilite port=C bundle=control
     #pragma HLS INTERFACE s_axilite port=M bundle=control
     #pragma HLS INTERFACE s_axilite port=N bundle=control
     #pragma HLS INTERFACE s_axilite port=P bundle=control

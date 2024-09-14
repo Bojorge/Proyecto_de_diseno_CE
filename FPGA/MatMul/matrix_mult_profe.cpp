@@ -57,6 +57,7 @@ matrix_mult_perceptron:
   }
 }
 
+
 static void load_data(RawDataT *a, RawDataT *b, StreamT &a_s, StreamT &b_s,
                int a_rows, int b_cols, int c_cols) {
   // Cargar B
