@@ -6,7 +6,11 @@
 #include <string>
 #include <unordered_map>
 #include <vector>
+#include <map>
+#include <cstdint>
+#include <sstream>
 #include "graph.h"
+
 
 // Función para simplificar el grafo aplicando reglas de optimización
 void simplifyGraph(Graph& graph);

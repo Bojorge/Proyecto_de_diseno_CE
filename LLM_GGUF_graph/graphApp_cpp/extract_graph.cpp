@@ -24,32 +24,50 @@ void listAccelerators(const Graph& graph) {
     }
 }
 
-// Función para leer un archivo GGUF y construir el grafo
 Graph loadGGUF(const std::string& filename) {
     Graph graph;
-    std::ifstream file(filename);
+
+    std::streampos start = 0;     // Inicio de lectura
+    std::streampos end = 10000;    // Fin de lectura (n bytes)
+
+    std::ifstream file(filename, std::ios::binary);
+    if (!file.is_open()) {
+        std::cerr << "Error: No se pudo abrir el archivo " << filename << std::endl;
+        return graph;  // Retornar un grafo vacío en caso de error
+    }
+
+    file.seekg(0, std::ios::end);
+    std::streampos fileSize = file.tellg();
     
+    std::cout << "\n >>> Tamaño del archivo:  " << fileSize << "  [bytes]" << std::endl;
+    if (end > fileSize) {
+        end = fileSize;
+    }
+
+    // Mover al inicio de lectura
+    file.seekg(start);
+
+    // Calcular el número de bytes a leer
+    std::streampos bytesToRead = end - start;
+
+    // Verificar que el rango de lectura es válido
+    if (bytesToRead <= 0) {
+        std::cerr << "Error: El rango de lectura no es válido." << std::endl;
+        return graph;  // Retornar un grafo vacío
+    }
+
+    // Leer datos de operaciones
+    std::string operationsData(bytesToRead, '\0');
+    file.read(&operationsData[0], bytesToRead);
+
+    // Verificar si la lectura fue exitosa
     if (!file) {
-        std::cerr << "Error: Unable to open file " << filename << std::endl;
-        return graph;
+        std::cerr << "Error: Fallo en la lectura del archivo." << std::endl;
+        return graph;  // Retornar un grafo vacío
     }
 
-    std::string line;
-    while (std::getline(file, line)) {
-        // Aquí debería ir la lógica específica para deserializar GGUF
-        // Este es un ejemplo simplificado, asumiendo que podemos obtener los nombres de operación, tensores y demás
-        if (line.find("Node") != std::string::npos) {
-            std::string operation = "unknown";  // Placeholder, extraer de la línea
-            std::vector<Tensor> inputs;         // Placeholder, extraer de la línea o de las siguientes líneas
-            Tensor output = createTensor("output_placeholder", {1, 64, 64}, "float32", "CPU"); // Placeholder
+    std::cout << "\n >>> Datos de operaciones: \n" << operationsData << std::endl;
 
-            // Extraer la información relevante de cada nodo
-            // ...
-            
-            Node node = createNode(graph, operation, inputs, output);
-            addNode(graph, node);  // Añadimos el nodo al grafo
-        }
-    }
-
+    file.close();
     return graph;
 }

@@ -5,7 +5,7 @@
 
 int main(int argc, char* argv[]) {
     if (argc != 2) {
-        std::cerr << "Usage: " << argv[0] << " <gguf_file>" << std::endl;
+        std::cerr << "Usage: " << argv[0] << " <llm_model.gguf>" << std::endl;
         return 1;
     }
 
@@ -13,9 +13,13 @@ int main(int argc, char* argv[]) {
 
     Graph graph = loadGGUF(filename);
 
-    simplifyGraph(graph);
+    std::cout << "\n ---------------------------------------- \n";
 
-    listAccelerators(graph);
+    //printGraph(graph);
+
+    //simplifyGraph(graph);
+
+    //listAccelerators(graph);
 
     return 0;
 }

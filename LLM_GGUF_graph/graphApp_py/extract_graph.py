@@ -1,6 +1,7 @@
 # extract_graph.py
 
 from graph import Graph, Node, Tensor
+import struct
 
 def simplify_graph(graph):
     """
@@ -25,25 +26,52 @@ def list_accelerators(graph):
             print(f" - Operation: {node.operation} can be accelerated using GPUs or specialized hardware (e.g., TPUs)")
 
 def load_gguf(filename):
-    """
-    Loads a GGUF file and builds the graph.
-    This is a simplified placeholder for demonstration purposes.
-    """
     graph = Graph()
-    try:
-        with open(filename, 'r') as file:
-            lines = file.readlines()
 
-        for line in lines:
-            if "Node" in line:
-                operation = "MatMul"  # Placeholder, this should be extracted from the file
-                inputs = [Tensor("input_placeholder", [4096, 4096], "float32", "CPU")]  # Example placeholder
-                output = Tensor("output_placeholder", [4096, 4096], "float32", "CPU")
-                node = Node(graph.next_node_id, operation, inputs, output)
-                graph.add_node(node)
-                graph.next_node_id += 1
+    start = 0     # Inicio de lectura
+    end = 1000   # Fin de lectura (n bytes)
+
+    try:
+        # Abrir el archivo en modo binario
+        with open(filename, 'rb') as file:
+            # Obtener el tamaño total del archivo
+            file.seek(0, 2)  # Mover al final del archivo
+            file_size = file.tell()
+
+            print(f"\n >>> Tamaño del archivo: {file_size} [bytes]")
+            
+            # Ajustar end si es mayor que el tamaño del archivo
+            if end > file_size:
+                end = file_size
+            
+            # Mover al inicio de lectura
+            file.seek(start)
+
+            # Calcular el número de bytes a leer
+            bytes_to_read = end - start
+
+            # Verificar que el rango de lectura es válido
+            if bytes_to_read <= 0:
+                print("Error: El rango de lectura no es válido.")
+                return graph  # Retornar un grafo vacío
+
+            # Leer los datos de operaciones
+            read_data = file.read(bytes_to_read)
+
+            # Verificar si la lectura fue exitosa
+            if not read_data:
+                print("Error: Fallo en la lectura del archivo.")
+                return graph  # Retornar un grafo vacío
+
+            # Decodificar los datos como texto
+            read_data_str = read_data.decode('utf-8', errors='ignore')
+
+            print("\n >>> Datos leidos:")
+            print(read_data_str)
 
     except FileNotFoundError:
-        print(f"Error: Unable to open file {filename}")
-    
+        print(f"Error: No se pudo abrir el archivo {filename}")
+        return graph  # Retornar un grafo vacío en caso de error
+
     return graph
+
