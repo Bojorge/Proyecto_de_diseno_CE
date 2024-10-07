@@ -1,7 +1,7 @@
 # main.py
 
 from graph import Graph, Tensor, Node
-from extract_graph import simplify_graph, list_accelerators, load_gguf
+from extract_graph import load_gguf
 
 def main():
     

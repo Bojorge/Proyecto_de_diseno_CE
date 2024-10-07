@@ -1,77 +1,89 @@
-# extract_graph.py
-
 from graph import Graph, Node, Tensor
 import struct
+import os
 
-def simplify_graph(graph):
-    """
-    Simplifies the graph by applying optimization rules
-    """
-    nodes_to_remove = []
-    for node in graph.get_nodes():
-        if node.operation == "duplicate":
-            print(f"Eliminating redundant node with operation: {node.operation}")
-            nodes_to_remove.append(node.id)
+def print_metadata_as_table(metadata):
+    # Lista de prefijos de claves que deseamos extraer
+    key_prefixes = ["llama.", "general.", "tokenizer."]
+    position = 0  # Para manejar índices
 
-    for node_id in nodes_to_remove:
-        graph.remove_node(node_id)
+    while position < len(metadata):
+        found_key = False  # Para determinar si se encontró un key
 
-def list_accelerators(graph):
-    """
-    Lists compatible accelerators based on the operations in the graph
-    """
-    print("List of compatible accelerators:")
-    for node in graph.get_nodes():
-        if node.operation == "MatMul":
-            print(f" - Operation: {node.operation} can be accelerated using GPUs or specialized hardware (e.g., TPUs)")
+        for prefix in key_prefixes:
+            start_position = metadata.find(prefix, position)
+            if start_position != -1:  # Se encontró un key
+                found_key = True
+
+                # Buscar el siguiente key
+                end_position = len(metadata)  # Resetear end_position
+                for next_prefix in key_prefixes:
+                    next_position = metadata.find(next_prefix, start_position + len(prefix))
+                    if next_position != -1:
+                        end_position = next_position
+                        break  # Salir si se encontró el siguiente key
+
+                # Tomar la línea de texto desde start_position hasta end_position
+                text_line = metadata[start_position:end_position]
+                print(text_line)
+
+                position = end_position - 1  # Continuar desde el final del key encontrado
+                break  # Salir del bucle de prefijos si se encontró uno
+
+        # Si no se encontró un key, avanzar la posición
+        if not found_key:
+            position += 1
+
 
 def load_gguf(filename):
-    graph = Graph()
+    graph = {}  # Crear un grafo vacío (o un objeto Graph si tienes una clase Graph definida)
+    
+    # Variables para los encabezados
+    gguf_magic_number = 0
+    gguf_version = 0
+    tensor_count = 0
+    kv_count = 0
 
-    start = 0     # Inicio de lectura
-    end = 1000   # Fin de lectura (n bytes)
-
-    try:
-        # Abrir el archivo en modo binario
-        with open(filename, 'rb') as file:
-            # Obtener el tamaño total del archivo
-            file.seek(0, 2)  # Mover al final del archivo
-            file_size = file.tell()
-
-            print(f"\n >>> Tamaño del archivo: {file_size} [bytes]")
-            
-            # Ajustar end si es mayor que el tamaño del archivo
-            if end > file_size:
-                end = file_size
-            
-            # Mover al inicio de lectura
-            file.seek(start)
-
-            # Calcular el número de bytes a leer
-            bytes_to_read = end - start
-
-            # Verificar que el rango de lectura es válido
-            if bytes_to_read <= 0:
-                print("Error: El rango de lectura no es válido.")
-                return graph  # Retornar un grafo vacío
-
-            # Leer los datos de operaciones
-            read_data = file.read(bytes_to_read)
-
-            # Verificar si la lectura fue exitosa
-            if not read_data:
-                print("Error: Fallo en la lectura del archivo.")
-                return graph  # Retornar un grafo vacío
-
-            # Decodificar los datos como texto
-            read_data_str = read_data.decode('utf-8', errors='ignore')
-
-            print("\n >>> Datos leidos:")
-            print(read_data_str)
-
-    except FileNotFoundError:
+    if not os.path.isfile(filename):
         print(f"Error: No se pudo abrir el archivo {filename}")
         return graph  # Retornar un grafo vacío en caso de error
 
-    return graph
+    # Leer el tamaño del archivo completo
+    file_size = os.path.getsize(filename)
+    print(f"\n >>> Tamaño del archivo:  {file_size}  [bytes]")
 
+    with open(filename, "rb") as file:
+        # Leer los primeros datos: GGUF magic number, versión, tensor_count, kv_count
+        gguf_magic_number = struct.unpack('I', file.read(4))[0]  # uint32_t
+        gguf_version = struct.unpack('I', file.read(4))[0]      # uint32_t
+        tensor_count = struct.unpack('Q', file.read(8))[0]      # uint64_t
+        kv_count = struct.unpack('Q', file.read(8))[0]          # uint64_t
+
+        # El punto actual en el archivo es donde empieza la metadata
+        start = file.tell()
+
+        # Determinar cuántos bytes leer para la metadata
+        metadata_bytes_to_read = 5000  # cantidad de metadata a leer
+        end = start + metadata_bytes_to_read
+
+        # Verificar que el rango de lectura es válido
+        if end > file_size:
+            end = file_size
+
+        bytes_to_read = end - start
+        if bytes_to_read <= 0:
+            print("Error: El rango de lectura no es válido.")
+            return graph  # Retornar un grafo vacío
+
+        # Leer la metadata
+        metadata_data = file.read(bytes_to_read).decode('utf-8', errors='ignore')
+
+        # Imprimir metadata como tabla
+        print(f"\n > gguf_magic_number: {gguf_magic_number}")
+        print(f" > gguf_version: {gguf_version}")
+        print(f" > tensor_count: {tensor_count}")
+        print(f" > kv_count: {kv_count}")
+
+        print_metadata_as_table(metadata_data)
+
+    return graph
