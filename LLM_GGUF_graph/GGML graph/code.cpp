@@ -20,6 +20,32 @@
 
 
 
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+union gguf_value {
+    uint8_t  uint8;
+    int8_t   int8;
+    uint16_t uint16;
+    int16_t  int16;
+    uint32_t uint32;
+    int32_t  int32;
+    float    float32;
+    uint64_t uint64;
+    int64_t  int64;
+    double   float64;
+    bool     bool_;
+
+    struct gguf_str str;
+
+    struct {
+        enum gguf_type type;
+
+        uint64_t n;  // GGUFv2
+        void * data;
+    } arr;
+};
+
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 
 enum gguf_type {
@@ -39,13 +65,53 @@ enum gguf_type {
         GGUF_TYPE_COUNT,       // marks the end of the enum
     };
 
+enum ggml_type {
+        GGML_TYPE_F32     = 0,
+        GGML_TYPE_F16     = 1,
+        GGML_TYPE_Q4_0    = 2,
+        GGML_TYPE_Q4_1    = 3,
+        // GGML_TYPE_Q4_2 = 4, support has been removed
+        // GGML_TYPE_Q4_3 = 5, support has been removed
+        GGML_TYPE_Q5_0    = 6,
+        GGML_TYPE_Q5_1    = 7,
+        GGML_TYPE_Q8_0    = 8,
+        GGML_TYPE_Q8_1    = 9,
+        GGML_TYPE_Q2_K    = 10,
+        GGML_TYPE_Q3_K    = 11,
+        GGML_TYPE_Q4_K    = 12,
+        GGML_TYPE_Q5_K    = 13,
+        GGML_TYPE_Q6_K    = 14,
+        GGML_TYPE_Q8_K    = 15,
+        GGML_TYPE_IQ2_XXS = 16,
+        GGML_TYPE_IQ2_XS  = 17,
+        GGML_TYPE_IQ3_XXS = 18,
+        GGML_TYPE_IQ1_S   = 19,
+        GGML_TYPE_IQ4_NL  = 20,
+        GGML_TYPE_IQ3_S   = 21,
+        GGML_TYPE_IQ2_S   = 22,
+        GGML_TYPE_IQ4_XS  = 23,
+        GGML_TYPE_I8      = 24,
+        GGML_TYPE_I16     = 25,
+        GGML_TYPE_I32     = 26,
+        GGML_TYPE_I64     = 27,
+        GGML_TYPE_F64     = 28,
+        GGML_TYPE_IQ1_M   = 29,
+        GGML_TYPE_BF16    = 30,
+        GGML_TYPE_COUNT,
+};
+
+enum ggml_object_type {
+        GGML_OBJECT_TYPE_TENSOR,
+        GGML_OBJECT_TYPE_GRAPH,
+        GGML_OBJECT_TYPE_WORK_BUFFER
+};
+
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 
 struct gguf_str {
     uint64_t n;  // GGUFv2
     char * data;
 };
-
 
 struct gguf_tensor_info {
     struct gguf_str name;
@@ -70,6 +136,23 @@ struct gguf_kv {
     union gguf_value value;
 };
 
+struct ggml_object {
+        size_t offs;
+        size_t size;
+
+        struct ggml_object * next;
+
+        enum ggml_object_type type;
+
+        char padding[4];
+    };
+
+ struct ggml_scratch {
+        size_t offs;
+        size_t size;
+        void * data;
+    };
+
 struct ggml_context {
     size_t mem_size;
     void* mem_buffer;
@@ -84,6 +167,14 @@ struct ggml_context {
 
     struct ggml_scratch scratch;
     struct ggml_scratch scratch_save;
+};
+
+struct gguf_header {
+    char magic[4];
+
+    uint32_t version;
+    uint64_t n_tensors; // GGUFv2
+    uint64_t n_kv;      // GGUFv2
 };
 
 struct gguf_context {
@@ -765,3 +856,26 @@ struct gguf_context * gguf_init_from_file(const char * fname, struct gguf_init_p
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 
+int main(int argc, char *argv[]) {
+    if (argc < 2) {
+        std::cerr << "Uso: " << argv[0] << " <nombre_archivo.gguf>" << std::endl;
+        return 1;
+    }
+
+    std::string fname = argv[1];
+    
+    struct ggml_context *ctx = NULL;
+    struct gguf_init_params params = {
+        /* .no_alloc = */ true,
+        /* .ctx      = */ &ctx,
+    };
+
+    struct gguf_meta *meta = gguf_init_from_file(fname.c_str(), params);
+    if (!meta) {
+        throw std::runtime_error("Error: no se pudo cargar el modelo desde " + fname);
+    }
+
+    // El resto del código que necesitas
+
+    return 0;
+}
