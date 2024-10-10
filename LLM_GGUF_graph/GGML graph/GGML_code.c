@@ -471,12 +471,14 @@ void gguf_free(struct gguf_context * ctx) {
 
 inline static void * ggml_calloc(size_t num, size_t size) {
     if (num == 0 || size == 0) {
-        GGML_PRINT("WARNING: Behavior may be unexpected when allocating 0 bytes for ggml_calloc!\n");
+        //GGML_PRINT("WARNING: Behavior may be unexpected when allocating 0 bytes for ggml_calloc!\n");
+        printf("WARNING: Behavior may be unexpected when allocating 0 bytes for ggml_calloc!\n");
         return NULL;
     }
     void * result = calloc(num, size);
     if (result == NULL) {
-        GGML_PRINT("%s: failed to allocate %6.2f MB\n", __func__, size/(1024.0*1024.0));
+        //GGML_PRINT("%s: failed to allocate %6.2f MB\n", __func__, size/(1024.0*1024.0));
+        printf("%s: failed to allocate %6.2f MB\n", __func__, size/(1024.0*1024.0));
         GGML_ASSERT(false);
     }
     return result;
@@ -864,18 +866,17 @@ int main(int argc, char *argv[]) {
 
     std::string fname = argv[1];
     
+    struct gguf_context * meta = NULL;
     struct ggml_context *ctx = NULL;
     struct gguf_init_params params = {
         /* .no_alloc = */ true,
         /* .ctx      = */ &ctx,
     };
 
-    struct gguf_meta *meta = gguf_init_from_file(fname.c_str(), params);
+    meta = gguf_init_from_file(fname.c_str(), params);
     if (!meta) {
         throw std::runtime_error("Error: no se pudo cargar el modelo desde " + fname);
     }
-
-    // El resto del código que necesitas
 
     return 0;
 }
