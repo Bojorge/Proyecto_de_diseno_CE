@@ -2,7 +2,7 @@
 CC = gcc
 
 # Flags del compilador
-CFLAGS = -Wall -Wextra -std=c99 -O2
+CFLAGS = -Wall -Wextra -std=c11 -O2 -g
 
 # Archivo de salida
 TARGET = my_code
