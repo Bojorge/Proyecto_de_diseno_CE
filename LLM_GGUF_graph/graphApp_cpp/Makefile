@@ -2,7 +2,7 @@
 TARGET = graph_extractor
 
 # Archivos fuente
-SRCS = main.cpp graph.cpp extract_graph.cpp
+SRCS = main.cpp graph.cpp extract_context.cpp graph_builder.cpp mock_graph.cpp
 
 # Compilador
 CXX = g++

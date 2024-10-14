@@ -4,7 +4,7 @@
 #include <fstream>
 #include <iostream>
 #include <cstring>
-#include "extract_graph.h"
+#include "extract_context.h"
 
 void printMetadataAsTable(const std::string& metadata) {
     // Lista de prefijos de claves que deseamos extraer
