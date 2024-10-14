@@ -1,8 +1,8 @@
 #ifndef GRAPH_BUILDER_H
 #define GRAPH_BUILDER_H
 
-#include "graph.h"  // Incluir la cabecera del grafo
 #include <iostream>
+#include "graph.h"
 
 // Declaración de la función que construye un grafo a partir de un gguf_context
 Graph build_graph_from_context(const struct gguf_context* ctx);

@@ -1,5 +1,6 @@
 #include "graph_builder.h" 
-#include "mock_graph.h"         
+#include "mock_graph.h"   
+#include "graph_to_file.h"      
 
 int main(int argc, char* argv[]) {
 
@@ -11,8 +12,12 @@ int main(int argc, char* argv[]) {
 
     std::string filename = argv[1];
 */
-    struct gguf_context * example_ctx = create_mock_ctx();
-    gguf_print_context(*example_ctx);
 
+    struct Graph graph  = create_mock_graph();
+
+    create_dot_file(graph);
+
+    show_dot_file();
+    
     return 0;
 }
