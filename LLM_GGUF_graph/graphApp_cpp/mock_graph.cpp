@@ -11,74 +11,56 @@ struct Graph create_mock_graph() {
     std::string input1_str = "input1";
     std::string input2_str = "input2";
     std::string output_str = "output";
+
+    // Asignar dinámicamente la memoria para la cadena y copiar los datos
+    char* tensor_input_name1 = new char[input1_str.size() + 1]; // +1 para el carácter nulo
+    std::strcpy(tensor_input_name1, input1_str.c_str());
+
+    char* tensor_input_name2 = new char[input2_str.size() + 1]; // +1 para el carácter nulo
+    std::strcpy(tensor_input_name2, input2_str.c_str());
+
+    char* tensor_output_name = new char[output_str.size() + 1]; // +1 para el carácter nulo
+    std::strcpy(tensor_output_name, output_str.c_str());
+
     
     // Llenar los tensores de entrada y salida
     gguf_tensor_info input_tensor1 = {
-        {input1_str.size(), const_cast<char*>(input1_str.c_str())}, // Nombre
-        2, // n_dims
-        {64, 64}, // ne
+        {input1_str.size(), tensor_input_name1}, // Nombre
+        1, // n_dims
+        {4096}, // ne
         GGML_TYPE_F32, // type
         0, // offset
         nullptr, // data (aún no asignado)
-        64 * 64 * sizeof(float) // size
+        4096 * sizeof(float) // size
     };
 
-    gguf_tensor_info input_tensor2 = {
-        {input2_str.size(), const_cast<char*>(input2_str.c_str())}, // Nombre
-        2, // n_dims
-        {64, 64}, // ne
+    gguf_tensor_info output_tensor_1 = {
+        {output_str.size(), tensor_output_name}, // Nombre
+        1, // n_dims
+        {4096}, // ne
         GGML_TYPE_F32, // type
         0, // offset
         nullptr, // data (aún no asignado)
-        64 * 64 * sizeof(float) // size
+        4096 * sizeof(float) // size
     };
 
-    gguf_tensor_info output_tensor = {
-        {output_str.size(), const_cast<char*>(output_str.c_str())}, // Nombre
-        2, // n_dims
-        {64, 64}, // ne
+    gguf_tensor_info output_tensor_2 = {
+        {output_str.size(), tensor_output_name}, // Nombre
+        1, // n_dims
+        {4096}, // ne
         GGML_TYPE_F32, // type
         0, // offset
         nullptr, // data (aún no asignado)
-        64 * 64 * sizeof(float) // size
+        4096 * sizeof(float) // size
     };
 
-    // Agregar el primer nodo con las entradas iniciales y el tensor de salida
-    addNode(graph, {}, input_tensor1, input_tensor2, output_tensor, "Matrix Multiply");
 
-    // Crear nodos adicionales con configuraciones variadas de entradas
-    for (int i = 1; i < 15; ++i) {
-        std::string new_input_str = "tensor" + std::to_string(i);
-        std::string new_output_str = "out" + std::to_string(i);
+    
 
-        gguf_tensor_info new_input_tensor = {
-            {new_input_str.size(), const_cast<char*>(new_input_str.c_str())}, // Nombre
-            2, // n_dims
-            {64, 64}, // ne
-            GGML_TYPE_F32, // type
-            0, // offset
-            nullptr, // data (aún no asignado)
-            64 * 64 * sizeof(float) // size
-        };
-
-        gguf_tensor_info new_output_tensor = {
-            {new_output_str.size(), const_cast<char*>(new_output_str.c_str())}, // Nombre
-            2, // n_dims
-            {64, 64}, // ne
-            GGML_TYPE_F32, // type
-            0, // offset
-            nullptr, // data (aún no asignado)
-            64 * 64 * sizeof(float) // size
-        };
-
-        if (i % 2 == 0) {
-            // Si el índice es par, el nodo tiene una sola entrada
-            addNode(graph, {i - 1}, new_input_tensor, {}, new_output_tensor, "EW Multiply");
-        } else {
-            // Si el índice es impar, el nodo tiene dos entradas
-            addNode(graph, {i - 1, i - 2}, new_input_tensor, new_input_tensor, new_output_tensor, "Add");
-        }
-    }
+    addNode(graph, {}, input_tensor1, {}, output_tensor_1, "RMS NORM");
+    addNode(graph, {}, input_tensor1, {}, output_tensor_2, "EW ADDITION");
+    
+    
 
     return graph;
 }
@@ -97,7 +79,7 @@ void print_graph(struct Graph& graph) {
         std::string tensorName(node.output_tensor.name.data, node.output_tensor.name.n);
     
         std::cout << "\nOutput tensor name: " << tensorName << "\n";
-        
+
         
         std::cout << "Shapes:\n";
         std::cout << "  Input1 Shape: ";

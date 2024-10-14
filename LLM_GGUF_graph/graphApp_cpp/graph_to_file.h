@@ -5,6 +5,7 @@
 #include <iostream>
 #include <cstdlib>
 #include <algorithm>
+#include <cstring>
 #include "graph.h" 
 
 // Función para crear un archivo .dot a partir del grafo

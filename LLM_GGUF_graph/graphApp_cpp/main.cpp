@@ -18,6 +18,8 @@ int main(int argc, char* argv[]) {
     create_dot_file(graph);
 
     show_dot_file();
+
+    //print_graph(graph);
     
     return 0;
 }

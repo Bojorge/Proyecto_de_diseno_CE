@@ -1,0 +1,15 @@
+digraph G {
+    rankdir=LR;
+    node [shape=box, style=rounded];
+    edge [arrowhead=open, penwidth=2.0];
+    1 [label="RMS NORM"];
+    tensor_input1 [label="input1 1D (4096)", shape=none];
+    tensor_input1 -> 1 [label="1D (4096)"];
+    1 -> tensor_output [label="1D (4096)"];
+    tensor_output [label="output 1D (4096)", shape=none];
+    2 [label="EW ADDITION"];
+    tensor_input1 [label="input1 1D (4096)", shape=none];
+    tensor_input1 -> 2 [label="1D (4096)"];
+    2 -> tensor_output [label="1D (4096)"];
+    tensor_output [label="output 1D (4096)", shape=none];
+}

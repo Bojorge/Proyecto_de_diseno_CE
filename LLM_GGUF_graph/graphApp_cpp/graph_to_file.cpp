@@ -1,48 +1,65 @@
 #include "graph_to_file.h"
 
 //sudo apt-get install graphviz
-//sudo apt install --reinstall libstdc++6
-
-
 
 
 void create_dot_file(const Graph& graph) {
-    std::ofstream file("graph.dot");
-    
+    // Abrir el archivo .dot
+    std::ofstream file("graph_output.dot");
     if (!file.is_open()) {
-        std::cerr << "Error: No se pudo abrir el archivo graph.dot" << std::endl;
+        std::cerr << "Error al abrir el archivo .dot para escritura." << std::endl;
         return;
     }
 
-    file << "digraph G {\n"; // Inicia el grafo
+    // Configuración inicial del archivo DOT
+    file << "digraph G {\n";
+    file << "    rankdir=LR;\n";  // Colocar los nodos de izquierda a derecha
+    file << "    node [shape=box, style=rounded];\n";  // Hacer los nodos como cuadros
+    file << "    edge [arrowhead=open, penwidth=2.0];\n";  // Flechas con cabezas abiertas y líneas más gruesas
 
-    // Itera sobre cada nodo en el grafo
+    // Recorrer los nodos del grafo
     for (const auto& node : graph.nodes) {
-        // Escapa el nombre de la operación
-        std::string operation_label = node.operation;
-        std::replace(operation_label.begin(), operation_label.end(), '\"', '\''); // Reemplaza comillas dobles
+        // Convertir gguf_str a std::string
+        std::string input1_name_str(node.input1_tensor.name.data, node.input1_tensor.name.n);
+        std::string input2_name_str(node.input2_tensor.name.data, node.input2_tensor.name.n);
+        std::string output_name_str(node.output_tensor.name.data, node.output_tensor.name.n);
 
-        // Agrega el nodo con su operación como etiqueta
-        file << "    " << node.id << " [label=\"" << operation_label << "\"];\n";
-        
-        // Agrega las conexiones a los nodos de entrada (máximo 2 entradas)
-        for (const auto& input_id : node.input_ids) {
-            file << "    " << input_id << " -> " << node.id << ";\n"; // Conectar cada entrada al nodo
+        // Crear los nodos en DOT
+        file << "    " << node.id << " [label=\"" << node.operation << "\"];\n";
+
+        // Si hay un tensor de entrada (input1_tensor)
+        if (!input1_name_str.empty()) {
+            // Nodo de entrada a la izquierda, si no está conectado a otro nodo
+            std::string input1_id = "tensor_" + input1_name_str;
+            file << "    " << input1_id << " [label=\"" << input1_name_str << " 1D (" << node.input1_tensor.ne[0] << ")\", shape=none];\n";
+            file << "    " << input1_id << " -> " << node.id 
+                 << " [label=\"1D (" << node.input1_tensor.ne[0] << ")\"];\n";
         }
 
-        // Solo puede haber una salida
-        if (node.output_tensor.name.n > 0) {
-            std::string tensorName(node.output_tensor.name.data, node.output_tensor.name.n);
-            // Escapa el nombre del tensor
-            std::replace(tensorName.begin(), tensorName.end(), '\"', '\''); // Reemplaza comillas dobles
-            // Actualiza la representación del nodo para incluir la salida
-            file << "    " << node.id << " [label=\"" << operation_label << "\\n" << tensorName << "\"];\n";
+        // Si hay un tensor de entrada 2 (input2_tensor), conectarlo también
+        if (!input2_name_str.empty()) {
+            std::string input2_id = "tensor_" + input2_name_str;
+            file << "    " << input2_id << " [label=\"" << input2_name_str << " 1D (" << node.input2_tensor.ne[0] << ")\", shape=none];\n";
+            file << "    " << input2_id << " -> " << node.id 
+                 << " [label=\"1D (" << node.input2_tensor.ne[0] << ")\"];\n";
+        }
+
+        // Conectar el nodo al tensor de salida
+        if (!output_name_str.empty()) {
+            std::string output_id = "tensor_" + output_name_str;
+            file << "    " << node.id << " -> " << output_id 
+                 << " [label=\"1D (" << node.output_tensor.ne[0] << ")\"];\n";
+            file << "    " << output_id << " [label=\"" << output_name_str << " 1D (" << node.output_tensor.ne[0] << ")\", shape=none];\n";
         }
     }
-    file << "}\n"; // Cierra el grafo
+
+    // Finalizar el archivo DOT
+    file << "}\n";
+
     file.close();
-    std::cout << "Archivo graph.dot generado." << std::endl;
+    std::cout << "Archivo .dot generado con éxito." << std::endl;
 }
+
 
 
 void show_dot_file() {
