@@ -1,0 +1,7 @@
+digraph G {
+    node [shape=box];
+    1 [label="RMS NORM"];
+    1 -> tensor_output [label="1D (4096)"];
+    2 [label="EW ADDITION"];
+    2 -> tensor_output [label="1D (4096)"];
+}
