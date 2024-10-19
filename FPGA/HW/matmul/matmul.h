@@ -1,27 +1,23 @@
-/*
- * Copyright 2022-2024
- * Author: Luis G. Leon-Vega <luis.leon@ieee.org>
- */
+#ifndef __MATRIX_MULT_H__
+#define __MATRIX_MULT_H__
 
-#ifndef __MATMUL_H__
-#define __MATMUL_H__
+#include <stdint.h>
+#include <ap_int.h>
+#include <ap_fixed.h>
+#include <hls_stream.h>
 
-#include "common/config.h"
+static constexpr int kBusWidth = 64;
+static constexpr int kDataWidth = 16;
+static constexpr int kDataInt = 6;
+static constexpr int kPackets = kBusWidth / kDataWidth;
+static constexpr int kShiftData = 2;
 
-static constexpr int kARows = 2;
-#ifndef B_COLS
-static constexpr int kBCols = 32768;
-#else
-static constexpr int kBCols = B_COLS;
-#endif
-#ifndef C_COLS
-static constexpr int kCCols = 32768;
-#else
-static constexpr int kCCols = C_COLS;
-#endif
+using RawDataT = ap_uint<kBusWidth>;
+using StreamT = hls::stream<RawDataT>;
+using DataT = ap_fixed<kDataWidth, kDataInt>;
 
 extern "C" {
-void matmul(RawDataT *a, RawDataT *b, RawDataT *c, int a_rows, int b_cols, int c_cols);
+void matrix_mult(RawDataT *a, RawDataT *b, RawDataT *c, int a_rows, int b_cols, int c_cols);
 }
 
-#endif // __MATMUL_H__
+#endif // __MATRIX_MULT_H__

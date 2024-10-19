@@ -8,7 +8,7 @@
 
 #define AP_INT_MAX_W 32768
 
-#include "common/config.h"
+#include "config.h"
 
 #ifndef A_ROWS
 static constexpr int kARows = kPackets;

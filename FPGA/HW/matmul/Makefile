@@ -1,7 +1,7 @@
 # Setting relevant variables
 ROOT_DIR := $(realpath $(dir $(lastword $(MAKEFILE_LIST))))
 TARGET := hw
-PLATFORM := $(ROOT_DIR)/../../kv260_custom.xpfm   #esta ruta depende de la ruta del codigo fuente
+PLATFORM := $(ROOT_DIR)/../../kv260_custom.xpfm
 
 # Setting input files
 HLS_FILE := matmul.cpp
