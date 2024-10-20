@@ -2,6 +2,7 @@
 #include <vector>
 #include <iostream>
 
+#define FIXED_SCALE (1 << 4)
 using DataT = int16_t;
 
 // Función para convertir de float a punto fijo (16 bits)
@@ -23,8 +24,9 @@ int main(int argc, char** argv) {
     std::vector<DataT> A = {floatToFixed(1.0f), floatToFixed(2.0f), floatToFixed(3.0f),
                             floatToFixed(4.0f), floatToFixed(5.0f), floatToFixed(6.0f)}; // A en punto fijo (2x3)
 
-    std::vector<DataT> B = {floatToFixed(7.0f), floatToFixed(8.0f), floatToFixed(9.0f),
-                            floatToFixed(10.0f), floatToFixed(11.0f), floatToFixed(12.0f)}; // B en punto fijo (3x2)
+    std::vector<DataT> B = {floatToFixed(7.0f), floatToFixed(8.0f), 
+                            floatToFixed(9.0f), floatToFixed(10.0f), 
+                            floatToFixed(11.0f), floatToFixed(12.0f)}; // B en punto fijo (3x2)
 
     
     // Matriz de salida

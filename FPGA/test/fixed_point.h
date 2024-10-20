@@ -13,8 +13,8 @@
 // Precisión y Rango:
 // Para un formato de punto fijo de n bits, donde se utilizan f bits para la parte fraccionaria:
 // Rango de valores representables: De -2^(n-f) a 2^(n-f) - 1.
-// Precisión: La menor cantidad que puedes representar es 2^(-f). En el caso específico de usar 16 bits con 4 bits para la parte fraccionaria y 12 bits para la parte entera, 
-// el rango será de -2048 a 2047.9375 y la menor unidad representable será 0.0625.
+// Precisión: La menor cantidad que se puede representar es 2^(-f). En el caso específico de usar 16 bits con 4 bits para la parte fraccionaria y 12 bits para la parte entera, 
+// Rango aproximado -2048 a 2047.9375 y la menor unidad representable será 0.0625 (error 1=0.0625)
 
 // Definición de la escala para la parte fraccionaria
 #define FIXED_SCALE (1 << 4) // 4 bits para la parte fraccionaria (16 = 2^4)

@@ -5,12 +5,12 @@
 // M es el número de filas de la matriz A
 // N es el número de columnas de la matriz A y filas de la matriz B
 // P es el número de columnas de la matriz B
-void matrix_mult_accel(const half *A, const half *B, half *C, int M, int N, int P) {
+void matrix_mult_accel(const DataT *A, const DataT *B, DataT *C, int M, int N, int P) {
     for (int i = 0; i < M; i++) {
         #pragma HLS PIPELINE II=1
         
         for (int j = 0; j < P; j++) {
-            half sum = 0;
+            DataT sum = 0;
             
             for (int k = 0; k < N; k++) {
                 #pragma HLS UNROLL factor=4
