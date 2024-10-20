@@ -1,8 +1,15 @@
 #include <xrt/xrt.h>
+#include <xrt/xrt_device.h>
+#include <xrt/xrt_kernel.h>
+#include <xrt/xrt_bo.h>
 #include <vector>
 #include <iostream>
+#include <cstdint>
 
-using DataT = float;
+//using DataT = std::float16_t;
+//using DataT = ap_fixed<16, 12>;
+//using DataT = float;
+
 
 int main(int argc, char** argv) {
     int M = 2; // Número de filas de la matriz A y C
