@@ -2,7 +2,17 @@
 #include <vector>
 #include <iostream>
 
-using DataT = float;
+using DataT = int16_t;
+
+// Función para convertir de float a punto fijo (16 bits)
+int16_t floatToFixed(float f) {
+    return static_cast<int16_t>(f * FIXED_SCALE);
+}
+
+// Función para convertir de punto fijo a float
+float fixedToFloat(int16_t fixedValue) {
+    return static_cast<float>(fixedValue) / FIXED_SCALE;
+}
 
 int main(int argc, char** argv) {
     int M = 2; // Número de filas de la matriz A y C
@@ -10,8 +20,12 @@ int main(int argc, char** argv) {
     int P = 2; // Número de columnas de la matriz B y C
 
     // Matrices de entrada
-    std::vector<DataT> A = {1, 2, 3, 4, 5, 6}; // Matriz A de tamaño MxN (2x3)
-    std::vector<DataT> B = {7, 8, 9, 10, 11, 12}; // Matriz B de tamaño NxP (3x2)
+    std::vector<DataT> A = {floatToFixed(1.0f), floatToFixed(2.0f), floatToFixed(3.0f),
+                            floatToFixed(4.0f), floatToFixed(5.0f), floatToFixed(6.0f)}; // A en punto fijo (2x3)
+
+    std::vector<DataT> B = {floatToFixed(7.0f), floatToFixed(8.0f), floatToFixed(9.0f),
+                            floatToFixed(10.0f), floatToFixed(11.0f), floatToFixed(12.0f)}; // B en punto fijo (3x2)
+
     
     // Matriz de salida
     std::vector<DataT> C(M * P); // Matriz C de tamaño MxP (2x2)
@@ -38,10 +52,10 @@ int main(int argc, char** argv) {
     buffer_c.sync(XCL_BO_SYNC_BO_FROM_DEVICE);
 
     // Mostrar los resultados (matriz C)
-    std::cout << "Matriz C (resultado):" << std::endl;
+    std::cout << "Matriz C (resultado en punto fijo):" << std::endl;
     for (int i = 0; i < M; ++i) {
         for (int j = 0; j < P; ++j) {
-            std::cout << C[i * P + j] << " ";
+            std::cout << fixedToFloat(C[i * P + j]) << " "; // Convertir a float para mostrar el resultado
         }
         std::cout << std::endl;
     }
