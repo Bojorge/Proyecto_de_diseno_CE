@@ -1,4 +1,4 @@
-#include "matrix_mult.h"
+#include "matmul.h"
 
 #ifdef USE_AXI_STREAM
 /**
@@ -6,21 +6,21 @@
  * b: weights (outputs, inputs)
  * c: output (samples, outputs)
  *
- * Aquí:
+ * here:
  * a_rows = c_rows -> samples
  * a_cols = b_cols -> inputs
  * b_rows = c_cols -> outputs
  */
-static void matrix_mult_accel (StreamT &a, StreamT &b, StreamT &c, int a_rows, int b_cols, int c_cols) {
+static void matmul_accel (StreamT &a, StreamT &b, StreamT &c, int a_rows, int b_cols, int c_cols) {
 
-matrix_mult_samples:
+matmul_samples:
   for (int ay = 0; ay < a_rows; ++ay) {
-matrix_mult_layers:
+matmul_layers:
     RawDataT valpacket = 0;
     for (int cx = 0; cx < c_cols; ++cx) {
 #pragma HLS pipeline
       DataT val = 0.f;
-matrix_mult_perceptron:
+matmul_perceptron:
       for (int bx = 0; bx < b_cols; bx += kPackets) {
         RawDataT a_raw = a.read();
         RawDataT b_raw = b.read();
@@ -37,18 +37,18 @@ matrix_mult_perceptron:
           val += a * b;
         }
       }
-      // Obtener los índices
+      // Get the indices
       int cx_p_1 = cx + 1;
       int val_mod = cx_p_1 & (kPackets - 1);
       int cx_mod = cx & (kPackets - 1);
 
-      // Escribir según sea necesario
+      // Write accordingly 
       int poff_low = cx_mod * kDataWidth;
       int poff_high = poff_low + kDataWidth - 1;
 
       valpacket(poff_high, poff_low) = val.V;
       
-      // Transmitir si se ha completado
+      // Stream out if done
       if (val_mod == 0) {
         c.write(valpacket);
         valpacket = 0;
@@ -57,10 +57,9 @@ matrix_mult_perceptron:
   }
 }
 
-
 static void load_data(RawDataT *a, RawDataT *b, StreamT &a_s, StreamT &b_s,
                int a_rows, int b_cols, int c_cols) {
-  // Cargar B
+  // Load B
   for (int ay = 0; ay < a_rows; ++ay) {
 #pragma HLS pipeline
     for (int cx = 0; cx < c_cols; ++cx) {
@@ -71,7 +70,7 @@ static void load_data(RawDataT *a, RawDataT *b, StreamT &a_s, StreamT &b_s,
     }
   }
 
-  // Cargar A
+  // Load A
   for (int cx = 0; cx < c_cols; ++cx) {
     for (int ay = 0; ay < a_rows; ++ay) {
 #pragma HLS pipeline
@@ -86,7 +85,7 @@ static void load_data(RawDataT *a, RawDataT *b, StreamT &a_s, StreamT &b_s,
 static void store_data(RawDataT *c, StreamT &c_s,
                int a_rows, int b_cols, int c_cols) {
 
-  // Cargar C
+  // Load C
   for (int cy = 0; cy < a_rows; ++cy) {
 #pragma HLS pipeline
     for (int cx = 0; cx < (c_cols >> kShiftData); ++cx) {
@@ -96,18 +95,18 @@ static void store_data(RawDataT *c, StreamT &c_s,
   }
 }
 #else
-static void matrix_mult_accel (RawDataT *a, RawDataT *b, RawDataT *c, int a_rows, int b_cols, int c_cols) {
+static void matmul_accel (RawDataT *a, RawDataT *b, RawDataT *c, int a_rows, int b_cols, int c_cols) {
   int b_cols_shift = b_cols >> kShiftData;
   int c_cols_shift = c_cols >> kShiftData;
 
-matrix_mult_samples:
+matmul_samples:
   for (int ay = 0; ay < a_rows; ++ay) {
-matrix_mult_layers:
+matmul_layers:
     RawDataT valpacket = 0;
     for (int cx = 0; cx < c_cols; ++cx) {
 #pragma HLS pipeline
       DataT val = 0.f;
-matrix_mult_perceptron:
+matmul_perceptron:
       for (int bx = 0; bx < b_cols_shift; ++bx) {
         RawDataT a_raw = a[ay * b_cols_shift + bx];
         RawDataT b_raw = b[cx * b_cols_shift + bx];
@@ -125,18 +124,18 @@ matrix_mult_perceptron:
         }
       }
 
-      // Obtener los índices
+      // Get the indices
       int cx_mod = cx & (kPackets - 1);
       int cx_div = cx >> kShiftData;
       int val_mod = (cx + 1) & (kPackets - 1);
 
-      // Escribir según sea necesario
+      // Write accordingly 
       int poff_low = cx_mod * kDataWidth;
       int poff_high = poff_low + kDataWidth - 1;
 
       valpacket(poff_high, poff_low) = val.V;
 
-      // Transmitir si se ha completado
+      // Stream out if done
       if (val_mod == 0) {
         c[cx_div + ay * c_cols_shift] = valpacket;
         valpacket = 0;
@@ -149,12 +148,12 @@ matrix_mult_perceptron:
 extern "C" {
 
 /**
- * matrix_mult: (rows, cols)
+ * matrix: (rows, cols)
  * a: input (samples, inputs)
  * b: weights (outputs, inputs)
  * c: output (samples, outputs)
  */
-void matrix_mult(RawDataT *a, RawDataT *b, RawDataT *c, int a_rows, int b_cols, int c_cols) {
+void matmul(RawDataT *a, RawDataT *b, RawDataT *c, int a_rows, int b_cols, int c_cols) {
 #pragma HLS INTERFACE m_axi offset=slave port=a bundle=gmem0
 #pragma HLS INTERFACE m_axi offset=slave port=b bundle=gmem1
 #pragma HLS INTERFACE m_axi offset=slave port=c bundle=gmem2
@@ -171,11 +170,11 @@ void matrix_mult(RawDataT *a, RawDataT *b, RawDataT *c, int a_rows, int b_cols, 
 
 #pragma HLS dataflow
   load_data(a, b, a_stream, b_stream, a_rows, b_cols, c_cols);
-  matrix_mult_accel(a_stream, b_stream, c_stream, a_rows, b_cols, c_cols);
+  matmul_accel(a_stream, b_stream, c_stream, a_rows, b_cols, c_cols);
   store_data(c, c_stream, a_rows, b_cols, c_cols);
 
 #else
-  matrix_mult_accel(a, b, c, a_rows, b_cols, c_cols);
+  matmul_accel(a, b, c, a_rows, b_cols, c_cols);
 #endif
 
 }
