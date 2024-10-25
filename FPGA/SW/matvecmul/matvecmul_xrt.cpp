@@ -19,10 +19,9 @@
 #include <cstring>
 
 // XRT includes
-#include <xrt/xrt.h>
-//#include <experimental/xrt_bo.h>
-//#include <experimental/xrt_device.h>
-//#include <experimental/xrt_kernel.h>
+#include "experimental/xrt_bo.h"
+#include "experimental/xrt_device.h"
+#include "experimental/xrt_kernel.h"
 
 // Profiler
 #include "timer.hpp"
@@ -41,7 +40,7 @@ int next_power_of_two(int n) {
 
 
 int main(int argc, char** argv) {
-    //INIT_PROFILER(cynq_profiler)
+    INIT_PROFILER(cynq_profiler)
     int device_index = 0;
 
     if (argc != 4) {
@@ -49,7 +48,7 @@ int main(int argc, char** argv) {
     }
     
     // Get input size
-    static std::string binaryFile = "matvecmul.xclbin";
+    static std::string binaryFile = "../HW/package.hw/kernels.xclbin";
     int a_rows = std::stoi(argv[1]);
     int b_cols = std::stoi(argv[2]);
     int b_rows = std::stoi(argv[3]);
@@ -68,7 +67,7 @@ int main(int argc, char** argv) {
     int size_b = c_cols * b_cols;
     int size_c = a_rows * c_cols;
 
-    //GET_PROFILE_INSTANCE(setup_time, cynq_profiler);
+    GET_PROFILE_INSTANCE(setup_time, cynq_profiler);
     setup_time->reset();
 
     std::cout << "Open the device " << device_index << std::endl;
@@ -129,7 +128,7 @@ int main(int argc, char** argv) {
     {
       // Synchronize buffer content with device side
       std::cout << "Synchronize input buffer data to device global memory\n";
-      //START_PROFILE(kernel_execution, cynq_profiler, 10)
+      START_PROFILE(kernel_execution, cynq_profiler, 10)
       bo_a.sync(XCL_BO_SYNC_BO_TO_DEVICE);
       bo_b.sync(XCL_BO_SYNC_BO_TO_DEVICE);
 
@@ -141,7 +140,7 @@ int main(int argc, char** argv) {
       // Get the output;
       //std::cout << "Get the output data from the device" << std::endl;
       bo_c.sync(XCL_BO_SYNC_BO_FROM_DEVICE);
-      //END_PROFILE(kernel_execution);
+      END_PROFILE(kernel_execution);
 
       // Multiply by software
       float c_sw[size_c];
