@@ -1,7 +1,9 @@
 # Variables
 CXX := g++
-CXXFLAGS := -std=c++17 -I/opt/xilinx/xrt/include
-LDFLAGS := -L/opt/xilinx/xrt/lib -lxrt_core -lxrt_cu -lxrt_kernel -lpthread -ldl
+#CXXFLAGS := -std=c++17 -I/opt/xilinx/xrt/include
+#LDFLAGS := -L/opt/xilinx/xrt/lib -lxrt_core -lxrt_cu -lxrt_kernel -lpthread -ldl
+CXXFLAGS := -std=c++17 -I/usr/include/xrt
+LDFLAGS := -L/usr/lib/xrt -lxrt_core -lxrt_cu -lxrt_kernel -lpthread -ldl
 SRC := matmul_xrt.cpp
 OBJ := $(SRC:.cpp=.o)
 EXEC := matmul_xrt

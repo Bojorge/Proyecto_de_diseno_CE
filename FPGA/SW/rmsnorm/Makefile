@@ -1,6 +1,6 @@
 # List of source files and corresponding executables
-SOURCES := matvecmul_xrt.cpp
-EXECUTABLES := matvecmul_xrt
+SOURCES := rmsnorm_xrt.cpp
+EXECUTABLES := rmsnorm_xrt
 
 #CFLAGS := -I/opt/xilinx/xrt/include -Wall -std=c++17 -O0 -g -I. -I./hls-types/include
 CFLAGS := -I/opt/xilinx/xrt/include -Wall -std=c++17 -O0 -g -I.. -I../include
@@ -18,3 +18,4 @@ $(EXECUTABLES): %: %.cpp
 # Clean target to remove all executables
 clean:
 	$(RM) $(EXECUTABLES)
+

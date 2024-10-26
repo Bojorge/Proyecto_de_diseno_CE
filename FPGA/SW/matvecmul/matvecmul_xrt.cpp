@@ -24,7 +24,7 @@
 #include "experimental/xrt_kernel.h"
 
 // Profiler
-#include "timer.hpp"
+#include "../timer.hpp"
 
 // HLS Types
 #include "ap_fixed.h"
