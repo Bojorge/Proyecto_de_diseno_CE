@@ -6,10 +6,10 @@
 
 #pragma once
 
-#include <cmath>
+//#include <cmath>
 #include <ratio>
-
-#include "interpolation-wrapper.hpp"
+#include "hls_math.h"
+#include "../interpolation-wrapper.hpp"
 
 namespace axc {
 namespace nonlinear {
@@ -66,7 +66,8 @@ template <typename T, class BEGIN, class END, int S>
 Exponential<T, BEGIN, END, S>::Exponential(T lut[S]) {
   for (int i = 0; i < Points; ++i) {
     float x = Minimum + i * Step;
-    lut[i] = T{std::exp(x)};
+    //lut[i] = T{std::exp(x)};
+    lut[i] = T{hls::exp(x)};
   }
 }
 
