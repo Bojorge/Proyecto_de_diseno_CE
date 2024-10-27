@@ -10,6 +10,7 @@
 #include <math.h>   
 #include <sched.h> 
 //#include <cfloat>
+#include <stdatomic.h>
 
 #define MIN(a, b) ((a) < (b) ? (a) : (b))
 #define MAX(a, b) ((a) > (b) ? (a) : (b))
@@ -150,6 +151,8 @@ inline static void * ggml_aligned_malloc(size_t size) {
 }
 
 #define GGML_ALIGNED_MALLOC(size) ggml_aligned_malloc(size)
+
+#define GGML_COMPUTE_FP16_TO_FP32(x) ggml_compute_fp16_to_fp32(x)
 
 typedef double ggml_float;
 
@@ -415,7 +418,8 @@ static_assert(sizeof(block_iq4_xs) == sizeof(ggml_half) + sizeof(uint16_t) + QK_
 
 
 //typedef volatile LONG atomic_int;
-typedef volatile int64_t atomic_int;
+//typedef volatile int64_t atomic_int;
+//typedef int64_t atomic_int;
 
 /*
 #if defined(__gnu_linux__)
@@ -5569,7 +5573,7 @@ struct ggml_state {
 static struct ggml_state g_state;
 
 extern float ggml_table_f32_f16[1 << 16];
-//float ggml_table_f32_f16[1 << 16];
+float ggml_table_f32_f16[1 << 16];
 
 // precomputed gelu table for f16 (128 KB)
 static ggml_fp16_t ggml_table_gelu_f16[1 << 16];
@@ -5915,31 +5919,33 @@ size_t ggml_used_mem(const struct ggml_context * ctx) {
 }
 
 //static LONG atomic_fetch_add(atomic_int * ptr, LONG inc) {
-static int64_t atomic_fetch_add(atomic_int * ptr, int64_t inc) {
+static int64_t my_atomic_fetch_add(atomic_int * ptr, int64_t inc) {
+    printf("Hello, komea!\n");
     //return InterlockedExchangeAdd(ptr, inc);
     return atomic_fetch_add(ptr, inc);
 }
 
 //static LONG atomic_fetch_sub(atomic_int * ptr, LONG dec) {
-static int64_t atomic_fetch_sub(atomic_int * ptr, int64_t dec) {
-    return atomic_fetch_add(ptr, -(dec));
+static int64_t my_atomic_fetch_sub(atomic_int * ptr, int64_t dec) {
+    return my_atomic_fetch_add(ptr, -(dec));
 }
 
 static atomic_int g_state_barrier = 0;
 
 inline static void ggml_critical_section_start(void) {
-    int processing = atomic_fetch_add(&g_state_barrier, 1);
-
+    
+    int processing = my_atomic_fetch_add(&g_state_barrier, 1);
+    
     while (processing > 0) {
         // wait for other threads to finish
-        atomic_fetch_sub(&g_state_barrier, 1);
+        my_atomic_fetch_sub(&g_state_barrier, 1);
         sched_yield(); // TODO: reconsider this
-        processing = atomic_fetch_add(&g_state_barrier, 1);
+        processing = my_atomic_fetch_add(&g_state_barrier, 1);
     }
 }
 
 inline static void ggml_critical_section_end(void) {
-    atomic_fetch_sub(&g_state_barrier, 1);
+    my_atomic_fetch_sub(&g_state_barrier, 1);
 }
 
 static size_t gguf_type_size(enum gguf_type type) {
@@ -6035,7 +6041,7 @@ inline static float ggml_gelu_f32(float x) {
 struct ggml_context * ggml_init(struct ggml_init_params params) {
     // make this function thread safe
     ggml_critical_section_start();
-
+    
     static bool is_first_call = true;
 
     if (is_first_call) {
@@ -6287,7 +6293,8 @@ struct gguf_context * gguf_init_from_file(const char * fname, struct gguf_init_p
 
     // Crear el contexto de GGUF y asignar memoria
     //struct gguf_context * ctx = (gguf_context*) GGML_CALLOC(1, sizeof(struct gguf_context));
-    struct gguf_context * ctx = (struct gguf_context *) GGML_CALLOC(1, sizeof(struct gguf_context));
+    //struct gguf_context * ctx = (struct gguf_context *) GGML_CALLOC(1, sizeof(struct gguf_context));
+    struct gguf_context * ctx = (struct gguf_context *) calloc(1, sizeof(struct gguf_context));
 
    // read the header
     {
@@ -6311,7 +6318,8 @@ struct gguf_context * gguf_init_from_file(const char * fname, struct gguf_init_p
         // sanity-checks to prevent from integer/buffer overflows
 
         ok = ok && (ctx->header.n_tensors < (SIZE_MAX/2)/sizeof(struct gguf_tensor_info));
-        ok = ok && (ctx->header.n_tensors < (SIZE_MAX/2)/ggml_tensor_overhead());
+        //ok = ok && (ctx->header.n_tensors < (SIZE_MAX/2)/ggml_tensor_overhead());
+        ok = ok && (ctx->header.n_tensors < (SIZE_MAX/2) / (GGML_OBJECT_SIZE + GGML_TENSOR_SIZE));
         ok = ok && (ctx->header.n_kv      < (SIZE_MAX/2)/sizeof(struct gguf_kv));
 
         if (!ok) {
@@ -6328,7 +6336,8 @@ struct gguf_context * gguf_init_from_file(const char * fname, struct gguf_init_p
 
         // header.n_kv will hold the actual value of pairs that were successfully read in the loop below
         ctx->header.n_kv = 0;
-        ctx->kv = (struct gguf_kv *) ggml_calloc(n_kv, sizeof(struct gguf_kv));
+        //ctx->kv = (struct gguf_kv *) ggml_calloc(n_kv, sizeof(struct gguf_kv));
+        ctx->kv = (struct gguf_kv *) calloc(n_kv, sizeof(struct gguf_kv));
 
         for (uint64_t i = 0; i < n_kv; ++i) {
             struct gguf_kv * kv = &ctx->kv[i];
@@ -6420,7 +6429,7 @@ struct gguf_context * gguf_init_from_file(const char * fname, struct gguf_init_p
             return NULL;
         }
     }
-
+  ///////////////////////////////////////////////////////////////////////////////////////////////////////////
     // read the tensor infos
     if (ctx->header.n_tensors > 0) {
         ctx->infos = ggml_calloc(ctx->header.n_tensors, sizeof(struct gguf_tensor_info));
@@ -6463,7 +6472,7 @@ struct gguf_context * gguf_init_from_file(const char * fname, struct gguf_init_p
             }
         }
     }
-
+    
     ctx->alignment = GGUF_DEFAULT_ALIGNMENT;
 
     int alignment_idx = gguf_find_key(ctx, "general.alignment");
@@ -6509,13 +6518,13 @@ struct gguf_context * gguf_init_from_file(const char * fname, struct gguf_init_p
             ctx->size += GGML_PAD(size_cur, ctx->alignment);
         }
     }
-
+    
     // load the tensor data only if requested
     if (params.ctx != NULL) {
         // if the provided gguf_context is no_alloc, then we create "empty" tensors and do not read the binary blob
         // otherwise, we load the binary blob into the created ggml_context as well, and point the "data" members of
         // the ggml_tensor structs to the appropriate locations in the binary blob
-
+        
         // compute the exact size needed for the new ggml_context
         const size_t mem_size =
             params.no_alloc ?
@@ -6527,13 +6536,13 @@ struct gguf_context * gguf_init_from_file(const char * fname, struct gguf_init_p
             .mem_buffer = NULL,
             .no_alloc   = params.no_alloc,
         };
-
+    
         *params.ctx = ggml_init(pdata);
-
+        
         struct ggml_context * ctx_data = *params.ctx;
-
+        
         struct ggml_tensor * data = NULL;
-
+        
         if (!params.no_alloc) {
             data = ggml_new_tensor_1d(ctx_data, GGML_TYPE_I8, ctx->size);
 
@@ -6591,7 +6600,7 @@ struct gguf_context * gguf_init_from_file(const char * fname, struct gguf_init_p
 
         ggml_set_no_alloc(ctx_data, params.no_alloc);
     }
-
+    
     fclose(file);
     return ctx;
 }
