@@ -17,17 +17,16 @@
 #include <iostream>
 #include <cstdint>
 #include <cstring>
+#include <cmath>
 
 // XRT includes
-#include "experimental/xrt_bo.h"
-#include "experimental/xrt_device.h"
-#include "experimental/xrt_kernel.h"
-
-// Profiler
-#include "../timer.hpp"
+#include <xrt/xrt.h>
+#include <xrt/xrt/xrt_kernel.h>
+#include <xrt/xrt/xrt_bo.h>
+#include <xrt/xrt/xrt_device.h>
 
 // HLS Types
-#include "ap_fixed.h"
+//#include "ap_fixed.h"
 
 // Function to find the next power of two greater than or equal to n
 int next_power_of_two(int n) {
@@ -40,18 +39,13 @@ int next_power_of_two(int n) {
 
 
 int main(int argc, char** argv) {
-    INIT_PROFILER(cynq_profiler)
     int device_index = 0;
-
-    if (argc != 4) {
-        return EXIT_FAILURE;
-    }
     
     // Get input size
-    static std::string binaryFile = "../HW/package.hw/kernels.xclbin";
-    int a_rows = std::stoi(argv[1]);
-    int b_cols = std::stoi(argv[2]);
-    int b_rows = std::stoi(argv[3]);
+    static std::string binaryFile = "matvecmul.xclbin";
+    int a_rows = 5;
+    int b_cols = 5;
+    int b_rows = 5;
     b_cols = b_cols < 8 ? 8 : (b_cols - (b_cols & 0b111));
     int c_cols = 1;
 
@@ -67,8 +61,7 @@ int main(int argc, char** argv) {
     int size_b = c_cols * b_cols;
     int size_c = a_rows * c_cols;
 
-    GET_PROFILE_INSTANCE(setup_time, cynq_profiler);
-    setup_time->reset();
+   
 
     std::cout << "Open the device " << device_index << std::endl;
     auto device = xrt::device(device_index);
@@ -76,7 +69,7 @@ int main(int argc, char** argv) {
     auto uuid = device.load_xclbin(binaryFile);;
 
     auto matvecmul = xrt::kernel(device, uuid, "matvecmul");
-    setup_time->tick();
+    
 
     std::cout << "Allocate Buffer in Global Memory\n";
     auto bo_a = xrt::bo(device, size_a * sizeof(float), matvecmul.group_id(0));
@@ -128,7 +121,6 @@ int main(int argc, char** argv) {
     {
       // Synchronize buffer content with device side
       std::cout << "Synchronize input buffer data to device global memory\n";
-      START_PROFILE(kernel_execution, cynq_profiler, 10)
       bo_a.sync(XCL_BO_SYNC_BO_TO_DEVICE);
       bo_b.sync(XCL_BO_SYNC_BO_TO_DEVICE);
 
@@ -140,8 +132,7 @@ int main(int argc, char** argv) {
       // Get the output;
       //std::cout << "Get the output data from the device" << std::endl;
       bo_c.sync(XCL_BO_SYNC_BO_FROM_DEVICE);
-      END_PROFILE(kernel_execution);
-
+      
       // Multiply by software
       float c_sw[size_c];
       std::fill(c_sw, c_sw + size_c, 0.0f);
@@ -169,7 +160,6 @@ int main(int argc, char** argv) {
       }
     }
     
-    std::cout << cynq_profiler << std::endl;
     std::cout << "TEST PASSED\n";
     return 0;
 }

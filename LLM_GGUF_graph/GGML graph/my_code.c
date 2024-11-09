@@ -5920,7 +5920,6 @@ size_t ggml_used_mem(const struct ggml_context * ctx) {
 
 //static LONG atomic_fetch_add(atomic_int * ptr, LONG inc) {
 static int64_t my_atomic_fetch_add(atomic_int * ptr, int64_t inc) {
-    printf("Hello, komea!\n");
     //return InterlockedExchangeAdd(ptr, inc);
     return atomic_fetch_add(ptr, inc);
 }
@@ -6606,76 +6605,90 @@ struct gguf_context * gguf_init_from_file(const char * fname, struct gguf_init_p
 }
 
 void gguf_print_context(const struct gguf_context * ctx) {
-    printf("Magic: %.4s\n", ctx->header.magic);
-    printf("Version: %u\n", ctx->header.version);
-    printf("Number of tensors: %lu\n", ctx->header.n_tensors);
-    printf("Number of key-value pairs: %lu\n", ctx->header.n_kv);
+    FILE *file = fopen("../gguf_context.txt", "w"); 
+    if (file == NULL) {
+        perror("Error al abrir el archivo");
+        return;
+    }
+
+    fprintf(file, "\n *************************  HEADER  ************************* \n \n");
+    fprintf(file, "Magic: %.4s\n", ctx->header.magic);
+    fprintf(file, "Version: %u\n", ctx->header.version);
+    fprintf(file, "Number of tensors: %lu\n", ctx->header.n_tensors);
+    fprintf(file, "Number of key-value pairs: %lu\n", ctx->header.n_kv);
+    
+    fprintf(file, "\n *************************  METADATA  ************************* \n \n");
 
     for (uint64_t i = 0; i < ctx->header.n_kv; ++i) {
-        printf("Key: %.*s\n", (int)ctx->kv[i].key.n, ctx->kv[i].key.data);
+        fprintf(file, "Key: %.*s\n", (int)ctx->kv[i].key.n, ctx->kv[i].key.data);
         
-        // Imprimir el valor dependiendo del tipo
+        // Escribir el valor dependiendo del tipo
         switch (ctx->kv[i].type) {
             case GGUF_TYPE_UINT8:
-                printf("Value: %u (uint8)\n", ctx->kv[i].value.uint8);
+                fprintf(file, "Value: %u (uint8)\n", ctx->kv[i].value.uint8);
                 break;
             case GGUF_TYPE_INT8:
-                printf("Value: %d (int8)\n", ctx->kv[i].value.int8);
+                fprintf(file, "Value: %d (int8)\n", ctx->kv[i].value.int8);
                 break;
             case GGUF_TYPE_UINT16:
-                printf("Value: %u (uint16)\n", ctx->kv[i].value.uint16);
+                fprintf(file, "Value: %u (uint16)\n", ctx->kv[i].value.uint16);
                 break;
             case GGUF_TYPE_INT16:
-                printf("Value: %d (int16)\n", ctx->kv[i].value.int16);
+                fprintf(file, "Value: %d (int16)\n", ctx->kv[i].value.int16);
                 break;
             case GGUF_TYPE_UINT32:
-                printf("Value: %u (uint32)\n", ctx->kv[i].value.uint32);
+                fprintf(file, "Value: %u (uint32)\n", ctx->kv[i].value.uint32);
                 break;
             case GGUF_TYPE_INT32:
-                printf("Value: %d (int32)\n", ctx->kv[i].value.int32);
+                fprintf(file, "Value: %d (int32)\n", ctx->kv[i].value.int32);
                 break;
             case GGUF_TYPE_UINT64:
-                printf("Value: %lu (uint64)\n", ctx->kv[i].value.uint64);
+                fprintf(file, "Value: %lu (uint64)\n", ctx->kv[i].value.uint64);
                 break;
             case GGUF_TYPE_INT64:
-                printf("Value: %ld (int64)\n", ctx->kv[i].value.int64);
+                fprintf(file, "Value: %ld (int64)\n", ctx->kv[i].value.int64);
                 break;
             case GGUF_TYPE_FLOAT32:
-                printf("Value: %f (float32)\n", ctx->kv[i].value.float32);
+                fprintf(file, "Value: %f (float32)\n", ctx->kv[i].value.float32);
                 break;
             case GGUF_TYPE_FLOAT64:
-                printf("Value: %lf (float64)\n", ctx->kv[i].value.float64);
+                fprintf(file, "Value: %lf (float64)\n", ctx->kv[i].value.float64);
                 break;
             case GGUF_TYPE_BOOL:
-                printf("Value: %s (bool)\n", ctx->kv[i].value.bool_ ? "true" : "false");
+                fprintf(file, "Value: %s (bool)\n", ctx->kv[i].value.bool_ ? "true" : "false");
                 break;
             case GGUF_TYPE_STRING:
-                printf("Value: %.*s (string)\n", (int)ctx->kv[i].value.str.n, ctx->kv[i].value.str.data);
+                fprintf(file, "Value: %.*s (string)\n", (int)ctx->kv[i].value.str.n, ctx->kv[i].value.str.data);
                 break;
             case GGUF_TYPE_ARRAY:
-                printf("Value: (array of type %d, size %lu)\n", ctx->kv[i].value.arr.type, ctx->kv[i].value.arr.n);
-                // Aquí puedes añadir más detalles si necesitas imprimir los contenidos del array
+                fprintf(file, "Value: (array of type %d, size %lu)\n", ctx->kv[i].value.arr.type, ctx->kv[i].value.arr.n);
+                // Añadir más detalles aquí si es necesario para los contenidos del array
                 break;
             default:
-                printf("Value: Unknown type\n");
+                fprintf(file, "Value: Unknown type\n");
                 break;
         }
         
-        printf("Type: %d\n", ctx->kv[i].type);
+        fprintf(file, "Type: %d\n", ctx->kv[i].type);
+        fprintf(file, " ----------------------------------- \n");
     }
 
+    fprintf(file, "\n *************************  TENSORS  ************************* \n \n");
     for (uint64_t i = 0; i < ctx->header.n_tensors; ++i) {
-        printf("Tensor Name: %.*s\n", (int)ctx->infos[i].name.n, ctx->infos[i].name.data);
-        printf("Number of Dimensions: %u\n", ctx->infos[i].n_dims);
-        printf("Offsets: %lu\n", ctx->infos[i].offset);
-        printf("Data Size: %zu\n", ctx->infos[i].size);
-        // Imprimir las dimensiones
-        printf("Dimensions: ");
+        fprintf(file, "Tensor Name: %.*s\n", (int)ctx->infos[i].name.n, ctx->infos[i].name.data);
+        fprintf(file, "Number of Dimensions: %u\n", ctx->infos[i].n_dims);
+        fprintf(file, "Offsets: %lu\n", ctx->infos[i].offset);
+        fprintf(file, "Data Size: %zu\n", ctx->infos[i].size);
+        
+        // Escribir las dimensiones
+        fprintf(file, "Dimensions: ");
         for (uint32_t j = 0; j < ctx->infos[i].n_dims; ++j) {
-            printf("%lu ", ctx->infos[i].ne[j]);
+            fprintf(file, "%lu ", ctx->infos[i].ne[j]);
         }
-        printf("\n");
+        fprintf(file, "\n ----------------------------------- \n");
     }
+
+    fclose(file);
 }
 
 int main(int argc, char *argv[]) {

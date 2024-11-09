@@ -1,0 +1,1839 @@
+
+ *************************  HEADER  ************************* 
+ 
+Magic: GGUF
+Version: 2
+Number of tensors: 291
+Number of key-value pairs: 20
+
+ *************************  METADATA  ************************* 
+ 
+Key: general.architecture
+Value: llama (string)
+Type: 8
+ ----------------------------------- 
+Key: general.name
+Value: adaptllm_law-llm (string)
+Type: 8
+ ----------------------------------- 
+Key: llama.context_length
+Value: 2048 (uint32)
+Type: 4
+ ----------------------------------- 
+Key: llama.embedding_length
+Value: 4096 (uint32)
+Type: 4
+ ----------------------------------- 
+Key: llama.block_count
+Value: 32 (uint32)
+Type: 4
+ ----------------------------------- 
+Key: llama.feed_forward_length
+Value: 11008 (uint32)
+Type: 4
+ ----------------------------------- 
+Key: llama.rope.dimension_count
+Value: 128 (uint32)
+Type: 4
+ ----------------------------------- 
+Key: llama.attention.head_count
+Value: 32 (uint32)
+Type: 4
+ ----------------------------------- 
+Key: llama.attention.head_count_kv
+Value: 32 (uint32)
+Type: 4
+ ----------------------------------- 
+Key: llama.attention.layer_norm_rms_epsilon
+Value: 0.000001 (float32)
+Type: 6
+ ----------------------------------- 
+Key: general.file_type
+Value: 10 (uint32)
+Type: 4
+ ----------------------------------- 
+Key: tokenizer.ggml.model
+Value: llama (string)
+Type: 8
+ ----------------------------------- 
+Key: tokenizer.ggml.tokens
+Value: (array of type 8, size 32001)
+Type: 9
+ ----------------------------------- 
+Key: tokenizer.ggml.scores
+Value: (array of type 6, size 32001)
+Type: 9
+ ----------------------------------- 
+Key: tokenizer.ggml.token_type
+Value: (array of type 5, size 32001)
+Type: 9
+ ----------------------------------- 
+Key: tokenizer.ggml.bos_token_id
+Value: 1 (uint32)
+Type: 4
+ ----------------------------------- 
+Key: tokenizer.ggml.eos_token_id
+Value: 2 (uint32)
+Type: 4
+ ----------------------------------- 
+Key: tokenizer.ggml.unknown_token_id
+Value: 0 (uint32)
+Type: 4
+ ----------------------------------- 
+Key: tokenizer.ggml.padding_token_id
+Value: 32000 (uint32)
+Type: 4
+ ----------------------------------- 
+Key: general.quantization_version
+Value: 2 (uint32)
+Type: 4
+ ----------------------------------- 
+
+ *************************  TENSORS  ************************* 
+ 
+Tensor Name: blk.0.attn_q.weight
+Number of Dimensions: 2
+Offsets: 0
+Data Size: 0
+Dimensions: 4096 4096 
+ ----------------------------------- 
+Tensor Name: blk.0.attn_k.weight
+Number of Dimensions: 2
+Offsets: 5505024
+Data Size: 0
+Dimensions: 4096 4096 
+ ----------------------------------- 
+Tensor Name: blk.0.attn_v.weight
+Number of Dimensions: 2
+Offsets: 11010048
+Data Size: 0
+Dimensions: 4096 4096 
+ ----------------------------------- 
+Tensor Name: blk.0.attn_output.weight
+Number of Dimensions: 2
+Offsets: 18219008
+Data Size: 0
+Dimensions: 4096 4096 
+ ----------------------------------- 
+Tensor Name: blk.0.ffn_gate.weight
+Number of Dimensions: 2
+Offsets: 25427968
+Data Size: 0
+Dimensions: 4096 11008 
+ ----------------------------------- 
+Tensor Name: blk.0.ffn_down.weight
+Number of Dimensions: 2
+Offsets: 44802048
+Data Size: 0
+Dimensions: 11008 4096 
+ ----------------------------------- 
+Tensor Name: blk.0.ffn_up.weight
+Number of Dimensions: 2
+Offsets: 64176128
+Data Size: 0
+Dimensions: 4096 11008 
+ ----------------------------------- 
+Tensor Name: blk.0.attn_norm.weight
+Number of Dimensions: 1
+Offsets: 83550208
+Data Size: 0
+Dimensions: 4096 
+ ----------------------------------- 
+Tensor Name: blk.0.ffn_norm.weight
+Number of Dimensions: 1
+Offsets: 83566592
+Data Size: 0
+Dimensions: 4096 
+ ----------------------------------- 
+Tensor Name: blk.1.attn_q.weight
+Number of Dimensions: 2
+Offsets: 83582976
+Data Size: 0
+Dimensions: 4096 4096 
+ ----------------------------------- 
+Tensor Name: blk.1.attn_k.weight
+Number of Dimensions: 2
+Offsets: 89088000
+Data Size: 0
+Dimensions: 4096 4096 
+ ----------------------------------- 
+Tensor Name: blk.1.attn_v.weight
+Number of Dimensions: 2
+Offsets: 94593024
+Data Size: 0
+Dimensions: 4096 4096 
+ ----------------------------------- 
+Tensor Name: blk.1.attn_output.weight
+Number of Dimensions: 2
+Offsets: 101801984
+Data Size: 0
+Dimensions: 4096 4096 
+ ----------------------------------- 
+Tensor Name: blk.1.ffn_gate.weight
+Number of Dimensions: 2
+Offsets: 109010944
+Data Size: 0
+Dimensions: 4096 11008 
+ ----------------------------------- 
+Tensor Name: blk.1.ffn_down.weight
+Number of Dimensions: 2
+Offsets: 128385024
+Data Size: 0
+Dimensions: 11008 4096 
+ ----------------------------------- 
+Tensor Name: blk.1.ffn_up.weight
+Number of Dimensions: 2
+Offsets: 147759104
+Data Size: 0
+Dimensions: 4096 11008 
+ ----------------------------------- 
+Tensor Name: blk.1.attn_norm.weight
+Number of Dimensions: 1
+Offsets: 167133184
+Data Size: 0
+Dimensions: 4096 
+ ----------------------------------- 
+Tensor Name: blk.1.ffn_norm.weight
+Number of Dimensions: 1
+Offsets: 167149568
+Data Size: 0
+Dimensions: 4096 
+ ----------------------------------- 
+Tensor Name: blk.2.attn_q.weight
+Number of Dimensions: 2
+Offsets: 167165952
+Data Size: 0
+Dimensions: 4096 4096 
+ ----------------------------------- 
+Tensor Name: blk.2.attn_k.weight
+Number of Dimensions: 2
+Offsets: 172670976
+Data Size: 0
+Dimensions: 4096 4096 
+ ----------------------------------- 
+Tensor Name: blk.2.attn_v.weight
+Number of Dimensions: 2
+Offsets: 178176000
+Data Size: 0
+Dimensions: 4096 4096 
+ ----------------------------------- 
+Tensor Name: blk.2.attn_output.weight
+Number of Dimensions: 2
+Offsets: 185384960
+Data Size: 0
+Dimensions: 4096 4096 
+ ----------------------------------- 
+Tensor Name: blk.2.ffn_gate.weight
+Number of Dimensions: 2
+Offsets: 192593920
+Data Size: 0
+Dimensions: 4096 11008 
+ ----------------------------------- 
+Tensor Name: blk.2.ffn_down.weight
+Number of Dimensions: 2
+Offsets: 211968000
+Data Size: 0
+Dimensions: 11008 4096 
+ ----------------------------------- 
+Tensor Name: blk.2.ffn_up.weight
+Number of Dimensions: 2
+Offsets: 231342080
+Data Size: 0
+Dimensions: 4096 11008 
+ ----------------------------------- 
+Tensor Name: blk.2.attn_norm.weight
+Number of Dimensions: 1
+Offsets: 250716160
+Data Size: 0
+Dimensions: 4096 
+ ----------------------------------- 
+Tensor Name: blk.2.ffn_norm.weight
+Number of Dimensions: 1
+Offsets: 250732544
+Data Size: 0
+Dimensions: 4096 
+ ----------------------------------- 
+Tensor Name: blk.3.attn_q.weight
+Number of Dimensions: 2
+Offsets: 250748928
+Data Size: 0
+Dimensions: 4096 4096 
+ ----------------------------------- 
+Tensor Name: blk.3.attn_k.weight
+Number of Dimensions: 2
+Offsets: 256253952
+Data Size: 0
+Dimensions: 4096 4096 
+ ----------------------------------- 
+Tensor Name: blk.3.attn_v.weight
+Number of Dimensions: 2
+Offsets: 261758976
+Data Size: 0
+Dimensions: 4096 4096 
+ ----------------------------------- 
+Tensor Name: blk.3.attn_output.weight
+Number of Dimensions: 2
+Offsets: 268967936
+Data Size: 0
+Dimensions: 4096 4096 
+ ----------------------------------- 
+Tensor Name: blk.3.ffn_gate.weight
+Number of Dimensions: 2
+Offsets: 276176896
+Data Size: 0
+Dimensions: 4096 11008 
+ ----------------------------------- 
+Tensor Name: blk.3.ffn_down.weight
+Number of Dimensions: 2
+Offsets: 295550976
+Data Size: 0
+Dimensions: 11008 4096 
+ ----------------------------------- 
+Tensor Name: blk.3.ffn_up.weight
+Number of Dimensions: 2
+Offsets: 314925056
+Data Size: 0
+Dimensions: 4096 11008 
+ ----------------------------------- 
+Tensor Name: blk.3.attn_norm.weight
+Number of Dimensions: 1
+Offsets: 334299136
+Data Size: 0
+Dimensions: 4096 
+ ----------------------------------- 
+Tensor Name: blk.3.ffn_norm.weight
+Number of Dimensions: 1
+Offsets: 334315520
+Data Size: 0
+Dimensions: 4096 
+ ----------------------------------- 
+Tensor Name: blk.4.attn_q.weight
+Number of Dimensions: 2
+Offsets: 334331904
+Data Size: 0
+Dimensions: 4096 4096 
+ ----------------------------------- 
+Tensor Name: blk.4.attn_k.weight
+Number of Dimensions: 2
+Offsets: 339836928
+Data Size: 0
+Dimensions: 4096 4096 
+ ----------------------------------- 
+Tensor Name: blk.4.attn_v.weight
+Number of Dimensions: 2
+Offsets: 345341952
+Data Size: 0
+Dimensions: 4096 4096 
+ ----------------------------------- 
+Tensor Name: blk.4.attn_output.weight
+Number of Dimensions: 2
+Offsets: 352550912
+Data Size: 0
+Dimensions: 4096 4096 
+ ----------------------------------- 
+Tensor Name: blk.4.ffn_gate.weight
+Number of Dimensions: 2
+Offsets: 359759872
+Data Size: 0
+Dimensions: 4096 11008 
+ ----------------------------------- 
+Tensor Name: blk.4.ffn_down.weight
+Number of Dimensions: 2
+Offsets: 379133952
+Data Size: 0
+Dimensions: 11008 4096 
+ ----------------------------------- 
+Tensor Name: blk.4.ffn_up.weight
+Number of Dimensions: 2
+Offsets: 398508032
+Data Size: 0
+Dimensions: 4096 11008 
+ ----------------------------------- 
+Tensor Name: blk.4.attn_norm.weight
+Number of Dimensions: 1
+Offsets: 417882112
+Data Size: 0
+Dimensions: 4096 
+ ----------------------------------- 
+Tensor Name: blk.4.ffn_norm.weight
+Number of Dimensions: 1
+Offsets: 417898496
+Data Size: 0
+Dimensions: 4096 
+ ----------------------------------- 
+Tensor Name: blk.5.attn_q.weight
+Number of Dimensions: 2
+Offsets: 417914880
+Data Size: 0
+Dimensions: 4096 4096 
+ ----------------------------------- 
+Tensor Name: blk.5.attn_k.weight
+Number of Dimensions: 2
+Offsets: 423419904
+Data Size: 0
+Dimensions: 4096 4096 
+ ----------------------------------- 
+Tensor Name: blk.5.attn_v.weight
+Number of Dimensions: 2
+Offsets: 428924928
+Data Size: 0
+Dimensions: 4096 4096 
+ ----------------------------------- 
+Tensor Name: blk.5.attn_output.weight
+Number of Dimensions: 2
+Offsets: 436133888
+Data Size: 0
+Dimensions: 4096 4096 
+ ----------------------------------- 
+Tensor Name: blk.5.ffn_gate.weight
+Number of Dimensions: 2
+Offsets: 443342848
+Data Size: 0
+Dimensions: 4096 11008 
+ ----------------------------------- 
+Tensor Name: blk.5.ffn_down.weight
+Number of Dimensions: 2
+Offsets: 462716928
+Data Size: 0
+Dimensions: 11008 4096 
+ ----------------------------------- 
+Tensor Name: blk.5.ffn_up.weight
+Number of Dimensions: 2
+Offsets: 482091008
+Data Size: 0
+Dimensions: 4096 11008 
+ ----------------------------------- 
+Tensor Name: blk.5.attn_norm.weight
+Number of Dimensions: 1
+Offsets: 501465088
+Data Size: 0
+Dimensions: 4096 
+ ----------------------------------- 
+Tensor Name: blk.5.ffn_norm.weight
+Number of Dimensions: 1
+Offsets: 501481472
+Data Size: 0
+Dimensions: 4096 
+ ----------------------------------- 
+Tensor Name: blk.6.attn_q.weight
+Number of Dimensions: 2
+Offsets: 501497856
+Data Size: 0
+Dimensions: 4096 4096 
+ ----------------------------------- 
+Tensor Name: blk.6.attn_k.weight
+Number of Dimensions: 2
+Offsets: 507002880
+Data Size: 0
+Dimensions: 4096 4096 
+ ----------------------------------- 
+Tensor Name: blk.6.attn_v.weight
+Number of Dimensions: 2
+Offsets: 512507904
+Data Size: 0
+Dimensions: 4096 4096 
+ ----------------------------------- 
+Tensor Name: blk.6.attn_output.weight
+Number of Dimensions: 2
+Offsets: 519716864
+Data Size: 0
+Dimensions: 4096 4096 
+ ----------------------------------- 
+Tensor Name: blk.6.ffn_gate.weight
+Number of Dimensions: 2
+Offsets: 526925824
+Data Size: 0
+Dimensions: 4096 11008 
+ ----------------------------------- 
+Tensor Name: blk.6.ffn_down.weight
+Number of Dimensions: 2
+Offsets: 546299904
+Data Size: 0
+Dimensions: 11008 4096 
+ ----------------------------------- 
+Tensor Name: blk.6.ffn_up.weight
+Number of Dimensions: 2
+Offsets: 565673984
+Data Size: 0
+Dimensions: 4096 11008 
+ ----------------------------------- 
+Tensor Name: blk.6.attn_norm.weight
+Number of Dimensions: 1
+Offsets: 585048064
+Data Size: 0
+Dimensions: 4096 
+ ----------------------------------- 
+Tensor Name: blk.6.ffn_norm.weight
+Number of Dimensions: 1
+Offsets: 585064448
+Data Size: 0
+Dimensions: 4096 
+ ----------------------------------- 
+Tensor Name: blk.7.attn_q.weight
+Number of Dimensions: 2
+Offsets: 585080832
+Data Size: 0
+Dimensions: 4096 4096 
+ ----------------------------------- 
+Tensor Name: blk.7.attn_k.weight
+Number of Dimensions: 2
+Offsets: 590585856
+Data Size: 0
+Dimensions: 4096 4096 
+ ----------------------------------- 
+Tensor Name: blk.7.attn_v.weight
+Number of Dimensions: 2
+Offsets: 596090880
+Data Size: 0
+Dimensions: 4096 4096 
+ ----------------------------------- 
+Tensor Name: blk.7.attn_output.weight
+Number of Dimensions: 2
+Offsets: 603299840
+Data Size: 0
+Dimensions: 4096 4096 
+ ----------------------------------- 
+Tensor Name: blk.7.ffn_gate.weight
+Number of Dimensions: 2
+Offsets: 610508800
+Data Size: 0
+Dimensions: 4096 11008 
+ ----------------------------------- 
+Tensor Name: blk.7.ffn_down.weight
+Number of Dimensions: 2
+Offsets: 629882880
+Data Size: 0
+Dimensions: 11008 4096 
+ ----------------------------------- 
+Tensor Name: blk.7.ffn_up.weight
+Number of Dimensions: 2
+Offsets: 649256960
+Data Size: 0
+Dimensions: 4096 11008 
+ ----------------------------------- 
+Tensor Name: blk.7.attn_norm.weight
+Number of Dimensions: 1
+Offsets: 668631040
+Data Size: 0
+Dimensions: 4096 
+ ----------------------------------- 
+Tensor Name: blk.7.ffn_norm.weight
+Number of Dimensions: 1
+Offsets: 668647424
+Data Size: 0
+Dimensions: 4096 
+ ----------------------------------- 
+Tensor Name: blk.8.attn_q.weight
+Number of Dimensions: 2
+Offsets: 668663808
+Data Size: 0
+Dimensions: 4096 4096 
+ ----------------------------------- 
+Tensor Name: blk.8.attn_k.weight
+Number of Dimensions: 2
+Offsets: 674168832
+Data Size: 0
+Dimensions: 4096 4096 
+ ----------------------------------- 
+Tensor Name: blk.8.attn_v.weight
+Number of Dimensions: 2
+Offsets: 679673856
+Data Size: 0
+Dimensions: 4096 4096 
+ ----------------------------------- 
+Tensor Name: blk.8.attn_output.weight
+Number of Dimensions: 2
+Offsets: 686882816
+Data Size: 0
+Dimensions: 4096 4096 
+ ----------------------------------- 
+Tensor Name: blk.8.ffn_gate.weight
+Number of Dimensions: 2
+Offsets: 694091776
+Data Size: 0
+Dimensions: 4096 11008 
+ ----------------------------------- 
+Tensor Name: blk.8.ffn_down.weight
+Number of Dimensions: 2
+Offsets: 713465856
+Data Size: 0
+Dimensions: 11008 4096 
+ ----------------------------------- 
+Tensor Name: blk.8.ffn_up.weight
+Number of Dimensions: 2
+Offsets: 732839936
+Data Size: 0
+Dimensions: 4096 11008 
+ ----------------------------------- 
+Tensor Name: blk.8.attn_norm.weight
+Number of Dimensions: 1
+Offsets: 752214016
+Data Size: 0
+Dimensions: 4096 
+ ----------------------------------- 
+Tensor Name: blk.8.ffn_norm.weight
+Number of Dimensions: 1
+Offsets: 752230400
+Data Size: 0
+Dimensions: 4096 
+ ----------------------------------- 
+Tensor Name: blk.9.attn_q.weight
+Number of Dimensions: 2
+Offsets: 752246784
+Data Size: 0
+Dimensions: 4096 4096 
+ ----------------------------------- 
+Tensor Name: blk.9.attn_k.weight
+Number of Dimensions: 2
+Offsets: 757751808
+Data Size: 0
+Dimensions: 4096 4096 
+ ----------------------------------- 
+Tensor Name: blk.9.attn_v.weight
+Number of Dimensions: 2
+Offsets: 763256832
+Data Size: 0
+Dimensions: 4096 4096 
+ ----------------------------------- 
+Tensor Name: blk.9.attn_output.weight
+Number of Dimensions: 2
+Offsets: 770465792
+Data Size: 0
+Dimensions: 4096 4096 
+ ----------------------------------- 
+Tensor Name: blk.9.ffn_gate.weight
+Number of Dimensions: 2
+Offsets: 777674752
+Data Size: 0
+Dimensions: 4096 11008 
+ ----------------------------------- 
+Tensor Name: blk.9.ffn_down.weight
+Number of Dimensions: 2
+Offsets: 797048832
+Data Size: 0
+Dimensions: 11008 4096 
+ ----------------------------------- 
+Tensor Name: blk.9.ffn_up.weight
+Number of Dimensions: 2
+Offsets: 816422912
+Data Size: 0
+Dimensions: 4096 11008 
+ ----------------------------------- 
+Tensor Name: blk.9.attn_norm.weight
+Number of Dimensions: 1
+Offsets: 835796992
+Data Size: 0
+Dimensions: 4096 
+ ----------------------------------- 
+Tensor Name: blk.9.ffn_norm.weight
+Number of Dimensions: 1
+Offsets: 835813376
+Data Size: 0
+Dimensions: 4096 
+ ----------------------------------- 
+Tensor Name: blk.10.attn_q.weight
+Number of Dimensions: 2
+Offsets: 835829760
+Data Size: 0
+Dimensions: 4096 4096 
+ ----------------------------------- 
+Tensor Name: blk.10.attn_k.weight
+Number of Dimensions: 2
+Offsets: 841334784
+Data Size: 0
+Dimensions: 4096 4096 
+ ----------------------------------- 
+Tensor Name: blk.10.attn_v.weight
+Number of Dimensions: 2
+Offsets: 846839808
+Data Size: 0
+Dimensions: 4096 4096 
+ ----------------------------------- 
+Tensor Name: blk.10.attn_output.weight
+Number of Dimensions: 2
+Offsets: 854048768
+Data Size: 0
+Dimensions: 4096 4096 
+ ----------------------------------- 
+Tensor Name: blk.10.ffn_gate.weight
+Number of Dimensions: 2
+Offsets: 861257728
+Data Size: 0
+Dimensions: 4096 11008 
+ ----------------------------------- 
+Tensor Name: blk.10.ffn_down.weight
+Number of Dimensions: 2
+Offsets: 880631808
+Data Size: 0
+Dimensions: 11008 4096 
+ ----------------------------------- 
+Tensor Name: blk.10.ffn_up.weight
+Number of Dimensions: 2
+Offsets: 900005888
+Data Size: 0
+Dimensions: 4096 11008 
+ ----------------------------------- 
+Tensor Name: blk.10.attn_norm.weight
+Number of Dimensions: 1
+Offsets: 919379968
+Data Size: 0
+Dimensions: 4096 
+ ----------------------------------- 
+Tensor Name: blk.10.ffn_norm.weight
+Number of Dimensions: 1
+Offsets: 919396352
+Data Size: 0
+Dimensions: 4096 
+ ----------------------------------- 
+Tensor Name: blk.11.attn_q.weight
+Number of Dimensions: 2
+Offsets: 919412736
+Data Size: 0
+Dimensions: 4096 4096 
+ ----------------------------------- 
+Tensor Name: blk.11.attn_k.weight
+Number of Dimensions: 2
+Offsets: 924917760
+Data Size: 0
+Dimensions: 4096 4096 
+ ----------------------------------- 
+Tensor Name: blk.11.attn_v.weight
+Number of Dimensions: 2
+Offsets: 930422784
+Data Size: 0
+Dimensions: 4096 4096 
+ ----------------------------------- 
+Tensor Name: blk.11.attn_output.weight
+Number of Dimensions: 2
+Offsets: 937631744
+Data Size: 0
+Dimensions: 4096 4096 
+ ----------------------------------- 
+Tensor Name: blk.11.ffn_gate.weight
+Number of Dimensions: 2
+Offsets: 944840704
+Data Size: 0
+Dimensions: 4096 11008 
+ ----------------------------------- 
+Tensor Name: blk.11.ffn_down.weight
+Number of Dimensions: 2
+Offsets: 964214784
+Data Size: 0
+Dimensions: 11008 4096 
+ ----------------------------------- 
+Tensor Name: blk.11.ffn_up.weight
+Number of Dimensions: 2
+Offsets: 983588864
+Data Size: 0
+Dimensions: 4096 11008 
+ ----------------------------------- 
+Tensor Name: blk.11.attn_norm.weight
+Number of Dimensions: 1
+Offsets: 1002962944
+Data Size: 0
+Dimensions: 4096 
+ ----------------------------------- 
+Tensor Name: blk.11.ffn_norm.weight
+Number of Dimensions: 1
+Offsets: 1002979328
+Data Size: 0
+Dimensions: 4096 
+ ----------------------------------- 
+Tensor Name: blk.12.attn_q.weight
+Number of Dimensions: 2
+Offsets: 1002995712
+Data Size: 0
+Dimensions: 4096 4096 
+ ----------------------------------- 
+Tensor Name: blk.12.attn_k.weight
+Number of Dimensions: 2
+Offsets: 1008500736
+Data Size: 0
+Dimensions: 4096 4096 
+ ----------------------------------- 
+Tensor Name: blk.12.attn_v.weight
+Number of Dimensions: 2
+Offsets: 1014005760
+Data Size: 0
+Dimensions: 4096 4096 
+ ----------------------------------- 
+Tensor Name: blk.12.attn_output.weight
+Number of Dimensions: 2
+Offsets: 1021214720
+Data Size: 0
+Dimensions: 4096 4096 
+ ----------------------------------- 
+Tensor Name: blk.12.ffn_gate.weight
+Number of Dimensions: 2
+Offsets: 1028423680
+Data Size: 0
+Dimensions: 4096 11008 
+ ----------------------------------- 
+Tensor Name: blk.12.ffn_down.weight
+Number of Dimensions: 2
+Offsets: 1047797760
+Data Size: 0
+Dimensions: 11008 4096 
+ ----------------------------------- 
+Tensor Name: blk.12.ffn_up.weight
+Number of Dimensions: 2
+Offsets: 1067171840
+Data Size: 0
+Dimensions: 4096 11008 
+ ----------------------------------- 
+Tensor Name: blk.12.attn_norm.weight
+Number of Dimensions: 1
+Offsets: 1086545920
+Data Size: 0
+Dimensions: 4096 
+ ----------------------------------- 
+Tensor Name: blk.12.ffn_norm.weight
+Number of Dimensions: 1
+Offsets: 1086562304
+Data Size: 0
+Dimensions: 4096 
+ ----------------------------------- 
+Tensor Name: blk.13.attn_q.weight
+Number of Dimensions: 2
+Offsets: 1086578688
+Data Size: 0
+Dimensions: 4096 4096 
+ ----------------------------------- 
+Tensor Name: blk.13.attn_k.weight
+Number of Dimensions: 2
+Offsets: 1092083712
+Data Size: 0
+Dimensions: 4096 4096 
+ ----------------------------------- 
+Tensor Name: blk.13.attn_v.weight
+Number of Dimensions: 2
+Offsets: 1097588736
+Data Size: 0
+Dimensions: 4096 4096 
+ ----------------------------------- 
+Tensor Name: blk.13.attn_output.weight
+Number of Dimensions: 2
+Offsets: 1104797696
+Data Size: 0
+Dimensions: 4096 4096 
+ ----------------------------------- 
+Tensor Name: blk.13.ffn_gate.weight
+Number of Dimensions: 2
+Offsets: 1112006656
+Data Size: 0
+Dimensions: 4096 11008 
+ ----------------------------------- 
+Tensor Name: blk.13.ffn_down.weight
+Number of Dimensions: 2
+Offsets: 1131380736
+Data Size: 0
+Dimensions: 11008 4096 
+ ----------------------------------- 
+Tensor Name: blk.13.ffn_up.weight
+Number of Dimensions: 2
+Offsets: 1150754816
+Data Size: 0
+Dimensions: 4096 11008 
+ ----------------------------------- 
+Tensor Name: blk.13.attn_norm.weight
+Number of Dimensions: 1
+Offsets: 1170128896
+Data Size: 0
+Dimensions: 4096 
+ ----------------------------------- 
+Tensor Name: blk.13.ffn_norm.weight
+Number of Dimensions: 1
+Offsets: 1170145280
+Data Size: 0
+Dimensions: 4096 
+ ----------------------------------- 
+Tensor Name: blk.14.attn_q.weight
+Number of Dimensions: 2
+Offsets: 1170161664
+Data Size: 0
+Dimensions: 4096 4096 
+ ----------------------------------- 
+Tensor Name: blk.14.attn_k.weight
+Number of Dimensions: 2
+Offsets: 1175666688
+Data Size: 0
+Dimensions: 4096 4096 
+ ----------------------------------- 
+Tensor Name: blk.14.attn_v.weight
+Number of Dimensions: 2
+Offsets: 1181171712
+Data Size: 0
+Dimensions: 4096 4096 
+ ----------------------------------- 
+Tensor Name: blk.14.attn_output.weight
+Number of Dimensions: 2
+Offsets: 1188380672
+Data Size: 0
+Dimensions: 4096 4096 
+ ----------------------------------- 
+Tensor Name: blk.14.ffn_gate.weight
+Number of Dimensions: 2
+Offsets: 1195589632
+Data Size: 0
+Dimensions: 4096 11008 
+ ----------------------------------- 
+Tensor Name: blk.14.ffn_down.weight
+Number of Dimensions: 2
+Offsets: 1214963712
+Data Size: 0
+Dimensions: 11008 4096 
+ ----------------------------------- 
+Tensor Name: blk.14.ffn_up.weight
+Number of Dimensions: 2
+Offsets: 1234337792
+Data Size: 0
+Dimensions: 4096 11008 
+ ----------------------------------- 
+Tensor Name: blk.14.attn_norm.weight
+Number of Dimensions: 1
+Offsets: 1253711872
+Data Size: 0
+Dimensions: 4096 
+ ----------------------------------- 
+Tensor Name: blk.14.ffn_norm.weight
+Number of Dimensions: 1
+Offsets: 1253728256
+Data Size: 0
+Dimensions: 4096 
+ ----------------------------------- 
+Tensor Name: blk.15.attn_q.weight
+Number of Dimensions: 2
+Offsets: 1253744640
+Data Size: 0
+Dimensions: 4096 4096 
+ ----------------------------------- 
+Tensor Name: blk.15.attn_k.weight
+Number of Dimensions: 2
+Offsets: 1259249664
+Data Size: 0
+Dimensions: 4096 4096 
+ ----------------------------------- 
+Tensor Name: blk.15.attn_v.weight
+Number of Dimensions: 2
+Offsets: 1264754688
+Data Size: 0
+Dimensions: 4096 4096 
+ ----------------------------------- 
+Tensor Name: blk.15.attn_output.weight
+Number of Dimensions: 2
+Offsets: 1271963648
+Data Size: 0
+Dimensions: 4096 4096 
+ ----------------------------------- 
+Tensor Name: blk.15.ffn_gate.weight
+Number of Dimensions: 2
+Offsets: 1279172608
+Data Size: 0
+Dimensions: 4096 11008 
+ ----------------------------------- 
+Tensor Name: blk.15.ffn_down.weight
+Number of Dimensions: 2
+Offsets: 1298546688
+Data Size: 0
+Dimensions: 11008 4096 
+ ----------------------------------- 
+Tensor Name: blk.15.ffn_up.weight
+Number of Dimensions: 2
+Offsets: 1317920768
+Data Size: 0
+Dimensions: 4096 11008 
+ ----------------------------------- 
+Tensor Name: blk.15.attn_norm.weight
+Number of Dimensions: 1
+Offsets: 1337294848
+Data Size: 0
+Dimensions: 4096 
+ ----------------------------------- 
+Tensor Name: blk.15.ffn_norm.weight
+Number of Dimensions: 1
+Offsets: 1337311232
+Data Size: 0
+Dimensions: 4096 
+ ----------------------------------- 
+Tensor Name: blk.16.attn_q.weight
+Number of Dimensions: 2
+Offsets: 1337327616
+Data Size: 0
+Dimensions: 4096 4096 
+ ----------------------------------- 
+Tensor Name: blk.16.attn_k.weight
+Number of Dimensions: 2
+Offsets: 1342832640
+Data Size: 0
+Dimensions: 4096 4096 
+ ----------------------------------- 
+Tensor Name: blk.16.attn_v.weight
+Number of Dimensions: 2
+Offsets: 1348337664
+Data Size: 0
+Dimensions: 4096 4096 
+ ----------------------------------- 
+Tensor Name: blk.16.attn_output.weight
+Number of Dimensions: 2
+Offsets: 1355546624
+Data Size: 0
+Dimensions: 4096 4096 
+ ----------------------------------- 
+Tensor Name: blk.16.ffn_gate.weight
+Number of Dimensions: 2
+Offsets: 1362755584
+Data Size: 0
+Dimensions: 4096 11008 
+ ----------------------------------- 
+Tensor Name: blk.16.ffn_down.weight
+Number of Dimensions: 2
+Offsets: 1382129664
+Data Size: 0
+Dimensions: 11008 4096 
+ ----------------------------------- 
+Tensor Name: blk.16.ffn_up.weight
+Number of Dimensions: 2
+Offsets: 1401503744
+Data Size: 0
+Dimensions: 4096 11008 
+ ----------------------------------- 
+Tensor Name: blk.16.attn_norm.weight
+Number of Dimensions: 1
+Offsets: 1420877824
+Data Size: 0
+Dimensions: 4096 
+ ----------------------------------- 
+Tensor Name: blk.16.ffn_norm.weight
+Number of Dimensions: 1
+Offsets: 1420894208
+Data Size: 0
+Dimensions: 4096 
+ ----------------------------------- 
+Tensor Name: blk.17.attn_q.weight
+Number of Dimensions: 2
+Offsets: 1420910592
+Data Size: 0
+Dimensions: 4096 4096 
+ ----------------------------------- 
+Tensor Name: blk.17.attn_k.weight
+Number of Dimensions: 2
+Offsets: 1426415616
+Data Size: 0
+Dimensions: 4096 4096 
+ ----------------------------------- 
+Tensor Name: blk.17.attn_v.weight
+Number of Dimensions: 2
+Offsets: 1431920640
+Data Size: 0
+Dimensions: 4096 4096 
+ ----------------------------------- 
+Tensor Name: blk.17.attn_output.weight
+Number of Dimensions: 2
+Offsets: 1439129600
+Data Size: 0
+Dimensions: 4096 4096 
+ ----------------------------------- 
+Tensor Name: blk.17.ffn_gate.weight
+Number of Dimensions: 2
+Offsets: 1446338560
+Data Size: 0
+Dimensions: 4096 11008 
+ ----------------------------------- 
+Tensor Name: blk.17.ffn_down.weight
+Number of Dimensions: 2
+Offsets: 1465712640
+Data Size: 0
+Dimensions: 11008 4096 
+ ----------------------------------- 
+Tensor Name: blk.17.ffn_up.weight
+Number of Dimensions: 2
+Offsets: 1485086720
+Data Size: 0
+Dimensions: 4096 11008 
+ ----------------------------------- 
+Tensor Name: blk.17.attn_norm.weight
+Number of Dimensions: 1
+Offsets: 1504460800
+Data Size: 0
+Dimensions: 4096 
+ ----------------------------------- 
+Tensor Name: blk.17.ffn_norm.weight
+Number of Dimensions: 1
+Offsets: 1504477184
+Data Size: 0
+Dimensions: 4096 
+ ----------------------------------- 
+Tensor Name: blk.18.attn_q.weight
+Number of Dimensions: 2
+Offsets: 1504493568
+Data Size: 0
+Dimensions: 4096 4096 
+ ----------------------------------- 
+Tensor Name: blk.18.attn_k.weight
+Number of Dimensions: 2
+Offsets: 1509998592
+Data Size: 0
+Dimensions: 4096 4096 
+ ----------------------------------- 
+Tensor Name: blk.18.attn_v.weight
+Number of Dimensions: 2
+Offsets: 1515503616
+Data Size: 0
+Dimensions: 4096 4096 
+ ----------------------------------- 
+Tensor Name: blk.18.attn_output.weight
+Number of Dimensions: 2
+Offsets: 1522712576
+Data Size: 0
+Dimensions: 4096 4096 
+ ----------------------------------- 
+Tensor Name: blk.18.ffn_gate.weight
+Number of Dimensions: 2
+Offsets: 1529921536
+Data Size: 0
+Dimensions: 4096 11008 
+ ----------------------------------- 
+Tensor Name: blk.18.ffn_down.weight
+Number of Dimensions: 2
+Offsets: 1549295616
+Data Size: 0
+Dimensions: 11008 4096 
+ ----------------------------------- 
+Tensor Name: blk.18.ffn_up.weight
+Number of Dimensions: 2
+Offsets: 1568669696
+Data Size: 0
+Dimensions: 4096 11008 
+ ----------------------------------- 
+Tensor Name: blk.18.attn_norm.weight
+Number of Dimensions: 1
+Offsets: 1588043776
+Data Size: 0
+Dimensions: 4096 
+ ----------------------------------- 
+Tensor Name: blk.18.ffn_norm.weight
+Number of Dimensions: 1
+Offsets: 1588060160
+Data Size: 0
+Dimensions: 4096 
+ ----------------------------------- 
+Tensor Name: blk.19.attn_q.weight
+Number of Dimensions: 2
+Offsets: 1588076544
+Data Size: 0
+Dimensions: 4096 4096 
+ ----------------------------------- 
+Tensor Name: blk.19.attn_k.weight
+Number of Dimensions: 2
+Offsets: 1593581568
+Data Size: 0
+Dimensions: 4096 4096 
+ ----------------------------------- 
+Tensor Name: blk.19.attn_v.weight
+Number of Dimensions: 2
+Offsets: 1599086592
+Data Size: 0
+Dimensions: 4096 4096 
+ ----------------------------------- 
+Tensor Name: blk.19.attn_output.weight
+Number of Dimensions: 2
+Offsets: 1606295552
+Data Size: 0
+Dimensions: 4096 4096 
+ ----------------------------------- 
+Tensor Name: blk.19.ffn_gate.weight
+Number of Dimensions: 2
+Offsets: 1613504512
+Data Size: 0
+Dimensions: 4096 11008 
+ ----------------------------------- 
+Tensor Name: blk.19.ffn_down.weight
+Number of Dimensions: 2
+Offsets: 1632878592
+Data Size: 0
+Dimensions: 11008 4096 
+ ----------------------------------- 
+Tensor Name: blk.19.ffn_up.weight
+Number of Dimensions: 2
+Offsets: 1652252672
+Data Size: 0
+Dimensions: 4096 11008 
+ ----------------------------------- 
+Tensor Name: blk.19.attn_norm.weight
+Number of Dimensions: 1
+Offsets: 1671626752
+Data Size: 0
+Dimensions: 4096 
+ ----------------------------------- 
+Tensor Name: blk.19.ffn_norm.weight
+Number of Dimensions: 1
+Offsets: 1671643136
+Data Size: 0
+Dimensions: 4096 
+ ----------------------------------- 
+Tensor Name: blk.20.attn_q.weight
+Number of Dimensions: 2
+Offsets: 1671659520
+Data Size: 0
+Dimensions: 4096 4096 
+ ----------------------------------- 
+Tensor Name: blk.20.attn_k.weight
+Number of Dimensions: 2
+Offsets: 1677164544
+Data Size: 0
+Dimensions: 4096 4096 
+ ----------------------------------- 
+Tensor Name: blk.20.attn_v.weight
+Number of Dimensions: 2
+Offsets: 1682669568
+Data Size: 0
+Dimensions: 4096 4096 
+ ----------------------------------- 
+Tensor Name: blk.20.attn_output.weight
+Number of Dimensions: 2
+Offsets: 1689878528
+Data Size: 0
+Dimensions: 4096 4096 
+ ----------------------------------- 
+Tensor Name: blk.20.ffn_gate.weight
+Number of Dimensions: 2
+Offsets: 1697087488
+Data Size: 0
+Dimensions: 4096 11008 
+ ----------------------------------- 
+Tensor Name: blk.20.ffn_down.weight
+Number of Dimensions: 2
+Offsets: 1716461568
+Data Size: 0
+Dimensions: 11008 4096 
+ ----------------------------------- 
+Tensor Name: blk.20.ffn_up.weight
+Number of Dimensions: 2
+Offsets: 1735835648
+Data Size: 0
+Dimensions: 4096 11008 
+ ----------------------------------- 
+Tensor Name: blk.20.attn_norm.weight
+Number of Dimensions: 1
+Offsets: 1755209728
+Data Size: 0
+Dimensions: 4096 
+ ----------------------------------- 
+Tensor Name: blk.20.ffn_norm.weight
+Number of Dimensions: 1
+Offsets: 1755226112
+Data Size: 0
+Dimensions: 4096 
+ ----------------------------------- 
+Tensor Name: blk.21.attn_q.weight
+Number of Dimensions: 2
+Offsets: 1755242496
+Data Size: 0
+Dimensions: 4096 4096 
+ ----------------------------------- 
+Tensor Name: blk.21.attn_k.weight
+Number of Dimensions: 2
+Offsets: 1760747520
+Data Size: 0
+Dimensions: 4096 4096 
+ ----------------------------------- 
+Tensor Name: blk.21.attn_v.weight
+Number of Dimensions: 2
+Offsets: 1766252544
+Data Size: 0
+Dimensions: 4096 4096 
+ ----------------------------------- 
+Tensor Name: blk.21.attn_output.weight
+Number of Dimensions: 2
+Offsets: 1773461504
+Data Size: 0
+Dimensions: 4096 4096 
+ ----------------------------------- 
+Tensor Name: blk.21.ffn_gate.weight
+Number of Dimensions: 2
+Offsets: 1780670464
+Data Size: 0
+Dimensions: 4096 11008 
+ ----------------------------------- 
+Tensor Name: blk.21.ffn_down.weight
+Number of Dimensions: 2
+Offsets: 1800044544
+Data Size: 0
+Dimensions: 11008 4096 
+ ----------------------------------- 
+Tensor Name: blk.21.ffn_up.weight
+Number of Dimensions: 2
+Offsets: 1819418624
+Data Size: 0
+Dimensions: 4096 11008 
+ ----------------------------------- 
+Tensor Name: blk.21.attn_norm.weight
+Number of Dimensions: 1
+Offsets: 1838792704
+Data Size: 0
+Dimensions: 4096 
+ ----------------------------------- 
+Tensor Name: blk.21.ffn_norm.weight
+Number of Dimensions: 1
+Offsets: 1838809088
+Data Size: 0
+Dimensions: 4096 
+ ----------------------------------- 
+Tensor Name: blk.22.attn_q.weight
+Number of Dimensions: 2
+Offsets: 1838825472
+Data Size: 0
+Dimensions: 4096 4096 
+ ----------------------------------- 
+Tensor Name: blk.22.attn_k.weight
+Number of Dimensions: 2
+Offsets: 1844330496
+Data Size: 0
+Dimensions: 4096 4096 
+ ----------------------------------- 
+Tensor Name: blk.22.attn_v.weight
+Number of Dimensions: 2
+Offsets: 1849835520
+Data Size: 0
+Dimensions: 4096 4096 
+ ----------------------------------- 
+Tensor Name: blk.22.attn_output.weight
+Number of Dimensions: 2
+Offsets: 1857044480
+Data Size: 0
+Dimensions: 4096 4096 
+ ----------------------------------- 
+Tensor Name: blk.22.ffn_gate.weight
+Number of Dimensions: 2
+Offsets: 1864253440
+Data Size: 0
+Dimensions: 4096 11008 
+ ----------------------------------- 
+Tensor Name: blk.22.ffn_down.weight
+Number of Dimensions: 2
+Offsets: 1883627520
+Data Size: 0
+Dimensions: 11008 4096 
+ ----------------------------------- 
+Tensor Name: blk.22.ffn_up.weight
+Number of Dimensions: 2
+Offsets: 1903001600
+Data Size: 0
+Dimensions: 4096 11008 
+ ----------------------------------- 
+Tensor Name: blk.22.attn_norm.weight
+Number of Dimensions: 1
+Offsets: 1922375680
+Data Size: 0
+Dimensions: 4096 
+ ----------------------------------- 
+Tensor Name: blk.22.ffn_norm.weight
+Number of Dimensions: 1
+Offsets: 1922392064
+Data Size: 0
+Dimensions: 4096 
+ ----------------------------------- 
+Tensor Name: blk.23.attn_q.weight
+Number of Dimensions: 2
+Offsets: 1922408448
+Data Size: 0
+Dimensions: 4096 4096 
+ ----------------------------------- 
+Tensor Name: blk.23.attn_k.weight
+Number of Dimensions: 2
+Offsets: 1927913472
+Data Size: 0
+Dimensions: 4096 4096 
+ ----------------------------------- 
+Tensor Name: blk.23.attn_v.weight
+Number of Dimensions: 2
+Offsets: 1933418496
+Data Size: 0
+Dimensions: 4096 4096 
+ ----------------------------------- 
+Tensor Name: blk.23.attn_output.weight
+Number of Dimensions: 2
+Offsets: 1940627456
+Data Size: 0
+Dimensions: 4096 4096 
+ ----------------------------------- 
+Tensor Name: blk.23.ffn_gate.weight
+Number of Dimensions: 2
+Offsets: 1947836416
+Data Size: 0
+Dimensions: 4096 11008 
+ ----------------------------------- 
+Tensor Name: blk.23.ffn_down.weight
+Number of Dimensions: 2
+Offsets: 1967210496
+Data Size: 0
+Dimensions: 11008 4096 
+ ----------------------------------- 
+Tensor Name: blk.23.ffn_up.weight
+Number of Dimensions: 2
+Offsets: 1986584576
+Data Size: 0
+Dimensions: 4096 11008 
+ ----------------------------------- 
+Tensor Name: blk.23.attn_norm.weight
+Number of Dimensions: 1
+Offsets: 2005958656
+Data Size: 0
+Dimensions: 4096 
+ ----------------------------------- 
+Tensor Name: blk.23.ffn_norm.weight
+Number of Dimensions: 1
+Offsets: 2005975040
+Data Size: 0
+Dimensions: 4096 
+ ----------------------------------- 
+Tensor Name: blk.24.attn_q.weight
+Number of Dimensions: 2
+Offsets: 2005991424
+Data Size: 0
+Dimensions: 4096 4096 
+ ----------------------------------- 
+Tensor Name: blk.24.attn_k.weight
+Number of Dimensions: 2
+Offsets: 2011496448
+Data Size: 0
+Dimensions: 4096 4096 
+ ----------------------------------- 
+Tensor Name: blk.24.attn_v.weight
+Number of Dimensions: 2
+Offsets: 2017001472
+Data Size: 0
+Dimensions: 4096 4096 
+ ----------------------------------- 
+Tensor Name: blk.24.attn_output.weight
+Number of Dimensions: 2
+Offsets: 2024210432
+Data Size: 0
+Dimensions: 4096 4096 
+ ----------------------------------- 
+Tensor Name: blk.24.ffn_gate.weight
+Number of Dimensions: 2
+Offsets: 2031419392
+Data Size: 0
+Dimensions: 4096 11008 
+ ----------------------------------- 
+Tensor Name: blk.24.ffn_down.weight
+Number of Dimensions: 2
+Offsets: 2050793472
+Data Size: 0
+Dimensions: 11008 4096 
+ ----------------------------------- 
+Tensor Name: blk.24.ffn_up.weight
+Number of Dimensions: 2
+Offsets: 2070167552
+Data Size: 0
+Dimensions: 4096 11008 
+ ----------------------------------- 
+Tensor Name: blk.24.attn_norm.weight
+Number of Dimensions: 1
+Offsets: 2089541632
+Data Size: 0
+Dimensions: 4096 
+ ----------------------------------- 
+Tensor Name: blk.24.ffn_norm.weight
+Number of Dimensions: 1
+Offsets: 2089558016
+Data Size: 0
+Dimensions: 4096 
+ ----------------------------------- 
+Tensor Name: blk.25.attn_q.weight
+Number of Dimensions: 2
+Offsets: 2089574400
+Data Size: 0
+Dimensions: 4096 4096 
+ ----------------------------------- 
+Tensor Name: blk.25.attn_k.weight
+Number of Dimensions: 2
+Offsets: 2095079424
+Data Size: 0
+Dimensions: 4096 4096 
+ ----------------------------------- 
+Tensor Name: blk.25.attn_v.weight
+Number of Dimensions: 2
+Offsets: 2100584448
+Data Size: 0
+Dimensions: 4096 4096 
+ ----------------------------------- 
+Tensor Name: blk.25.attn_output.weight
+Number of Dimensions: 2
+Offsets: 2107793408
+Data Size: 0
+Dimensions: 4096 4096 
+ ----------------------------------- 
+Tensor Name: blk.25.ffn_gate.weight
+Number of Dimensions: 2
+Offsets: 2115002368
+Data Size: 0
+Dimensions: 4096 11008 
+ ----------------------------------- 
+Tensor Name: blk.25.ffn_down.weight
+Number of Dimensions: 2
+Offsets: 2134376448
+Data Size: 0
+Dimensions: 11008 4096 
+ ----------------------------------- 
+Tensor Name: blk.25.ffn_up.weight
+Number of Dimensions: 2
+Offsets: 2153750528
+Data Size: 0
+Dimensions: 4096 11008 
+ ----------------------------------- 
+Tensor Name: blk.25.attn_norm.weight
+Number of Dimensions: 1
+Offsets: 2173124608
+Data Size: 0
+Dimensions: 4096 
+ ----------------------------------- 
+Tensor Name: blk.25.ffn_norm.weight
+Number of Dimensions: 1
+Offsets: 2173140992
+Data Size: 0
+Dimensions: 4096 
+ ----------------------------------- 
+Tensor Name: blk.26.attn_q.weight
+Number of Dimensions: 2
+Offsets: 2173157376
+Data Size: 0
+Dimensions: 4096 4096 
+ ----------------------------------- 
+Tensor Name: blk.26.attn_k.weight
+Number of Dimensions: 2
+Offsets: 2178662400
+Data Size: 0
+Dimensions: 4096 4096 
+ ----------------------------------- 
+Tensor Name: blk.26.attn_v.weight
+Number of Dimensions: 2
+Offsets: 2184167424
+Data Size: 0
+Dimensions: 4096 4096 
+ ----------------------------------- 
+Tensor Name: blk.26.attn_output.weight
+Number of Dimensions: 2
+Offsets: 2191376384
+Data Size: 0
+Dimensions: 4096 4096 
+ ----------------------------------- 
+Tensor Name: blk.26.ffn_gate.weight
+Number of Dimensions: 2
+Offsets: 2198585344
+Data Size: 0
+Dimensions: 4096 11008 
+ ----------------------------------- 
+Tensor Name: blk.26.ffn_down.weight
+Number of Dimensions: 2
+Offsets: 2217959424
+Data Size: 0
+Dimensions: 11008 4096 
+ ----------------------------------- 
+Tensor Name: blk.26.ffn_up.weight
+Number of Dimensions: 2
+Offsets: 2237333504
+Data Size: 0
+Dimensions: 4096 11008 
+ ----------------------------------- 
+Tensor Name: blk.26.attn_norm.weight
+Number of Dimensions: 1
+Offsets: 2256707584
+Data Size: 0
+Dimensions: 4096 
+ ----------------------------------- 
+Tensor Name: blk.26.ffn_norm.weight
+Number of Dimensions: 1
+Offsets: 2256723968
+Data Size: 0
+Dimensions: 4096 
+ ----------------------------------- 
+Tensor Name: blk.27.attn_q.weight
+Number of Dimensions: 2
+Offsets: 2256740352
+Data Size: 0
+Dimensions: 4096 4096 
+ ----------------------------------- 
+Tensor Name: blk.27.attn_k.weight
+Number of Dimensions: 2
+Offsets: 2262245376
+Data Size: 0
+Dimensions: 4096 4096 
+ ----------------------------------- 
+Tensor Name: blk.27.attn_v.weight
+Number of Dimensions: 2
+Offsets: 2267750400
+Data Size: 0
+Dimensions: 4096 4096 
+ ----------------------------------- 
+Tensor Name: blk.27.attn_output.weight
+Number of Dimensions: 2
+Offsets: 2274959360
+Data Size: 0
+Dimensions: 4096 4096 
+ ----------------------------------- 
+Tensor Name: blk.27.ffn_gate.weight
+Number of Dimensions: 2
+Offsets: 2282168320
+Data Size: 0
+Dimensions: 4096 11008 
+ ----------------------------------- 
+Tensor Name: blk.27.ffn_down.weight
+Number of Dimensions: 2
+Offsets: 2301542400
+Data Size: 0
+Dimensions: 11008 4096 
+ ----------------------------------- 
+Tensor Name: blk.27.ffn_up.weight
+Number of Dimensions: 2
+Offsets: 2320916480
+Data Size: 0
+Dimensions: 4096 11008 
+ ----------------------------------- 
+Tensor Name: blk.27.attn_norm.weight
+Number of Dimensions: 1
+Offsets: 2340290560
+Data Size: 0
+Dimensions: 4096 
+ ----------------------------------- 
+Tensor Name: blk.27.ffn_norm.weight
+Number of Dimensions: 1
+Offsets: 2340306944
+Data Size: 0
+Dimensions: 4096 
+ ----------------------------------- 
+Tensor Name: blk.28.attn_q.weight
+Number of Dimensions: 2
+Offsets: 2340323328
+Data Size: 0
+Dimensions: 4096 4096 
+ ----------------------------------- 
+Tensor Name: blk.28.attn_k.weight
+Number of Dimensions: 2
+Offsets: 2345828352
+Data Size: 0
+Dimensions: 4096 4096 
+ ----------------------------------- 
+Tensor Name: blk.28.attn_v.weight
+Number of Dimensions: 2
+Offsets: 2351333376
+Data Size: 0
+Dimensions: 4096 4096 
+ ----------------------------------- 
+Tensor Name: blk.28.attn_output.weight
+Number of Dimensions: 2
+Offsets: 2358542336
+Data Size: 0
+Dimensions: 4096 4096 
+ ----------------------------------- 
+Tensor Name: blk.28.ffn_gate.weight
+Number of Dimensions: 2
+Offsets: 2365751296
+Data Size: 0
+Dimensions: 4096 11008 
+ ----------------------------------- 
+Tensor Name: blk.28.ffn_down.weight
+Number of Dimensions: 2
+Offsets: 2385125376
+Data Size: 0
+Dimensions: 11008 4096 
+ ----------------------------------- 
+Tensor Name: blk.28.ffn_up.weight
+Number of Dimensions: 2
+Offsets: 2404499456
+Data Size: 0
+Dimensions: 4096 11008 
+ ----------------------------------- 
+Tensor Name: blk.28.attn_norm.weight
+Number of Dimensions: 1
+Offsets: 2423873536
+Data Size: 0
+Dimensions: 4096 
+ ----------------------------------- 
+Tensor Name: blk.28.ffn_norm.weight
+Number of Dimensions: 1
+Offsets: 2423889920
+Data Size: 0
+Dimensions: 4096 
+ ----------------------------------- 
+Tensor Name: blk.29.attn_q.weight
+Number of Dimensions: 2
+Offsets: 2423906304
+Data Size: 0
+Dimensions: 4096 4096 
+ ----------------------------------- 
+Tensor Name: blk.29.attn_k.weight
+Number of Dimensions: 2
+Offsets: 2429411328
+Data Size: 0
+Dimensions: 4096 4096 
+ ----------------------------------- 
+Tensor Name: blk.29.attn_v.weight
+Number of Dimensions: 2
+Offsets: 2434916352
+Data Size: 0
+Dimensions: 4096 4096 
+ ----------------------------------- 
+Tensor Name: blk.29.attn_output.weight
+Number of Dimensions: 2
+Offsets: 2442125312
+Data Size: 0
+Dimensions: 4096 4096 
+ ----------------------------------- 
+Tensor Name: blk.29.ffn_gate.weight
+Number of Dimensions: 2
+Offsets: 2449334272
+Data Size: 0
+Dimensions: 4096 11008 
+ ----------------------------------- 
+Tensor Name: blk.29.ffn_down.weight
+Number of Dimensions: 2
+Offsets: 2468708352
+Data Size: 0
+Dimensions: 11008 4096 
+ ----------------------------------- 
+Tensor Name: blk.29.ffn_up.weight
+Number of Dimensions: 2
+Offsets: 2488082432
+Data Size: 0
+Dimensions: 4096 11008 
+ ----------------------------------- 
+Tensor Name: blk.29.attn_norm.weight
+Number of Dimensions: 1
+Offsets: 2507456512
+Data Size: 0
+Dimensions: 4096 
+ ----------------------------------- 
+Tensor Name: blk.29.ffn_norm.weight
+Number of Dimensions: 1
+Offsets: 2507472896
+Data Size: 0
+Dimensions: 4096 
+ ----------------------------------- 
+Tensor Name: blk.30.attn_q.weight
+Number of Dimensions: 2
+Offsets: 2507489280
+Data Size: 0
+Dimensions: 4096 4096 
+ ----------------------------------- 
+Tensor Name: blk.30.attn_k.weight
+Number of Dimensions: 2
+Offsets: 2512994304
+Data Size: 0
+Dimensions: 4096 4096 
+ ----------------------------------- 
+Tensor Name: blk.30.attn_v.weight
+Number of Dimensions: 2
+Offsets: 2518499328
+Data Size: 0
+Dimensions: 4096 4096 
+ ----------------------------------- 
+Tensor Name: blk.30.attn_output.weight
+Number of Dimensions: 2
+Offsets: 2525708288
+Data Size: 0
+Dimensions: 4096 4096 
+ ----------------------------------- 
+Tensor Name: blk.30.ffn_gate.weight
+Number of Dimensions: 2
+Offsets: 2532917248
+Data Size: 0
+Dimensions: 4096 11008 
+ ----------------------------------- 
+Tensor Name: blk.30.ffn_down.weight
+Number of Dimensions: 2
+Offsets: 2552291328
+Data Size: 0
+Dimensions: 11008 4096 
+ ----------------------------------- 
+Tensor Name: blk.30.ffn_up.weight
+Number of Dimensions: 2
+Offsets: 2571665408
+Data Size: 0
+Dimensions: 4096 11008 
+ ----------------------------------- 
+Tensor Name: blk.30.attn_norm.weight
+Number of Dimensions: 1
+Offsets: 2591039488
+Data Size: 0
+Dimensions: 4096 
+ ----------------------------------- 
+Tensor Name: blk.30.ffn_norm.weight
+Number of Dimensions: 1
+Offsets: 2591055872
+Data Size: 0
+Dimensions: 4096 
+ ----------------------------------- 
+Tensor Name: blk.31.attn_q.weight
+Number of Dimensions: 2
+Offsets: 2591072256
+Data Size: 0
+Dimensions: 4096 4096 
+ ----------------------------------- 
+Tensor Name: blk.31.attn_k.weight
+Number of Dimensions: 2
+Offsets: 2596577280
+Data Size: 0
+Dimensions: 4096 4096 
+ ----------------------------------- 
+Tensor Name: blk.31.attn_v.weight
+Number of Dimensions: 2
+Offsets: 2602082304
+Data Size: 0
+Dimensions: 4096 4096 
+ ----------------------------------- 
+Tensor Name: blk.31.attn_output.weight
+Number of Dimensions: 2
+Offsets: 2609291264
+Data Size: 0
+Dimensions: 4096 4096 
+ ----------------------------------- 
+Tensor Name: blk.31.ffn_gate.weight
+Number of Dimensions: 2
+Offsets: 2616500224
+Data Size: 0
+Dimensions: 4096 11008 
+ ----------------------------------- 
+Tensor Name: blk.31.ffn_down.weight
+Number of Dimensions: 2
+Offsets: 2635874304
+Data Size: 0
+Dimensions: 11008 4096 
+ ----------------------------------- 
+Tensor Name: blk.31.ffn_up.weight
+Number of Dimensions: 2
+Offsets: 2655248384
+Data Size: 0
+Dimensions: 4096 11008 
+ ----------------------------------- 
+Tensor Name: blk.31.attn_norm.weight
+Number of Dimensions: 1
+Offsets: 2674622464
+Data Size: 0
+Dimensions: 4096 
+ ----------------------------------- 
+Tensor Name: blk.31.ffn_norm.weight
+Number of Dimensions: 1
+Offsets: 2674638848
+Data Size: 0
+Dimensions: 4096 
+ ----------------------------------- 
+Tensor Name: token_embd.weight
+Number of Dimensions: 2
+Offsets: 2674655232
+Data Size: 0
+Dimensions: 4096 32001 
+ ----------------------------------- 
+Tensor Name: output_norm.weight
+Number of Dimensions: 1
+Offsets: 2717664576
+Data Size: 0
+Dimensions: 4096 
+ ----------------------------------- 
+Tensor Name: output.weight
+Number of Dimensions: 2
+Offsets: 2717680960
+Data Size: 0
+Dimensions: 4096 32001 
+ ----------------------------------- 
