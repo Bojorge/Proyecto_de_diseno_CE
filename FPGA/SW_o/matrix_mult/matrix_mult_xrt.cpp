@@ -1,16 +1,38 @@
 #include <iostream>
 #include <vector>
+#include <cmath>
+#include <xrt/xrt.h>
 #include <xrt/xrt/xrt_kernel.h>
 #include <xrt/xrt/xrt_bo.h>
 #include <xrt/xrt/xrt_device.h>
-#include <ap_fixed.h>
+#include <cstdlib>
 
-using DataT = ap_fixed<16, 12>;
+#define FIXED_SCALE (1 << 4) // Escala para el punto fijo
+using DataT = int16_t;
 
-#define DATA_SIZE 256 // Tamaño de los datos
+// Función para convertir de float a punto fijo (16 bits)
+int16_t floatToFixed(float f) {
+    return static_cast<int16_t>(f * FIXED_SCALE);
+}
+
+// Función para convertir de punto fijo a float
+float fixedToFloat(int16_t fixedValue) {
+    return static_cast<float>(fixedValue) / FIXED_SCALE;
+}
+
+void printMatrix(const std::vector<DataT>& matrix, int rows, int cols, const std::string& name) {
+    std::cout << "Matrix " << name << ":\n";
+    for (int i = 0; i < rows; ++i) {
+        for (int j = 0; j < cols; ++j) {
+            std::cout << fixedToFloat(matrix[i * cols + j]) << " ";
+        }
+        std::cout << std::endl;
+    }
+    std::cout << std::endl;
+}
 
 int main(int argc, char** argv) {
-    const char* xclbinFilename = "matrix_mult.xclbin"; 
+    const char* xclbinFilename = "matrix_mult.xclbin";
 
     // Abrir el dispositivo y cargar el archivo .xclbin
     xrt::device device = xrt::device(0);
@@ -20,10 +42,26 @@ int main(int argc, char** argv) {
     xrt::kernel kernel = xrt::kernel(device, uuid, "matrix_mult");
 
     // Inicializar las matrices de entrada y salida
-    int M = 16, N = 16, P = 16; // Ejemplo de tamaño de matrices
-    std::vector<DataT> A(M * N, DataT(1.0)); // Rellena A con valores 1.0
-    std::vector<DataT> B(N * P, DataT(1.0)); // Rellena B con valores 1.0
-    std::vector<DataT> C(M * P, DataT(0.0)); // Inicializa C en cero
+    int M = 5, N = 5, P = 5;
+    std::vector<DataT> A(M * N, floatToFixed(1.0f)); // Rellena A con valor fijo
+    std::vector<DataT> B(N * P, floatToFixed(1.0f)); // Rellena B con valor fijo
+    std::vector<DataT> C(M * P, floatToFixed(0.0f)); // Inicializa C en cero
+    std::vector<DataT> C_expected(M * P, floatToFixed(0.0f)); // Resultado esperado en software
+
+    // Imprimir matrices de entrada
+    printMatrix(A, M, N, "A");
+    printMatrix(B, N, P, "B");
+
+    // Calcular el resultado esperado en software
+    for (int i = 0; i < M; ++i) {
+        for (int j = 0; j < P; ++j) {
+            float sum = 0.0f;
+            for (int k = 0; k < N; ++k) {
+                sum += fixedToFloat(A[i * N + k]) * fixedToFloat(B[k * P + j]);
+            }
+            C_expected[i * P + j] = floatToFixed(sum);
+        }
+    }
 
     // Crear buffers en la memoria global para las matrices
     xrt::bo buffer_A = xrt::bo(device, A.size() * sizeof(DataT), kernel.group_id(0));
@@ -43,10 +81,33 @@ int main(int argc, char** argv) {
     // Leer el resultado de la memoria del dispositivo a C
     buffer_C.sync(XCL_BO_SYNC_BO_FROM_DEVICE);
     buffer_C.read(C.data());
+    for (auto& elem : C) {
+        elem /= FIXED_SCALE;
+    }
 
-    std::cout << "Resultado de C[0]: " << C[0] << std::endl;
-    std::cout << "Resultado de C[1]: " << C[1] << std::endl;
-    std::cout << "Resultado de C[M*P-1]: " << C[M*P-1] << std::endl;
+    // Mostrar los resultados obtenidos y compararlos con el esperado
+    std::cout << "Matrix C (Expected):\n";
+    printMatrix(C_expected, M, P, "C_expected");
+
+    std::cout << "Matrix C (Hardware Result):\n";
+    printMatrix(C, M, P, "C (Hardware)");
+
+    // Verificación de resultados
+    bool passed = true;
+    for (int i = 0; i < M * P; ++i) {
+        float expected = fixedToFloat(C_expected[i]);
+        float obtained = fixedToFloat(C[i]);
+        if (std::abs(expected - obtained) > 0.1f) {
+            std::cout << "Mismatch at index " << i << ": Expected " << expected << ", Obtained " << obtained << std::endl;
+            passed = false;
+        }
+    }
+
+    if (passed) {
+        std::cout << "TEST PASSED\n";
+    } else {
+        std::cout << "TEST FAILED\n";
+    }
 
     return 0;
 }
