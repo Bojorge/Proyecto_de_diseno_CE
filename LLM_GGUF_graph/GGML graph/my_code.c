@@ -6918,7 +6918,102 @@ void gguf_print_context(const struct gguf_context * ctx) {
         }
 
         // Imprimir detalles del tensor
-        fprintf(file, "Tensor type: %d\n", temp_tensor.type); // Imprime el tipo del tensor
+        
+        fprintf(file, "Tensor type: ");
+        switch (temp_tensor.type) {
+            case GGML_TYPE_F32:
+                fprintf(file, "F32\n");
+                break;
+            case GGML_TYPE_F16:
+                fprintf(file, "F16\n");
+                break;
+            case GGML_TYPE_Q4_0:
+                fprintf(file, "Q4_0\n");
+                break;
+            case GGML_TYPE_Q4_1:
+                fprintf(file, "Q4_1\n");
+                break;
+            case GGML_TYPE_Q5_0:
+                fprintf(file, "Q5_0\n");
+                break;
+            case GGML_TYPE_Q5_1:
+                fprintf(file, "Q5_1\n");
+                break;
+            case GGML_TYPE_Q8_0:
+                fprintf(file, "Q8_0\n");
+                break;
+            case GGML_TYPE_Q8_1:
+                fprintf(file, "Q8_1\n");
+                break;
+            case GGML_TYPE_Q2_K:
+                fprintf(file, "Q2_K\n");
+                break;
+            case GGML_TYPE_Q3_K:
+                fprintf(file, "Q3_K\n");
+                break;
+            case GGML_TYPE_Q4_K:
+                fprintf(file, "Q4_K\n");
+                break;
+            case GGML_TYPE_Q5_K:
+                fprintf(file, "Q5_K\n");
+                break;
+            case GGML_TYPE_Q6_K:
+                fprintf(file, "Q6_K\n");
+                break;
+            case GGML_TYPE_Q8_K:
+                fprintf(file, "Q8_K\n");
+                break;
+            case GGML_TYPE_IQ2_XXS:
+                fprintf(file, "IQ2_XXS\n");
+                break;
+            case GGML_TYPE_IQ2_XS:
+                fprintf(file, "IQ2_XS\n");
+                break;
+            case GGML_TYPE_IQ3_XXS:
+                fprintf(file, "IQ3_XXS\n");
+                break;
+            case GGML_TYPE_IQ1_S:
+                fprintf(file, "IQ1_S\n");
+                break;
+            case GGML_TYPE_IQ4_NL:
+                fprintf(file, "IQ4_NL\n");
+                break;
+            case GGML_TYPE_IQ3_S:
+                fprintf(file, "IQ3_S\n");
+                break;
+            case GGML_TYPE_IQ2_S:
+                fprintf(file, "IQ2_S\n");
+                break;
+            case GGML_TYPE_IQ4_XS:
+                fprintf(file, "IQ4_XS\n");
+                break;
+            case GGML_TYPE_I8:
+                fprintf(file, "I8\n");
+                break;
+            case GGML_TYPE_I16:
+                fprintf(file, "I16\n");
+                break;
+            case GGML_TYPE_I32:
+                fprintf(file, "I32\n");
+                break;
+            case GGML_TYPE_I64:
+                fprintf(file, "I64\n");
+                break;
+            case GGML_TYPE_F64:
+                fprintf(file, "F64\n");
+                break;
+            case GGML_TYPE_IQ1_M:
+                fprintf(file, "IQ1_M\n");
+                break;
+            case GGML_TYPE_BF16:
+                fprintf(file, "BF16\n");
+                break;
+            default:
+                fprintf(file, "Unknown type (%d)\n", temp_tensor.type);
+                break;
+        }
+
+
         fprintf(file, "Dimensions: ");
         for (int i = 0; i < GGML_MAX_DIMS; ++i) {
             fprintf(file, "%lld ", (long long)temp_tensor.ne[i]);
