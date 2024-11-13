@@ -5445,7 +5445,7 @@ struct ggml_tensor {
         void * extra; // extra things e.g. for ggml-cuda.cu
 
         char padding[8];
-    };
+};
 
 static const size_t GGML_TENSOR_SIZE = sizeof(struct ggml_tensor);
 
@@ -6264,6 +6264,126 @@ static bool gguf_fread_str(FILE * file, struct gguf_str * p, size_t * offset) {
     return ok;
 }
 
+const char * ggml_op_to_string(enum ggml_op op) {
+    switch (op) {
+        case GGML_OP_NONE:                 return "NONE";
+        case GGML_OP_DUP:                  return "DUP";
+        case GGML_OP_ADD:                  return "ADD";
+        case GGML_OP_ADD1:                 return "ADD1";
+        case GGML_OP_ACC:                  return "ACC";
+        case GGML_OP_SUB:                  return "SUB";
+        case GGML_OP_MUL:                  return "MUL";
+        case GGML_OP_DIV:                  return "DIV";
+        case GGML_OP_SQR:                  return "SQR";
+        case GGML_OP_SQRT:                 return "SQRT";
+        case GGML_OP_LOG:                  return "LOG";
+        case GGML_OP_SUM:                  return "SUM";
+        case GGML_OP_SUM_ROWS:             return "SUM_ROWS";
+        case GGML_OP_MEAN:                 return "MEAN";
+        case GGML_OP_ARGMAX:               return "ARGMAX";
+        case GGML_OP_REPEAT:               return "REPEAT";
+        case GGML_OP_REPEAT_BACK:          return "REPEAT_BACK";
+        case GGML_OP_CONCAT:               return "CONCAT";
+        case GGML_OP_SILU_BACK:            return "SILU_BACK";
+        case GGML_OP_NORM:                 return "NORM";
+        case GGML_OP_RMS_NORM:             return "RMS_NORM";
+        case GGML_OP_RMS_NORM_BACK:        return "RMS_NORM_BACK";
+        case GGML_OP_GROUP_NORM:           return "GROUP_NORM";
+        case GGML_OP_MUL_MAT:              return "MUL_MAT";
+        case GGML_OP_MUL_MAT_ID:           return "MUL_MAT_ID";
+        case GGML_OP_OUT_PROD:             return "OUT_PROD";
+        case GGML_OP_SCALE:                return "SCALE";
+        case GGML_OP_SET:                  return "SET";
+        case GGML_OP_CPY:                  return "CPY";
+        case GGML_OP_CONT:                 return "CONT";
+        case GGML_OP_RESHAPE:              return "RESHAPE";
+        case GGML_OP_VIEW:                 return "VIEW";
+        case GGML_OP_PERMUTE:              return "PERMUTE";
+        case GGML_OP_TRANSPOSE:            return "TRANSPOSE";
+        case GGML_OP_GET_ROWS:             return "GET_ROWS";
+        case GGML_OP_GET_ROWS_BACK:        return "GET_ROWS_BACK";
+        case GGML_OP_DIAG:                 return "DIAG";
+        case GGML_OP_DIAG_MASK_INF:        return "DIAG_MASK_INF";
+        case GGML_OP_DIAG_MASK_ZERO:       return "DIAG_MASK_ZERO";
+        case GGML_OP_SOFT_MAX:             return "SOFT_MAX";
+        case GGML_OP_SOFT_MAX_BACK:        return "SOFT_MAX_BACK";
+        case GGML_OP_ROPE:                 return "ROPE";
+        case GGML_OP_ROPE_BACK:            return "ROPE_BACK";
+        case GGML_OP_CLAMP:                return "CLAMP";
+        case GGML_OP_CONV_TRANSPOSE_1D:    return "CONV_TRANSPOSE_1D";
+        case GGML_OP_IM2COL:               return "IM2COL";
+        case GGML_OP_CONV_TRANSPOSE_2D:    return "CONV_TRANSPOSE_2D";
+        case GGML_OP_POOL_1D:              return "POOL_1D";
+        case GGML_OP_POOL_2D:              return "POOL_2D";
+        case GGML_OP_UPSCALE:              return "UPSCALE";
+        case GGML_OP_PAD:                  return "PAD";
+        case GGML_OP_ARANGE:               return "ARANGE";
+        case GGML_OP_TIMESTEP_EMBEDDING:   return "TIMESTEP_EMBEDDING";
+        case GGML_OP_ARGSORT:              return "ARGSORT";
+        case GGML_OP_LEAKY_RELU:           return "LEAKY_RELU";
+        case GGML_OP_FLASH_ATTN_EXT:       return "FLASH_ATTN_EXT";
+        case GGML_OP_FLASH_ATTN_BACK:      return "FLASH_ATTN_BACK";
+        case GGML_OP_SSM_CONV:             return "SSM_CONV";
+        case GGML_OP_SSM_SCAN:             return "SSM_SCAN";
+        case GGML_OP_WIN_PART:             return "WIN_PART";
+        case GGML_OP_WIN_UNPART:           return "WIN_UNPART";
+        case GGML_OP_GET_REL_POS:          return "GET_REL_POS";
+        case GGML_OP_ADD_REL_POS:          return "ADD_REL_POS";
+        case GGML_OP_UNARY:                return "UNARY";
+        case GGML_OP_MAP_UNARY:            return "MAP_UNARY";
+        case GGML_OP_MAP_BINARY:           return "MAP_BINARY";
+        case GGML_OP_MAP_CUSTOM1_F32:      return "MAP_CUSTOM1_F32";
+        case GGML_OP_MAP_CUSTOM2_F32:      return "MAP_CUSTOM2_F32";
+        case GGML_OP_MAP_CUSTOM3_F32:      return "MAP_CUSTOM3_F32";
+        case GGML_OP_MAP_CUSTOM1:          return "MAP_CUSTOM1";
+        case GGML_OP_MAP_CUSTOM2:          return "MAP_CUSTOM2";
+        case GGML_OP_MAP_CUSTOM3:          return "MAP_CUSTOM3";
+        case GGML_OP_CROSS_ENTROPY_LOSS:   return "CROSS_ENTROPY_LOSS";
+        case GGML_OP_CROSS_ENTROPY_LOSS_BACK: return "CROSS_ENTROPY_LOSS_BACK";
+        case GGML_OP_COUNT:                return "COUNT";
+        default:                           return "UNKNOWN";
+    }
+}
+
+void print_operation(struct ggml_tensor * tensor) {
+    if (tensor == NULL) {
+        printf("Tensor is NULL.\n");
+        return;
+    }
+
+    printf("\n *************************  OPERATION  ************************* \n");
+    printf("Tensor Name: %s\n", tensor->name);
+    printf("Tensor Type: %d\n", tensor->type); // Tipo de tensor (e.g., GGML_TYPE_I8, GGML_TYPE_FLOAT32, etc.)
+    printf("Operation: %d\n", tensor->op); // Tipo de operación realizada en el tensor
+    printf("Operation Parameters: ");
+    
+    for (int i = 0; i < GGML_MAX_OP_PARAMS / sizeof(int32_t); ++i) {
+        if (tensor->op_params[i] != 0) {  // Imprime solo los parámetros no nulos
+            printf("%d ", tensor->op_params[i]);
+        }
+    }
+    printf("\n");
+    
+    printf("Flags: %d\n", tensor->flags);
+    printf("Number of Elements: ");
+    for (int i = 0; i < GGML_MAX_DIMS; ++i) {
+        if (tensor->ne[i] != 0) {
+            printf("%ld ", tensor->ne[i]);
+        }
+    }
+    printf("\n");
+
+    printf("Performance: Runs: %d, Cycles: %ld, Time: %ld us\n",
+           tensor->perf_runs, tensor->perf_cycles, tensor->perf_time_us);
+
+    if (tensor->grad != NULL) {
+        printf("Gradient Tensor: %s\n", tensor->grad->name);
+    }
+
+    printf("Data Pointer: %p\n", tensor->data);
+    printf("Extra Pointer: %p\n", tensor->extra);
+    printf(" ------------------------------------------------------------ \n");
+}
 
 struct gguf_context * gguf_init_from_file(const char * fname, struct gguf_init_params params) {
     FILE * file = fopen(fname, "rb");
@@ -6561,6 +6681,8 @@ struct gguf_context * gguf_init_from_file(const char * fname, struct gguf_init_p
             ctx->data = data->data;
         }
 
+        //print_operation(data);
+
         ggml_set_no_alloc(ctx_data, true);
 
         // create the tensors
@@ -6587,6 +6709,8 @@ struct gguf_context * gguf_init_from_file(const char * fname, struct gguf_init_p
               //cur->data = (char *) data->data + ctx->infos[i].offset - ctx->offset; // offset from start of file
                 cur->data = (char *) data->data + ctx->infos[i].offset;               // offset from data
             }
+            // Imprimir la operación del tensor actual
+            //print_operation(cur);
         }
 
         if (!ok) {
@@ -6685,7 +6809,161 @@ void gguf_print_context(const struct gguf_context * ctx) {
         for (uint32_t j = 0; j < ctx->infos[i].n_dims; ++j) {
             fprintf(file, "%lu ", ctx->infos[i].ne[j]);
         }
-        fprintf(file, "\n ----------------------------------- \n");
+        fprintf(file, "\n");
+        // Crear un tensor temporal y asignar valores necesarios
+        struct ggml_tensor temp_tensor;
+        temp_tensor.type = ctx->infos[i].type;
+        for (int j = 0; j < GGML_MAX_DIMS; ++j) {
+            temp_tensor.ne[j] = ctx->infos[i].ne[j];
+        }
+        temp_tensor.data = (void *)((char *)ctx->data + ctx->infos[i].offset);
+        //temp_tensor.op = ctx->infos[i].op; 
+
+
+        // Escribir la operación asociada con el tensor
+        fprintf(file, "Operation: ");
+        
+        // Dependiendo de la operación, imprimimos la descripción
+        switch (temp_tensor.op) {
+            case GGML_OP_NONE:
+                fprintf(file, "None operation\n");
+                break;
+            case GGML_OP_ADD:
+                fprintf(file, "Addition operation (element-wise addition)\n");
+                break;
+            case GGML_OP_SUB:
+                fprintf(file, "Subtraction operation (element-wise subtraction)\n");
+                break;
+            case GGML_OP_MUL:
+                fprintf(file, "Multiplication operation (element-wise multiplication)\n");
+                break;
+            case GGML_OP_DIV:
+                fprintf(file, "Division operation (element-wise division)\n");
+                break;
+            case GGML_OP_SQR:
+                fprintf(file, "Square operation (element-wise squaring)\n");
+                break;
+            case GGML_OP_SQRT:
+                fprintf(file, "Square root operation (element-wise square root)\n");
+                break;
+            case GGML_OP_LOG:
+                fprintf(file, "Logarithm operation (element-wise log)\n");
+                break;
+            case GGML_OP_SUM:
+                fprintf(file, "Sum operation (sum of all elements)\n");
+                break;
+            case GGML_OP_SUM_ROWS:
+                fprintf(file, "Sum operation (sum over rows)\n");
+                break;
+            case GGML_OP_MEAN:
+                fprintf(file, "Mean operation (mean of all elements)\n");
+                break;
+            case GGML_OP_ARGMAX:
+                fprintf(file, "Argmax operation (index of the maximum element)\n");
+                break;
+            case GGML_OP_REPEAT:
+                fprintf(file, "Repeat operation (repeat tensor along specified axis)\n");
+                break;
+            case GGML_OP_CONCAT:
+                fprintf(file, "Concatenation operation (concatenate tensors along an axis)\n");
+                break;
+            case GGML_OP_SCALE:
+                fprintf(file, "Scale operation (scale tensor by a factor)\n");
+                break;
+            case GGML_OP_SET:
+                fprintf(file, "Set operation (set tensor to a constant value)\n");
+                break;
+            case GGML_OP_CPY:
+                fprintf(file, "Copy operation (copy tensor)\n");
+                break;
+            case GGML_OP_RESHAPE:
+                fprintf(file, "Reshape operation (change tensor shape)\n");
+                break;
+            case GGML_OP_VIEW:
+                fprintf(file, "View operation (create a view of the tensor)\n");
+                break;
+            case GGML_OP_PERMUTE:
+                fprintf(file, "Permute operation (rearrange tensor dimensions)\n");
+                break;
+            case GGML_OP_TRANSPOSE:
+                fprintf(file, "Transpose operation (transpose tensor)\n");
+                break;
+            case GGML_OP_SOFT_MAX:
+                fprintf(file, "Softmax operation (apply softmax function to tensor)\n");
+                break;
+            case GGML_OP_CLAMP:
+                fprintf(file, "Clamp operation (limit tensor values within a range)\n");
+                break;
+            case GGML_OP_POOL_2D:
+                fprintf(file, "2D Pooling operation (e.g., max or average pooling)\n");
+                break;
+            case GGML_OP_UPSCALE:
+                fprintf(file, "Upscale operation (nearest-neighbor interpolation)\n");
+                break;
+            case GGML_OP_ARGSORT:
+                fprintf(file, "Argsort operation (sort tensor indices)\n");
+                break;
+            case GGML_OP_LEAKY_RELU:
+                fprintf(file, "Leaky ReLU operation (apply Leaky ReLU activation)\n");
+                break;
+            case GGML_OP_CROSS_ENTROPY_LOSS:
+                fprintf(file, "Cross-entropy loss operation (calculate cross-entropy loss)\n");
+                break;
+            case GGML_OP_CROSS_ENTROPY_LOSS_BACK:
+                fprintf(file, "Cross-entropy loss backpropagation (calculate gradients)\n");
+                break;
+            default:
+                fprintf(file, "Unknown operation (op value: %d)\n", temp_tensor.op);
+                break;
+        }
+
+        // Imprimir detalles del tensor
+        fprintf(file, "Tensor type: %d\n", temp_tensor.type); // Imprime el tipo del tensor
+        fprintf(file, "Dimensions: ");
+        for (int i = 0; i < GGML_MAX_DIMS; ++i) {
+            fprintf(file, "%lld ", (long long)temp_tensor.ne[i]);
+        }
+        fprintf(file, "\n");
+
+        fprintf(file, "Strides (bytes): ");
+        for (int i = 0; i < GGML_MAX_DIMS; ++i) {
+            fprintf(file, "%zu ", temp_tensor.nb[i]);
+        }
+        fprintf(file, "\n");
+
+        fprintf(file, "Operation parameters: ");
+        for (int i = 0; i < GGML_MAX_OP_PARAMS / sizeof(int32_t); ++i) {
+            fprintf(file, "%d ", temp_tensor.op_params[i]);
+        }
+        fprintf(file, "\n");
+
+        fprintf(file, "Flags: %d\n", temp_tensor.flags);
+        fprintf(file, "Grad tensor: %p\n", (void *)temp_tensor.grad); // Dirección de la gradiente
+        fprintf(file, "Source tensors: ");
+        for (int i = 0; i < GGML_MAX_SRC; ++i) {
+            fprintf(file, "%p ", (void *)temp_tensor.src[i]);
+        }
+        fprintf(file, "\n");
+
+        fprintf(file, "Performance runs: %d\n", temp_tensor.perf_runs);
+        fprintf(file, "Performance cycles: %lld\n", (long long)temp_tensor.perf_cycles);
+        fprintf(file, "Performance time (us): %lld\n", (long long)temp_tensor.perf_time_us);
+
+        fprintf(file, "View source: %p\n", (void *)temp_tensor.view_src);
+        fprintf(file, "View offset: %zu\n", temp_tensor.view_offs);
+
+        fprintf(file, "Data pointer: %p\n", (void *)temp_tensor.data);
+        fprintf(file, "Tensor name: %s\n", temp_tensor.name);
+        fprintf(file, "Extra data pointer: %p\n", temp_tensor.extra);
+
+        // Asegúrate de manejar la estructura de padding si es necesario
+        fprintf(file, "Padding: ");
+        for (int i = 0; i < sizeof(temp_tensor.padding); ++i) {
+            fprintf(file, "%02x ", (unsigned char)temp_tensor.padding[i]);
+        }
+        fprintf(file, "\n");
+
+        fprintf(file, "\n ---------------------------------------------------------------------- \n");
     }
 
     fclose(file);
