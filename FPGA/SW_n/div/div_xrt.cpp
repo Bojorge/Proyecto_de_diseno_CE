@@ -25,7 +25,7 @@ void print_data(const std::vector<DataT>& in1, int rows, int cols, const std::st
     std::cout << "Matrix " << name << ":\n";
     for (int i = 0; i < rows; ++i) {
         for (int j = 0; j < cols; ++j) {
-            std::cout << fixedToFloat(in1[i * cols + j])*FIXED_SCALE << " ";
+            std::cout << in1[i * cols + j] << " ";
         }
         std::cout << std::endl;
     }
@@ -37,8 +37,8 @@ int main(int argc, char** argv) {
         const char* xclbinFilename = "div.xclbin";
 
         // Dimensiones de las matrices
-        const int rows = 5;
-        const int cols = 5;
+        const int rows = 4;
+        const int cols = 4;
         const int size = rows * cols;
         const size_t data_size = size * sizeof(uint16_t);
 
@@ -56,8 +56,9 @@ int main(int argc, char** argv) {
         xrt::bo out_bo = xrt::bo(device, data_size, kernel.group_id(2));
 
         // Llenar datos de prueba
-        std::vector<DataT> in1(size, 20); // Entrada 1
-        std::vector<DataT> in2(size, 5); // Entrada 2
+        std::vector<DataT> in1(size, 8); // Entrada 1
+        std::vector<DataT> in2(size, 4); // Entrada 2
+        std::vector<DataT> expected(size, 2); // Resultado esperado
         std::vector<DataT> out(size, 0); // Inicializar salida
 
         in1_bo.write(in1.data());
@@ -84,7 +85,21 @@ int main(int argc, char** argv) {
         print_data(in1, rows, cols, "Input 1");
         print_data(in2, rows, cols, "Input 2");
         print_data(out, rows, cols, "Output (Hardware Result)");
-        
+
+        // Validación de resultados
+        bool passed = true;
+        for (size_t i = 0; i < size; ++i) {
+            if (out[i] != expected[i]) {
+                std::cerr << "Mismatch at index " << i << ": Expected " << expected[i] << ", Obtained " << out[i] << "\n";
+                passed = false;
+            }
+        }
+
+        if (passed) {
+            std::cout << "TEST PASSED\n";
+        } else {
+            std::cout << "TEST FAILED\n";
+        }
 
     } catch (const std::exception& ex) {
         std::cerr << "Error: " << ex.what() << "\n";
