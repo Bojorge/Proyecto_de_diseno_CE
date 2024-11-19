@@ -5512,7 +5512,7 @@ static struct ggml_tensor * ggml_new_tensor_impl(
 
     // TODO: for recoverable errors, we would need to free the data allocated from the scratch buffer here
 
-    struct ggml_tensor * const result = (struct ggml_tensor *)((char *)ctx->mem_buffer + obj_new->offs);
+    struct ggml_tensor *  result = (struct ggml_tensor *)((char *)ctx->mem_buffer + obj_new->offs);
 
 #ifdef __clang__
     // temporary until ggml_tensor::backend is removed
@@ -5526,7 +5526,7 @@ static struct ggml_tensor * ggml_new_tensor_impl(
         /*.buffer       =*/ NULL,
         /*.ne           =*/ { 1, 1, 1, 1 },
         /*.nb           =*/ { 0, 0, 0, 0 },
-        /*.op           =*/ GGML_OP_NONE,
+        /*.op           =*/ GGML_OP_NONE,  
         /*.op_params    =*/ { 0 },
         /*.flags        =*/ 0,
         /*.grad         =*/ NULL,
@@ -5560,6 +5560,8 @@ static struct ggml_tensor * ggml_new_tensor_impl(
     }
 
     ctx->n_objects++;
+
+    result->op = GGML_OP_ADD;
 
     return result;
 }
@@ -5866,7 +5868,7 @@ struct ggml_tensor * ggml_new_tensor(
 struct ggml_tensor * ggml_new_tensor_1d(
         struct ggml_context * ctx,
         enum   ggml_type      type,
-        int64_t ne0) {
+        int64_t               ne0) {
     return ggml_new_tensor(ctx, type, 1, &ne0);
 }
 
@@ -6352,12 +6354,16 @@ void print_operation(struct ggml_tensor * tensor) {
     }
 
     printf("\n *************************  OPERATION  ************************* \n");
+
+    //printf("Tensor view_src: %s\n", tensor->view_src->op);
+
     printf("Tensor Name: %s\n", tensor->name);
     printf("Tensor Type: %d\n", tensor->type); // Tipo de tensor (e.g., GGML_TYPE_I8, GGML_TYPE_FLOAT32, etc.)
     printf("Operation: %d\n", tensor->op); // Tipo de operación realizada en el tensor
     printf("Operation Parameters: ");
     
-    for (int i = 0; i < GGML_MAX_OP_PARAMS / sizeof(int32_t); ++i) {
+    for (long unsigned int i = 0; i < GGML_MAX_OP_PARAMS / sizeof(int32_t); ++i) {
+    //for (int i = 0; i < GGML_MAX_OP_PARAMS / sizeof(int32_t); ++i) {
         if (tensor->op_params[i] != 0) {  // Imprime solo los parámetros no nulos
             printf("%d ", tensor->op_params[i]);
         }
@@ -6817,8 +6823,11 @@ void gguf_print_context(const struct gguf_context * ctx) {
             temp_tensor.ne[j] = ctx->infos[i].ne[j];
         }
         temp_tensor.data = (void *)((char *)ctx->data + ctx->infos[i].offset);
+        
         //temp_tensor.op = ctx->infos[i].op; 
 
+        
+        
 
         // Escribir la operación asociada con el tensor
         fprintf(file, "Operation: ");
@@ -7027,7 +7036,8 @@ void gguf_print_context(const struct gguf_context * ctx) {
         fprintf(file, "\n");
 
         fprintf(file, "Operation parameters: ");
-        for (int i = 0; i < GGML_MAX_OP_PARAMS / sizeof(int32_t); ++i) {
+        for (long unsigned int i = 0; i < GGML_MAX_OP_PARAMS / sizeof(int32_t); ++i) {
+        //for (int i = 0; i < GGML_MAX_OP_PARAMS / sizeof(int32_t); ++i) {
             fprintf(file, "%d ", temp_tensor.op_params[i]);
         }
         fprintf(file, "\n");
@@ -7053,7 +7063,8 @@ void gguf_print_context(const struct gguf_context * ctx) {
 
         // Asegúrate de manejar la estructura de padding si es necesario
         fprintf(file, "Padding: ");
-        for (int i = 0; i < sizeof(temp_tensor.padding); ++i) {
+        for (long unsigned int i = 0; i < sizeof(temp_tensor.padding); ++i) {
+        //for (int i = 0; i < sizeof(temp_tensor.padding); ++i) {
             fprintf(file, "%02x ", (unsigned char)temp_tensor.padding[i]);
         }
         fprintf(file, "\n");
