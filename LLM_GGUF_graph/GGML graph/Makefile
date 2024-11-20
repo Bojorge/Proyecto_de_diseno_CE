@@ -25,9 +25,12 @@ call_tree: $(TARGET)
 	@echo "Generando archivo de texto con gprof..."
 	gprof -b -p $(TARGET) > call_tree.txt  # Genera el informe detallado de tiempos (flat profile)
 	gprof -b -q $(TARGET) >> call_tree.txt  # Añade el árbol de llamadas completo
+	@echo "Generando archivo .dot con gprof2dot..."
+	gprof $(TARGET) gmon.out | gprof2dot -o call_tree.dot  # Genera el archivo .dot
 	@echo "Generando gráfico visual del árbol de llamadas..."
-	gprof $(TARGET) gmon.out | gprof2dot | dot -Tpng -o call_tree.png
-	@echo "Árbol de llamadas generado como call_tree.png"
+	dot -Tpng call_tree.dot -o call_tree.png  # Convierte el archivo .dot en un archivo .png
+	@echo "Árbol de llamadas generado como call_tree.png y call_tree.dot"
+
 
 # Limpiar archivos compilados y de perfilado
 clean:

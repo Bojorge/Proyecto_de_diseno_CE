@@ -1,0 +1,57 @@
+Flat profile:
+
+Each sample counts as 0.01 seconds.
+  %   cumulative   self              self     total           
+ time   seconds   seconds    calls  ms/call  ms/call  name    
+100.00      0.01     0.01        1    10.00    10.00  ggml_init
+  0.00      0.01     0.00    66066     0.00     0.00  gguf_fread_el
+  0.00      0.01     0.00    32315     0.00     0.00  gguf_fread_str
+  0.00      0.01     0.00      291     0.00     0.00  ggml_new_tensor_impl.constprop.0
+  0.00      0.01     0.00        1     0.00     0.00  gguf_find_key
+  0.00      0.01     0.00        1     0.00    10.00  gguf_init_from_file
+  0.00      0.01     0.00        1     0.00     0.00  gguf_print_context
+			Call graph
+
+
+granularity: each sample hit covers 4 byte(s) for 100.00% of 0.01 seconds
+
+index % time    self  children    called     name
+                0.01    0.00       1/1           gguf_init_from_file [2]
+[1]    100.0    0.01    0.00       1         ggml_init [1]
+-----------------------------------------------
+                0.00    0.01       1/1           main [3]
+[2]    100.0    0.00    0.01       1         gguf_init_from_file [2]
+                0.01    0.00       1/1           ggml_init [1]
+                0.00    0.00   33751/66066       gguf_fread_el [4]
+                0.00    0.00   32315/32315       gguf_fread_str [5]
+                0.00    0.00     291/291         ggml_new_tensor_impl.constprop.0 [6]
+                0.00    0.00       1/1           gguf_find_key [7]
+-----------------------------------------------
+                                                 <spontaneous>
+[3]    100.0    0.00    0.01                 main [3]
+                0.00    0.01       1/1           gguf_init_from_file [2]
+                0.00    0.00       1/1           gguf_print_context [8]
+-----------------------------------------------
+                0.00    0.00   32315/66066       gguf_fread_str [5]
+                0.00    0.00   33751/66066       gguf_init_from_file [2]
+[4]      0.0    0.00    0.00   66066         gguf_fread_el [4]
+-----------------------------------------------
+                0.00    0.00   32315/32315       gguf_init_from_file [2]
+[5]      0.0    0.00    0.00   32315         gguf_fread_str [5]
+                0.00    0.00   32315/66066       gguf_fread_el [4]
+-----------------------------------------------
+                0.00    0.00     291/291         gguf_init_from_file [2]
+[6]      0.0    0.00    0.00     291         ggml_new_tensor_impl.constprop.0 [6]
+-----------------------------------------------
+                0.00    0.00       1/1           gguf_init_from_file [2]
+[7]      0.0    0.00    0.00       1         gguf_find_key [7]
+-----------------------------------------------
+                0.00    0.00       1/1           main [3]
+[8]      0.0    0.00    0.00       1         gguf_print_context [8]
+-----------------------------------------------
+
+Index by function name
+
+   [1] ggml_init               [4] gguf_fread_el (gguf_context.c) [8] gguf_print_context
+   [6] ggml_new_tensor_impl.constprop.0 (gguf_context.c) [5] gguf_fread_str (gguf_context.c)
+   [7] gguf_find_key           [2] gguf_init_from_file

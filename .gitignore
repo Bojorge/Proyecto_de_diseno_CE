@@ -1,2 +1,3 @@
 LLM_GGUF_graph/law-llm.Q2_K.gguf
-
+LLM_GGUF_graph/Meta-Llama-3-8B.Q4_K_S.gguf
+LLM_GGUF_graph/flux1-dev-Q4_K_S.gguf

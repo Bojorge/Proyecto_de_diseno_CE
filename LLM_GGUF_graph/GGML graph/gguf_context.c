@@ -691,7 +691,7 @@ enum ggml_op {
         GGML_OP_COUNT,
 };
 
- typedef struct { uint16_t bits; } ggml_bf16_t;
+typedef struct { uint16_t bits; } ggml_bf16_t;
 
 static inline float ggml_compute_bf16_to_fp32(ggml_bf16_t h) {
     union {
@@ -5561,7 +5561,7 @@ static struct ggml_tensor * ggml_new_tensor_impl(
 
     ctx->n_objects++;
 
-    result->op = GGML_OP_ADD;
+    //result->op = GGML_OP_ADD;
 
     return result;
 }
@@ -6731,6 +6731,7 @@ struct gguf_context * gguf_init_from_file(const char * fname, struct gguf_init_p
     }
     
     fclose(file);
+
     return ctx;
 }
 
@@ -7071,6 +7072,30 @@ void gguf_print_context(const struct gguf_context * ctx) {
 
         fprintf(file, "\n ---------------------------------------------------------------------- \n");
     }
+
+    // Escribir datos en formato hexadecimal
+    fprintf(file, "\n==================== DATA CONTENT ====================\n");
+
+    if(ctx->data == NULL){
+        fprintf(file, "Data is empty.\n");
+    }
+    else{
+        fprintf(file, "\n==================== DATA CONTENT (HEX) ====================\n");
+        uint8_t *data = (uint8_t *) ctx->data;
+        for (size_t i = 0; i < ctx->size; i++) {
+            fprintf(file, "%02X ", data[i]);
+        }
+        fprintf(file, "\n");
+
+        // Intentar escribir el contenido como cadena
+        fprintf(file, "\n==================== DATA CONTENT (STRING) ====================\n");
+        if (ctx->data != NULL && ((char *) ctx->data)[0] != '\0') {
+            fprintf(file, "%s\n", (char *) ctx->data);
+        } else {
+            fprintf(file, "Data is empty or not a valid string.\n");
+        }
+    }
+    
 
     fclose(file);
 }
