@@ -113,7 +113,7 @@
                 <tensor name="layer_output" type="embedding"/>
             </outputs>
         </layer>
-        <!-- Repetir para cada capa (num_hidden_layers) -->
+        <!-- Repetir para cada capa -->
     </layers>
     <output>
         <!-- Postprocesamiento y Clasificación -->
